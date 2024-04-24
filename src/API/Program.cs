@@ -1,4 +1,5 @@
 using Application;
+
 using Infrastructure;
 
 internal class Program
@@ -14,8 +15,13 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+
+        string currentDirectory = Directory.GetCurrentDirectory();
+        builder.Services.SetupDatabase($"Data Source={currentDirectory}\\database.db");
+
         builder.Services.ApplicationDependencyInjection();
         builder.Services.InfrastructureDependencyInjection();
+
 
         var app = builder.Build();
 
