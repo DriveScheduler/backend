@@ -14,12 +14,10 @@ internal class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        
+        builder.Services.SetupDatabase($"Data Source={builder.Configuration.GetConnectionString("Database")}");
 
-
-        string currentDirectory = Directory.GetCurrentDirectory();
-        builder.Services.SetupDatabase($"Data Source={currentDirectory}\\database.db");
-
-        builder.Services.ApplicationDependencyInjection();
+        builder.Services.ApplicationMediator();
         builder.Services.InfrastructureDependencyInjection();
 
 

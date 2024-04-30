@@ -5,9 +5,9 @@ using FluentValidation;
 
 namespace Domain.Validators.Users
 {
-    public sealed class UserValidator : AbstractValidator<User>
+    public sealed class UserValidator : CustomValidator<User, UserValidationException>
     {
-        private UserValidator()
+        public UserValidator()
         {
             RuleFor(user => user.Name)
                 .NotEmpty()
@@ -22,16 +22,6 @@ namespace Domain.Validators.Users
                 .WithMessage("L'adresse email est obligatoire")
                 .EmailAddress()
                 .WithMessage("L'adresse email n'est pas valide");
-        }
-
-
-        public static void ThrowIfInvalid(User user)
-        {
-            var results = new UserValidator().Validate(user);
-            if (!results.IsValid)
-            {
-                throw new UserValidationException(results.Errors[0].ErrorMessage);
-            }
         }
     }
 }

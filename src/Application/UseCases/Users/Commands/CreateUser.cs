@@ -1,5 +1,4 @@
-﻿using Application.Abstractions;
-
+﻿using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions.Users;
@@ -9,7 +8,7 @@ using MediatR;
 
 namespace Application.UseCases.Users.Commands
 {
-    public sealed record CreateUser_Command(string Name, string Firstname, string Email, LicenceType LicenceType) : IRequest<Guid>;
+    public sealed record CreateUser_Command(string Name, string Firstname, string Email, LicenceType LicenceType, UserType UserType) : IRequest<Guid>;
 
     internal sealed class CreateUser_RequestHandler(IDatabase database) : IRequestHandler<CreateUser_Command, Guid>
     {
@@ -22,12 +21,13 @@ namespace Application.UseCases.Users.Commands
                 Name = request.Name,
                 Firstname = request.Firstname,
                 Email = request.Email,
-                LicenceType = request.LicenceType
+                LicenceType = request.LicenceType,
+                UserType = request.UserType
             };
 
-            UserValidator.ThrowIfInvalid(user);
+            new UserValidator().ThrowIfInvalid(user);
 
-            _database.AddAsync(user);
+            _database.Users.Add(user);
             if (await _database.SaveChangesAsync() != 1)
             {
                 throw new UserSaveException();

@@ -1,5 +1,6 @@
-﻿using Application.Abstractions;
+﻿using Domain.Abstractions;
 
+using Infrastructure.ExternalServices;
 using Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
@@ -11,16 +12,17 @@ namespace Infrastructure
     {
         public static void InfrastructureDependencyInjection(this IServiceCollection services)
         {
+            services.AddScoped<ISystemClock, SystemClock>();
         }
 
         public static void SetupDatabase(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<IDatabase, DatabaseContexte>(options => options.UseSqlite(connectionString));
+            services.AddDbContext<IDatabase, DatabaseContext>(options => options.UseSqlite(connectionString));
         }
 
-        public static void  SetupDatabaseInMemory(this IServiceCollection services)
+        public static void SetupInMemoryDatabase(this IServiceCollection services, string inMemoryDbName)
         {
-            services.AddDbContext<IDatabase, DatabaseContexte>(options => options.UseInMemoryDatabase(databaseName: "TestDatabase"));
+            services.AddDbContext<IDatabase, DatabaseContext>(options => options.UseInMemoryDatabase(databaseName: inMemoryDbName));
         }
     }
 }

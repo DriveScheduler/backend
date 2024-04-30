@@ -1,104 +1,101 @@
-using Application;
-using Application.Abstractions;
 using Application.UseCases.Users.Commands;
 
+using Domain.Abstractions;
 using Domain.Enums;
 using Domain.Exceptions.Users;
-
-using Infrastructure;
 
 using MediatR;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace UseCases
+namespace UseCases.Users
 {
-    public class SetupMediator
-    {
-        public IServiceProvider ServiceProvider { get; }
-
-        public SetupMediator()
-        {
-            IServiceCollection serviceCollection = new ServiceCollection();
-
-            serviceCollection.ApplicationDependencyInjection();
-            serviceCollection.SetupDatabaseInMemory();
-
-            ServiceProvider = serviceCollection.BuildServiceProvider();
-        }
-    }
-
-
-    public class UserUseCases : IClassFixture<SetupMediator>
+    public class UserCreateAccount : IClassFixture<SetupDependencies>, IDisposable
     {
         private IMediator _mediator;
         private IDatabase _database;
 
-        public UserUseCases(SetupMediator fixture)
+        public UserCreateAccount(SetupDependencies fixture)
         {
-            _mediator = fixture.ServiceProvider.GetService<IMediator>()!;
-            _database = fixture.ServiceProvider.GetService<IDatabase>()!;
+            _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
+            _database = fixture.ServiceProvider.GetRequiredService<IDatabase>();
         }
 
+        public void Dispose()
+        {
+            _database.Clear();
+        }
 
         [Fact]
-        public async void UserShouldCreateAnAccount()
+        public async void UserShould_CreateAnAccount()
         {
+            // Arrange
             const string name = "Doe";
             const string firstname = "John";
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
+            const UserType userType = UserType.Student;
 
-            var command = new CreateUser_Command(name, firstname, email, licenceType);
-
+            // Act
+            var command = new CreateUser_Command(name, firstname, email, licenceType, userType);
             Guid userId = await _mediator.Send(command);
 
+            // Assert
             Assert.NotEqual(Guid.Empty, userId);
-            Assert.Equal(1, _database.Users.Count());
+            Assert.NotNull(_database.Users.Find(userId));
         }
 
         [Fact]
-        public async void UserShouldCreateAnAccountWithName()
+        public async void UserShould_CreateAnAccount_WithName()
         {
+            // Arrange
             const string name = "";
             const string firstname = "John";
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
+            const UserType userType = UserType.Student;
 
-            var command = new CreateUser_Command(name, firstname, email, licenceType);
+            // Act
+            var command = new CreateUser_Command(name, firstname, email, licenceType, userType);
 
+            // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
-
             Assert.Equal("Le nom est obligatoire", exc.Message);
         }
 
         [Fact]
-        public async void UserShouldCreateAnAccountWithFirstName()
+        public async void UserShould_CreateAnAccount_WithFirstName()
         {
+            // Arrange
             const string name = "Doe";
             const string firstname = "";
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
+            const UserType userType = UserType.Student;
 
-            var command = new CreateUser_Command(name, firstname, email, licenceType);
+            // Act
+            var command = new CreateUser_Command(name, firstname, email, licenceType, userType);
 
+            // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
-
             Assert.Equal("Le prénom est obligatoire", exc.Message);
         }
 
         [Fact]
-        public async void UserShouldCreateAnAccountWithEmail()
+        public async void UserShould_CreateAnAccount_WithEmail()
         {
+            // Arrange
             const string name = "Doe";
             const string firstname = "John";
             const string email = "";
             const LicenceType licenceType = LicenceType.Car;
+            const UserType userType = UserType.Student;
 
-            var command = new CreateUser_Command(name, firstname, email, licenceType);
+            // Act
+            var command = new CreateUser_Command(name, firstname, email, licenceType, userType);
 
+            // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
-
             Assert.Equal("L'adresse email est obligatoire", exc.Message);
         }
 
@@ -107,16 +104,19 @@ namespace UseCases
         [InlineData("jonh.doegmail.com")]
         [InlineData("@gmail.com")]
         [InlineData("@g.com")]
-        public async void UserShouldCreateAnAccountWithValidEmail(string invalidEmail)
+        public async void UserShould_CreateAnAccount_WithValidEmail(string invalidEmail)
         {
+            // Arrange
             const string name = "Doe";
             const string firstname = "John";
             const LicenceType licenceType = LicenceType.Car;
+            const UserType userType = UserType.Student;
 
-            var command = new CreateUser_Command(name, firstname, invalidEmail, licenceType);
+            // Act
+            var command = new CreateUser_Command(name, firstname, invalidEmail, licenceType, userType);
 
+            // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
-
             Assert.Equal("L'adresse email n'est pas valide", exc.Message);
         }
     }
