@@ -7,7 +7,6 @@ namespace API.Inputs.Users
         public string Name { get; set; }
         public string FirstName { get; set; }
         public string Email { get; set; }
-        public LicenceType LicenceType { get; set; }
-        public UserType UserType { get; set; }
+        public LicenceType LicenceType { get; set; }        
     }
 }

@@ -21,7 +21,7 @@ namespace Application.UseCases.Lessons.Commands
 
         public async Task<int> Handle(CreateLesson_Command request, CancellationToken cancellationToken)
         {
-            User user = GetUser(request.TeacherId);
+            Teacher user = GetTeacher(request.TeacherId);
             Vehicle vehicle = GetVehicle(request.VehicleId);
 
             Lesson lesson = new Lesson()
@@ -44,13 +44,20 @@ namespace Application.UseCases.Lessons.Commands
             return lesson.Id;
         }
 
-        private User GetUser(Guid id)
+        private Teacher GetTeacher(Guid id)
         {
-            User? user = _database.Users
+            Teacher? user = _database.Teachers
                 .Include(u => u.Lessons)
                 .FirstOrDefault(u => u.Id == id);
             if (user is null)
-                throw new UserNotFoundException();
+            {
+                Student? student = _database.Students.Find(id);
+                if (student is null)
+                    throw new UserNotFoundException();
+                throw new LessonValidationException("La personne en charge du cours doit être un moniteur");
+            }
+
+                
             return user;
         }
 

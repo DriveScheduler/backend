@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContexteModelSnapshot : ModelSnapshot
+    partial class DatabaseContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -55,7 +55,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Lesson");
                 });
 
-            modelBuilder.Entity("Domain.Entities.User", b =>
+            modelBuilder.Entity("Domain.Entities.Student", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,7 +66,7 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Firstname")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
@@ -79,12 +79,38 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserType")
+                    b.HasKey("Id");
+
+                    b.ToTable("Student");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Teacher", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LicenceType")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Teacher");
                 });
 
             modelBuilder.Entity("Domain.Entities.Vehicle", b =>
@@ -106,9 +132,39 @@ namespace Infrastructure.Migrations
                     b.ToTable("Vehicle");
                 });
 
+            modelBuilder.Entity("LessonStudent", b =>
+                {
+                    b.Property<int>("LessonsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("StudentsId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LessonsId", "StudentsId");
+
+                    b.HasIndex("StudentsId");
+
+                    b.ToTable("LessonUsers", (string)null);
+                });
+
+            modelBuilder.Entity("LessonStudent1", b =>
+                {
+                    b.Property<int>("WaitingLessonsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("WaitingListId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("WaitingLessonsId", "WaitingListId");
+
+                    b.HasIndex("WaitingListId");
+
+                    b.ToTable("LessonWaitingList", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.Lesson", b =>
                 {
-                    b.HasOne("Domain.Entities.User", "Teacher")
+                    b.HasOne("Domain.Entities.Teacher", "Teacher")
                         .WithMany("Lessons")
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -125,7 +181,37 @@ namespace Infrastructure.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("Domain.Entities.User", b =>
+            modelBuilder.Entity("LessonStudent", b =>
+                {
+                    b.HasOne("Domain.Entities.Lesson", null)
+                        .WithMany()
+                        .HasForeignKey("LessonsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Student", null)
+                        .WithMany()
+                        .HasForeignKey("StudentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LessonStudent1", b =>
+                {
+                    b.HasOne("Domain.Entities.Lesson", null)
+                        .WithMany()
+                        .HasForeignKey("WaitingLessonsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Student", null)
+                        .WithMany()
+                        .HasForeignKey("WaitingListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Teacher", b =>
                 {
                     b.Navigation("Lessons");
                 });

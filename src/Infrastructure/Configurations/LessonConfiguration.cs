@@ -34,6 +34,18 @@ namespace Infrastructure.Configurations
                 .HasOne(c => c.Vehicle)
                 .WithMany(v => v.Lessons);
 
+
+            builder
+                .HasMany(l => l.Students)
+                .WithMany(u => u.Lessons)
+                .UsingEntity(j => j.ToTable("LessonUsers"));
+
+            builder
+                .HasMany(l => l.WaitingList)
+                .WithMany(u => u.WaitingLessons)
+                .UsingEntity(j => j.ToTable("LessonWaitingList"));
+
+
             builder.Ignore(c => c.End);
         }
     }

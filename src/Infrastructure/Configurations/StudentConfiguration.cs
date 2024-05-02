@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
+    internal sealed class StudentConfiguration : IEntityTypeConfiguration<Student>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<Student> builder)
         {
             builder.Property(u => u.Id)
                 .IsRequired()
@@ -17,7 +17,7 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.Property(u => u.Firstname)
+            builder.Property(u => u.FirstName)
                 .IsRequired()
                 .HasMaxLength(50);
 
@@ -26,7 +26,7 @@ namespace Infrastructure.Configurations
                 .HasMaxLength(50);
 
             builder.Property(u => u.LicenceType)
-                .IsRequired();
+                .IsRequired();         
         }
     }
 }

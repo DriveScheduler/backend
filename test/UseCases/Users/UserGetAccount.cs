@@ -35,23 +35,21 @@ namespace UseCases.Users
             const string name = "Doe";
             const string firstname = "John";
             const string email = "john.doe@gmail.com";
-            const LicenceType licenceType = LicenceType.Car;
-            const UserType userType = UserType.Student;
+            const LicenceType licenceType = LicenceType.Car;            
 
-            _database.Users.Add(new User() { Id = userId, Name = name, Firstname = firstname, Email = email, LicenceType = licenceType, UserType = userType });
+            _database.Students.Add(new Student() { Id = userId, Name = name, FirstName = firstname, Email = email, LicenceType = licenceType });
             await _database.SaveChangesAsync();
 
             // Act
-            var getCommand = new GetUserById_Query(userId);
+            var getCommand = new GetStudentById_Query(userId);
             User user = await _mediator.Send(getCommand);
 
             // Assert
             Assert.NotNull(user);
             Assert.Equal(name, user.Name);
-            Assert.Equal(firstname, user.Firstname);
+            Assert.Equal(firstname, user.FirstName);
             Assert.Equal(email, user.Email);
-            Assert.Equal(licenceType, user.LicenceType);
-            Assert.Equal(userType, user.UserType);
+            Assert.Equal(licenceType, user.LicenceType);            
         }
 
         [Fact]
@@ -61,7 +59,7 @@ namespace UseCases.Users
             Guid userId = new Guid("00000000-0000-0000-0000-000000000001");
 
             // Act
-            var getCommand = new GetUserById_Query(userId);
+            var getCommand = new GetStudentById_Query(userId);
 
             // Assert
             UserNotFoundException exc = await Assert.ThrowsAsync<UserNotFoundException>(() => _mediator.Send(getCommand));

@@ -13,7 +13,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController(IMediator mediator) : ControllerBase
+    public class StudentController(IMediator mediator) : ControllerBase
     {
 
         private readonly IMediator _mediator = mediator;
@@ -21,7 +21,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateUserModel input)
         {
-            var command = new CreateUser_Command(input.Name, input.FirstName, input.Email, input.LicenceType, input.UserType);
+            var command = new CreateStudent_Command(input.Name, input.FirstName, input.Email, input.LicenceType);
             try
             {
                 Guid userId = await _mediator.Send(command);
@@ -36,7 +36,7 @@ namespace API.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(UpdateUserModel input)
         {
-            var command = new UpdateUser_Command(input.Id, input.Name, input.FirstName, input.Email, input.LicenceType);
+            var command = new UpdateStudent_Command(input.Id, input.Name, input.FirstName, input.Email, input.LicenceType);
             try
             {
                 await _mediator.Send(command);
@@ -51,7 +51,7 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var query = new GetUserById_Query(id);
+            var query = new GetStudentById_Query(id);
             try
             {
                 User user = await _mediator.Send(query);

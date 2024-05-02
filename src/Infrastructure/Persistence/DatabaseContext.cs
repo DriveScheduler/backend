@@ -14,7 +14,8 @@ namespace Infrastructure.Persistence
         {
         }
 
-        DbSet<User> IDatabase.Users => Users;
+        DbSet<Student> IDatabase.Students => Students;
+        DbSet<Teacher> IDatabase.Teachers => Teachers;
         DbSet<Lesson> IDatabase.Lessons => Lessons;
         DbSet<Vehicle> IDatabase.Vehicles => Vehicles;
 
@@ -25,7 +26,8 @@ namespace Infrastructure.Persistence
 
         public void Clear()
         {
-            Users.RemoveRange(Users.ToList());
+            Students.RemoveRange(Students.ToList());
+            Teachers.RemoveRange(Teachers.ToList());
             Lessons.RemoveRange(Lessons.ToList());
             Vehicles.RemoveRange(Vehicles.ToList());
             SaveChanges();
@@ -38,9 +40,10 @@ namespace Infrastructure.Persistence
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
             base.OnModelCreating(modelBuilder);
-        }     
+        }        
 
-        internal DbSet<User> Users { get; set; }
+        internal DbSet<Student> Students { get; set; }
+        internal DbSet<Teacher> Teachers { get; set; }
         internal DbSet<Lesson> Lessons { get; set; }
         internal DbSet<Vehicle> Vehicles { get; set; }
     }

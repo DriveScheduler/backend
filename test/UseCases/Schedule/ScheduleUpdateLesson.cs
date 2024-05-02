@@ -51,12 +51,12 @@ namespace UseCases.Schedule
             const int lessonId = 1;
 
 
-            User carTeacher = new User() { Id = carTeacherId, Firstname = "Car", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
-            User truckTeacher = new User() { Id = truckTeacherId, Firstname = "Truck", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Truck, UserType = UserType.Teacher };
+            Teacher carTeacher = new Teacher() { Id = carTeacherId, FirstName = "Car", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
+            Teacher truckTeacher = new Teacher() { Id = truckTeacherId, FirstName = "Truck", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Truck };
             Vehicle car = new Vehicle() { Id = carVehicleId, Name = "Peugeot 208", Type = LicenceType.Car };
             Vehicle truck = new Vehicle() { Id = truckVehicleId, Name = "Camion", Type = LicenceType.Truck };
-            _database.Users.Add(carTeacher);
-            _database.Users.Add(truckTeacher);
+            _database.Teachers.Add(carTeacher);
+            _database.Teachers.Add(truckTeacher);
             _database.Vehicles.Add(car);
             _database.Vehicles.Add(truck);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = carTeacher, Vehicle = car, Type = LicenceType.Car });
@@ -87,9 +87,9 @@ namespace UseCases.Schedule
             const int lessonId = 1;
 
 
-            User teacher = new User() { Id = teacherId, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };            
+            Teacher teacher = new Teacher() { Id = teacherId, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };            
             Vehicle car = new Vehicle() { Id = vehicleId, Name = "Peugeot 208", Type = LicenceType.Car };            
-            _database.Users.Add(teacher);            
+            _database.Teachers.Add(teacher);            
             _database.Vehicles.Add(car);            
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
             await _database.SaveChangesAsync();
@@ -111,9 +111,9 @@ namespace UseCases.Schedule
             const int lessonId = 1;
 
 
-            User teacher = new User() { Id = teacherId, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
+            Teacher teacher = new Teacher() { Id = teacherId, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
             Vehicle car = new Vehicle() { Id = vehicleId, Name = "Peugeot 208", Type = LicenceType.Car };
-            _database.Users.Add(teacher);
+            _database.Teachers.Add(teacher);
             _database.Vehicles.Add(car);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
             await _database.SaveChangesAsync();
@@ -136,9 +136,9 @@ namespace UseCases.Schedule
             const int lessonId = 1;
 
 
-            User teacher = new User() { Id = teacherId, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
+            Teacher teacher = new Teacher() { Id = teacherId, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
             Vehicle car = new Vehicle() { Id = vehicleId, Name = "Peugeot 208", Type = LicenceType.Car };
-            _database.Users.Add(teacher);
+            _database.Teachers.Add(teacher);
             _database.Vehicles.Add(car);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
             await _database.SaveChangesAsync();
@@ -162,9 +162,9 @@ namespace UseCases.Schedule
             const LicenceType invalidLicenceType = LicenceType.Motorcycle;
 
 
-            User teacher = new User() { Id = teacherId, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
+            Teacher teacher = new Teacher() { Id = teacherId, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
             Vehicle car = new Vehicle() { Id = vehicleId, Name = "Peugeot 208", Type = LicenceType.Car };
-            _database.Users.Add(teacher);
+            _database.Teachers.Add(teacher);
             _database.Vehicles.Add(car);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
             await _database.SaveChangesAsync();
@@ -188,11 +188,11 @@ namespace UseCases.Schedule
             const int lessonId = 1;
 
 
-            User carTeacher = new User() { Id = carTeacherId, Firstname = "Car", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
-            User truckTeacher = new User() { Id = truckTeacherId, Firstname = "Truck", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Truck, UserType = UserType.Teacher };
+            Teacher carTeacher = new Teacher() { Id = carTeacherId, FirstName = "Car", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
+            Teacher truckTeacher = new Teacher() { Id = truckTeacherId, FirstName = "Truck", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Truck };
             Vehicle car = new Vehicle() { Id = vehicleId, Name = "Peugeot 208", Type = LicenceType.Car };            
-            _database.Users.Add(carTeacher);
-            _database.Users.Add(truckTeacher);
+            _database.Teachers.Add(carTeacher);
+            _database.Teachers.Add(truckTeacher);
             _database.Vehicles.Add(car);            
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = carTeacher, Vehicle = car, Type = LicenceType.Car });
             await _database.SaveChangesAsync();
@@ -216,15 +216,15 @@ namespace UseCases.Schedule
             const int vehicleId1 = 1;
             const int vehicleId2 = 2;
 
-            const int lessonId = 1;                   
+            const int lessonId = 1;
 
-            User teacher1 = new User() { Id = teacherId1, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
-            User teacher2 = new User() { Id = teacherId2, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
+            Teacher teacher1 = new Teacher() { Id = teacherId1, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
+            Teacher teacher2 = new Teacher() { Id = teacherId2, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
             Vehicle vehicle1 = new Vehicle() { Id = vehicleId1, Name = "Peugeot 208", Type = LicenceType.Car };
             Vehicle vehicle2 = new Vehicle() { Id = vehicleId2, Name = "Peugeot 208", Type = LicenceType.Car };
 
-            _database.Users.Add(teacher1);
-            _database.Users.Add(teacher2);
+            _database.Teachers.Add(teacher1);
+            _database.Teachers.Add(teacher2);
             _database.Vehicles.Add(vehicle1);
             _database.Vehicles.Add(vehicle2);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Start = _clock.Now, Duration = 30, Teacher = teacher1, Type = LicenceType.Car, Vehicle = vehicle1 });
@@ -250,12 +250,12 @@ namespace UseCases.Schedule
 
             const int lessonId = 1;
 
-            User teacher = new User() { Id = teacherId, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
-            User user = new User() { Id = studentId, Firstname = "Student", Name = "Student", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Student };
+            Teacher teacher = new Teacher() { Id = teacherId, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
+            Student student = new Student() { Id = studentId, FirstName = "Student", Name = "Student", Email = "a@mail", LicenceType = LicenceType.Car };
             Vehicle vehicle = new Vehicle() { Id = vehicleId, Name = "Peugeot 208", Type = LicenceType.Car };            
 
-            _database.Users.Add(teacher);
-            _database.Users.Add(user);
+            _database.Teachers.Add(teacher);
+            _database.Students.Add(student);
             _database.Vehicles.Add(vehicle);            
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Start = _clock.Now, Duration = 30, Teacher = teacher, Type = LicenceType.Car, Vehicle = vehicle });
             await _database.SaveChangesAsync();
@@ -279,9 +279,9 @@ namespace UseCases.Schedule
             const int vehicleId = 1;
             const int lessonId = 1;
 
-            User teacher = new User() { Id = teacherId, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
+            Teacher teacher = new Teacher() { Id = teacherId, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
             Vehicle car = new Vehicle() { Id = vehicleId, Name = "Peugeot 208", Type = LicenceType.Car };
-            _database.Users.Add(teacher);
+            _database.Teachers.Add(teacher);
             _database.Vehicles.Add(car);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
             await _database.SaveChangesAsync();
@@ -304,9 +304,9 @@ namespace UseCases.Schedule
 
             const int invalidVehicleId = 2;
 
-            User teacher = new User() { Id = teacherId, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
+            Teacher teacher = new Teacher() { Id = teacherId, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
             Vehicle car = new Vehicle() { Id = vehicleId, Name = "Peugeot 208", Type = LicenceType.Car };
-            _database.Users.Add(teacher);
+            _database.Teachers.Add(teacher);
             _database.Vehicles.Add(car);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
             await _database.SaveChangesAsync();
@@ -330,13 +330,13 @@ namespace UseCases.Schedule
             const int lessonId1 = 1;
             const int lessonId2 = 2;
 
-            User teacher1 = new User() { Id = teacherId1, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
-            User teacher2 = new User() { Id = teacherId2, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
+            Teacher teacher1 = new Teacher() { Id = teacherId1, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
+            Teacher teacher2 = new Teacher() { Id = teacherId2, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
             Vehicle vehicle1 = new Vehicle() { Id = vehicleId1, Name = "Peugeot 208", Type = LicenceType.Car };
             Vehicle vehicle2 = new Vehicle() { Id = vehicleId2, Name = "Peugeot 208", Type = LicenceType.Car };
 
-            _database.Users.Add(teacher1);
-            _database.Users.Add(teacher2);
+            _database.Teachers.Add(teacher1);
+            _database.Teachers.Add(teacher2);
             _database.Vehicles.Add(vehicle1);
             _database.Vehicles.Add(vehicle2);
             _database.Lessons.Add(new Lesson() { Id = lessonId1, Name = "Cours 1", Start = _clock.Now, Duration = 30, Teacher = teacher1, Type = LicenceType.Car, Vehicle = vehicle1 });
@@ -361,10 +361,10 @@ namespace UseCases.Schedule
             const int truckId = 2;
             const int lessonId = 1;            
 
-            User teacher = new User() { Id = teacherId, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
+            Teacher teacher = new Teacher() { Id = teacherId, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
             Vehicle car = new Vehicle() { Id = carId, Name = "Peugeot 208", Type = LicenceType.Car };
             Vehicle truck = new Vehicle() { Id = truckId, Name = "Camion", Type = LicenceType.Truck };
-            _database.Users.Add(teacher);
+            _database.Teachers.Add(teacher);
             _database.Vehicles.Add(car);
             _database.Vehicles.Add(truck);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
@@ -387,9 +387,9 @@ namespace UseCases.Schedule
             
             const int invalidLessonId = 1;            
 
-            User teacher = new User() { Id = teacherId, Firstname = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car, UserType = UserType.Teacher };
+            Teacher teacher = new Teacher() { Id = teacherId, FirstName = "Teacher", Name = "Teacher", Email = "a@mail", LicenceType = LicenceType.Car };
             Vehicle car = new Vehicle() { Id = vehicleId, Name = "Peugeot 208", Type = LicenceType.Car };
-            _database.Users.Add(teacher);
+            _database.Teachers.Add(teacher);
             _database.Vehicles.Add(car);            
             await _database.SaveChangesAsync();
 

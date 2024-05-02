@@ -38,19 +38,19 @@ namespace UseCases.Users
             const string updatedEmail = "john.doe@gmail.com";
             const LicenceType updatedLicenceType = LicenceType.Motorcycle;
 
-            _database.Users.Add(new User() { Id = userId, Name = "Doe", Firstname = "John", Email = "john.doe@gmail.com", LicenceType = LicenceType.Car, UserType = UserType.Student });
+            _database.Students.Add(new Student() { Id = userId, Name = "Doe", FirstName = "John", Email = "john.doe@gmail.com", LicenceType = LicenceType.Car });
             await _database.SaveChangesAsync();
 
             // Act
-            var updateCommand = new UpdateUser_Command(userId, updatedName, updatedFirstname, updatedEmail, updatedLicenceType);
+            var updateCommand = new UpdateStudent_Command(userId, updatedName, updatedFirstname, updatedEmail, updatedLicenceType);
             await _mediator.Send(updateCommand);
-            User? user = _database.Users.Find(userId);
+            User? user = _database.Students.Find(userId);
 
             // Assert
             Assert.NotNull(user);
             Assert.Equal(userId, user.Id);
             Assert.Equal(updatedName, user.Name);
-            Assert.Equal(updatedFirstname, user.Firstname);
+            Assert.Equal(updatedFirstname, user.FirstName);
             Assert.Equal(updatedEmail, user.Email);
             Assert.Equal(updatedLicenceType, user.LicenceType);
         }
@@ -65,11 +65,11 @@ namespace UseCases.Users
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
 
-            _database.Users.Add(new User() { Id = userId, Name = name, Firstname = firstname, Email = email, LicenceType = licenceType, UserType = UserType.Student });
+            _database.Students.Add(new Student() { Id = userId, Name = name, FirstName = firstname, Email = email, LicenceType = licenceType });
             await _database.SaveChangesAsync();
 
             // Act
-            var updateCommand = new UpdateUser_Command(userId, string.Empty, firstname, email, licenceType);
+            var updateCommand = new UpdateStudent_Command(userId, string.Empty, firstname, email, licenceType);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(updateCommand));
@@ -86,11 +86,11 @@ namespace UseCases.Users
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
 
-            _database.Users.Add(new User() { Id = userId, Name = name, Firstname = firstname, Email = email, LicenceType = licenceType, UserType = UserType.Student });
+            _database.Students.Add(new Student() { Id = userId, Name = name, FirstName = firstname, Email = email, LicenceType = licenceType });
             await _database.SaveChangesAsync();
 
             // Act
-            var updateCommand = new UpdateUser_Command(userId, name, string.Empty, email, licenceType);
+            var updateCommand = new UpdateStudent_Command(userId, name, string.Empty, email, licenceType);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(updateCommand));
@@ -107,11 +107,11 @@ namespace UseCases.Users
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
 
-            _database.Users.Add(new User() { Id = userId, Name = name, Firstname = firstname, Email = email, LicenceType = licenceType, UserType = UserType.Student });
+            _database.Students.Add(new Student() { Id = userId, Name = name, FirstName = firstname, Email = email, LicenceType = licenceType });
             await _database.SaveChangesAsync();
 
             // Act
-            var updateCommand = new UpdateUser_Command(userId, name, firstname, string.Empty, licenceType);
+            var updateCommand = new UpdateStudent_Command(userId, name, firstname, string.Empty, licenceType);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(updateCommand));
@@ -132,11 +132,11 @@ namespace UseCases.Users
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
 
-            _database.Users.Add(new User() { Id = userId, Name = name, Firstname = firstname, Email = email, LicenceType = licenceType, UserType = UserType.Student });
+            _database.Students.Add(new Student() { Id = userId, Name = name, FirstName = firstname, Email = email, LicenceType = licenceType });
             await _database.SaveChangesAsync();
 
             // Act
-            var updateCommand = new UpdateUser_Command(userId, name, firstname, invalidEmail, licenceType);
+            var updateCommand = new UpdateStudent_Command(userId, name, firstname, invalidEmail, licenceType);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(updateCommand));
@@ -154,7 +154,7 @@ namespace UseCases.Users
             const LicenceType licenceType = LicenceType.Car;
 
             // Act
-            var command = new UpdateUser_Command(userId, name, firstname, email, licenceType);
+            var command = new UpdateStudent_Command(userId, name, firstname, email, licenceType);
 
             // Assert
             UserNotFoundException exc = await Assert.ThrowsAsync<UserNotFoundException>(() => _mediator.Send(command));

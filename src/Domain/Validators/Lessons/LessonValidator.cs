@@ -25,11 +25,7 @@ namespace Domain.Validators.Lessons
 
             RuleFor(lesson => lesson.Duration)
                 .InclusiveBetween(30, 120)
-                .WithMessage("La durée du cours n'est pas valide (elle doit être comprise entre 30min et 2h)");
-
-            RuleFor(lesson => lesson.Teacher.UserType)
-                .Equal(UserType.Teacher)
-                .WithMessage("La personne en charge du cours doit être un moniteur");          
+                .WithMessage("La durée du cours n'est pas valide (elle doit être comprise entre 30min et 2h)");        
 
             RuleFor(lesson => lesson.Type)
                 .Equal(lesson => lesson.Teacher.LicenceType)
@@ -42,7 +38,7 @@ namespace Domain.Validators.Lessons
 
             RuleFor(lesson => lesson)
                .Custom((lesson, context) =>
-               {                   
+               {
                    foreach (var teacherLesson in lesson.Teacher.Lessons)
                    {
                        if (teacherLesson.End > lesson.Start && teacherLesson.Start < lesson.End && teacherLesson.Id != lesson.Id)

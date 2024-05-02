@@ -13,7 +13,7 @@ namespace Domain.Validators.Users
                 .NotEmpty()
                 .WithMessage("Le nom est obligatoire");
 
-            RuleFor(user => user.Firstname)
+            RuleFor(user => user.FirstName)
                 .NotEmpty()
                 .WithMessage("Le prénom est obligatoire");
 

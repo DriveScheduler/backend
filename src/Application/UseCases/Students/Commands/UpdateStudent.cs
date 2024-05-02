@@ -8,23 +8,23 @@ using MediatR;
 
 namespace Application.UseCases.Users.Commands
 {
-    public sealed record UpdateUser_Command(Guid UserId, string Name, string Firstname, string Email, LicenceType LicenceType) : IRequest;
+    public sealed record UpdateStudent_Command(Guid UserId, string Name, string Firstname, string Email, LicenceType LicenceType) : IRequest;
 
-    internal sealed class UpdateUser_RequestHandler(IDatabase database) : IRequestHandler<UpdateUser_Command>
+    internal sealed class UpdateUser_RequestHandler(IDatabase database) : IRequestHandler<UpdateStudent_Command>
     {
         private readonly IDatabase _database = database;
 
-        public async Task Handle(UpdateUser_Command request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateStudent_Command request, CancellationToken cancellationToken)
         {
-            User? user = _database.Users.Find(request.UserId);
+            Student? user = _database.Students.Find(request.UserId);
             if (user is null)
                 throw new UserNotFoundException();
 
-            User model = new User()
+            Student model = new Student()
             {
                 Id = request.UserId,
                 Name = request.Name,
-                Firstname = request.Firstname,
+                FirstName = request.Firstname,
                 Email = request.Email,
                 LicenceType = request.LicenceType
             };
@@ -32,7 +32,7 @@ namespace Application.UseCases.Users.Commands
             new UserValidator().ThrowIfInvalid(model);
 
             user.Name = model.Name;
-            user.Firstname = model.Firstname;
+            user.FirstName = model.FirstName;
             user.Email = model.Email;
             user.LicenceType = model.LicenceType;
 

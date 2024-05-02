@@ -33,16 +33,15 @@ namespace UseCases.Users
             const string name = "Doe";
             const string firstname = "John";
             const string email = "john.doe@gmail.com";
-            const LicenceType licenceType = LicenceType.Car;
-            const UserType userType = UserType.Student;
+            const LicenceType licenceType = LicenceType.Car;            
 
             // Act
-            var command = new CreateUser_Command(name, firstname, email, licenceType, userType);
+            var command = new CreateStudent_Command(name, firstname, email, licenceType);
             Guid userId = await _mediator.Send(command);
 
             // Assert
             Assert.NotEqual(Guid.Empty, userId);
-            Assert.NotNull(_database.Users.Find(userId));
+            Assert.NotNull(_database.Students.Find(userId));
         }
 
         [Fact]
@@ -52,11 +51,10 @@ namespace UseCases.Users
             const string name = "";
             const string firstname = "John";
             const string email = "john.doe@gmail.com";
-            const LicenceType licenceType = LicenceType.Car;
-            const UserType userType = UserType.Student;
+            const LicenceType licenceType = LicenceType.Car;            
 
             // Act
-            var command = new CreateUser_Command(name, firstname, email, licenceType, userType);
+            var command = new CreateStudent_Command(name, firstname, email, licenceType);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
@@ -70,11 +68,10 @@ namespace UseCases.Users
             const string name = "Doe";
             const string firstname = "";
             const string email = "john.doe@gmail.com";
-            const LicenceType licenceType = LicenceType.Car;
-            const UserType userType = UserType.Student;
+            const LicenceType licenceType = LicenceType.Car;            
 
             // Act
-            var command = new CreateUser_Command(name, firstname, email, licenceType, userType);
+            var command = new CreateStudent_Command(name, firstname, email, licenceType);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
@@ -88,11 +85,10 @@ namespace UseCases.Users
             const string name = "Doe";
             const string firstname = "John";
             const string email = "";
-            const LicenceType licenceType = LicenceType.Car;
-            const UserType userType = UserType.Student;
+            const LicenceType licenceType = LicenceType.Car;            
 
             // Act
-            var command = new CreateUser_Command(name, firstname, email, licenceType, userType);
+            var command = new CreateStudent_Command(name, firstname, email, licenceType);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
@@ -109,11 +105,10 @@ namespace UseCases.Users
             // Arrange
             const string name = "Doe";
             const string firstname = "John";
-            const LicenceType licenceType = LicenceType.Car;
-            const UserType userType = UserType.Student;
+            const LicenceType licenceType = LicenceType.Car;            
 
             // Act
-            var command = new CreateUser_Command(name, firstname, invalidEmail, licenceType, userType);
+            var command = new CreateStudent_Command(name, firstname, invalidEmail, licenceType);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
