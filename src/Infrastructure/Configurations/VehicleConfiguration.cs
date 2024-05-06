@@ -9,16 +9,17 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Vehicle> builder)
         {
-            builder.Property(v => v.Id)
-                .IsRequired()
-                .ValueGeneratedOnAdd();
+            builder.HasKey(v => v.RegistrationNumber);
+
+            builder.Property(v => v.RegistrationNumber)                
+                .IsRequired();
 
             builder.Property(v => v.Name)
                 .IsRequired()
                 .HasMaxLength(50);
 
             builder.Property(v => v.Type)
-                .IsRequired();                
+                .IsRequired();
         }
     }
 }

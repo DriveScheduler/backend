@@ -22,6 +22,10 @@ namespace Domain.Validators.Users
                 .WithMessage("L'adresse email est obligatoire")
                 .EmailAddress()
                 .WithMessage("L'adresse email n'est pas valide");
+
+            RuleFor(user => user.Password)
+                .NotEmpty()
+                .WithMessage("Le mot de passe est obligatoire");
         }
     }
 }

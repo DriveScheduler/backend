@@ -43,19 +43,20 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("VehicleRegistrationNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TeacherId");
 
-                    b.HasIndex("VehicleId");
+                    b.HasIndex("VehicleRegistrationNumber");
 
                     b.ToTable("Lesson");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Student", b =>
+            modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -79,45 +80,22 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("Student");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Teacher", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
+                    b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("LicenceType")
+                    b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Teacher");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.Vehicle", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("RegistrationNumber")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -127,52 +105,52 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Id");
+                    b.HasKey("RegistrationNumber");
 
                     b.ToTable("Vehicle");
                 });
 
-            modelBuilder.Entity("LessonStudent", b =>
+            modelBuilder.Entity("LessonUser", b =>
                 {
-                    b.Property<int>("LessonsId")
+                    b.Property<int>("LessonsAsStudentId")
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid>("StudentsId")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("LessonsId", "StudentsId");
+                    b.HasKey("LessonsAsStudentId", "StudentsId");
 
                     b.HasIndex("StudentsId");
 
-                    b.ToTable("LessonUsers", (string)null);
+                    b.ToTable("LessonStudents", (string)null);
                 });
 
-            modelBuilder.Entity("LessonStudent1", b =>
+            modelBuilder.Entity("LessonUser1", b =>
                 {
-                    b.Property<int>("WaitingLessonsId")
+                    b.Property<int>("WaitingListId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid>("WaitingListId")
+                    b.Property<Guid>("WaitingListId1")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("WaitingLessonsId", "WaitingListId");
+                    b.HasKey("WaitingListId", "WaitingListId1");
 
-                    b.HasIndex("WaitingListId");
+                    b.HasIndex("WaitingListId1");
 
-                    b.ToTable("LessonWaitingList", (string)null);
+                    b.ToTable("LessonUsersPending", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Lesson", b =>
                 {
-                    b.HasOne("Domain.Entities.Teacher", "Teacher")
-                        .WithMany("Lessons")
+                    b.HasOne("Domain.Entities.User", "Teacher")
+                        .WithMany("LessonsAsTeacher")
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Vehicle", "Vehicle")
                         .WithMany("Lessons")
-                        .HasForeignKey("VehicleId")
+                        .HasForeignKey("VehicleRegistrationNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -181,39 +159,39 @@ namespace Infrastructure.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("LessonStudent", b =>
+            modelBuilder.Entity("LessonUser", b =>
                 {
                     b.HasOne("Domain.Entities.Lesson", null)
                         .WithMany()
-                        .HasForeignKey("LessonsId")
+                        .HasForeignKey("LessonsAsStudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Student", null)
+                    b.HasOne("Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("StudentsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LessonStudent1", b =>
+            modelBuilder.Entity("LessonUser1", b =>
                 {
                     b.HasOne("Domain.Entities.Lesson", null)
-                        .WithMany()
-                        .HasForeignKey("WaitingLessonsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Student", null)
                         .WithMany()
                         .HasForeignKey("WaitingListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("WaitingListId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.Teacher", b =>
+            modelBuilder.Entity("Domain.Entities.User", b =>
                 {
-                    b.Navigation("Lessons");
+                    b.Navigation("LessonsAsTeacher");
                 });
 
             modelBuilder.Entity("Domain.Entities.Vehicle", b =>

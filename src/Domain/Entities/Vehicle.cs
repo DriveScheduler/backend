@@ -4,9 +4,9 @@ namespace Domain.Entities
 {
     public sealed class Vehicle
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public LicenceType Type { get; set; }
+        public required string RegistrationNumber { get; set; }
+        public required string Name { get; set; }
+        public required LicenceType Type { get; set; }
         public List<Lesson> Lessons { get; set; }
     }
 }

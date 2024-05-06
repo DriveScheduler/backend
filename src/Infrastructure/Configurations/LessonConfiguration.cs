@@ -27,8 +27,9 @@ namespace Infrastructure.Configurations
                 .IsRequired();
 
             builder
-                .HasOne(c => c.Teacher)
-                .WithMany(u => u.Lessons);
+                 .HasOne(l => l.Teacher)
+                 .WithMany(u => u.LessonsAsTeacher)
+                 .HasForeignKey(l => l.TeacherId);
 
             builder
                 .HasOne(c => c.Vehicle)
@@ -37,13 +38,13 @@ namespace Infrastructure.Configurations
 
             builder
                 .HasMany(l => l.Students)
-                .WithMany(u => u.Lessons)
-                .UsingEntity(j => j.ToTable("LessonUsers"));
+                .WithMany(u => u.LessonsAsStudent)
+                .UsingEntity(j => j.ToTable("LessonStudents"));
 
             builder
                 .HasMany(l => l.WaitingList)
-                .WithMany(u => u.WaitingLessons)
-                .UsingEntity(j => j.ToTable("LessonWaitingList"));
+                .WithMany(u => u.WaitingList)
+                .UsingEntity(j => j.ToTable("LessonUsersPending"));
 
 
             builder.Ignore(c => c.End);

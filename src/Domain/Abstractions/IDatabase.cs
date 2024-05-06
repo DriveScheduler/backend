@@ -6,8 +6,7 @@ namespace Domain.Abstractions
 {
     public interface IDatabase
     {
-        DbSet<Student> Students { get; }
-        DbSet<Teacher> Teachers { get; }
+        DbSet<User> Users { get; }        
         DbSet<Lesson> Lessons { get; }
         DbSet<Vehicle> Vehicles { get; }
 

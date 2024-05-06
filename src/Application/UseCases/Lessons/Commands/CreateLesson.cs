@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Lessons.Commands
 {
-    public sealed record CreateLesson_Command(string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type, int VehicleId, int MaxStudent) : IRequest<int>;
+    public sealed record CreateLesson_Command(string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type, string VehicleId, int MaxStudent) : IRequest<int>;
 
     internal sealed class CreateLesson_CommandHandler(IDatabase database, ISystemClock systemClock) : IRequestHandler<CreateLesson_Command, int>
     {
@@ -21,7 +21,7 @@ namespace Application.UseCases.Lessons.Commands
 
         public async Task<int> Handle(CreateLesson_Command request, CancellationToken cancellationToken)
         {
-            Teacher user = GetTeacher(request.TeacherId);
+            User user = GetTeacher(request.TeacherId);
             Vehicle vehicle = GetVehicle(request.VehicleId);
 
             Lesson lesson = new Lesson()
@@ -44,28 +44,24 @@ namespace Application.UseCases.Lessons.Commands
             return lesson.Id;
         }
 
-        private Teacher GetTeacher(Guid id)
+        private User GetTeacher(Guid id)
         {
-            Teacher? user = _database.Teachers
-                .Include(u => u.Lessons)
+            User? user = _database.Users
+                .Include(u => u.LessonsAsTeacher)
                 .FirstOrDefault(u => u.Id == id);
             if (user is null)
-            {
-                Student? student = _database.Students.Find(id);
-                if (student is null)
-                    throw new UserNotFoundException();
+                throw new UserNotFoundException();
+            if (user.Type != UserType.Teacher)
                 throw new LessonValidationException("La personne en charge du cours doit être un moniteur");
-            }
 
-                
             return user;
         }
 
-        private Vehicle GetVehicle(int id)
+        private Vehicle GetVehicle(string id)
         {
             Vehicle? vehicle = _database.Vehicles
                 .Include(v => v.Lessons)
-                .FirstOrDefault(v => v.Id == id);
+                .FirstOrDefault(v => v.RegistrationNumber == id);
             if (vehicle is null)
                 throw new VehicleNotFoundException();
 

@@ -1,6 +1,5 @@
 ﻿using Domain.Abstractions;
 using Domain.Entities;
-using Domain.Enums;
 using Domain.Exceptions.Lessons;
 
 using FluentValidation;
@@ -33,13 +32,13 @@ namespace Domain.Validators.Lessons
 
             RuleFor(lesson => lesson.Type)
                 .Equal(lesson => lesson.Vehicle.Type)
-                .WithMessage("Le type de vehicule ne correspond pas au type de cours");
+                .WithMessage("Le type de vehicule ne correspond pas au type de cours");          
 
 
             RuleFor(lesson => lesson)
                .Custom((lesson, context) =>
                {
-                   foreach (var teacherLesson in lesson.Teacher.Lessons)
+                   foreach (var teacherLesson in lesson.Teacher.LessonsAsTeacher)
                    {
                        if (teacherLesson.End > lesson.Start && teacherLesson.Start < lesson.End && teacherLesson.Id != lesson.Id)
                        {

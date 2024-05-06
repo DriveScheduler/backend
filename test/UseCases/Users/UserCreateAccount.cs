@@ -33,15 +33,16 @@ namespace UseCases.Users
             const string name = "Doe";
             const string firstname = "John";
             const string email = "john.doe@gmail.com";
-            const LicenceType licenceType = LicenceType.Car;            
+            const string password = "mdp123";
+            const LicenceType licenceType = LicenceType.Car;
 
             // Act
-            var command = new CreateStudent_Command(name, firstname, email, licenceType);
+            var command = new CreateUser_Command(name, firstname, email, password, licenceType, UserType.Student);
             Guid userId = await _mediator.Send(command);
 
             // Assert
             Assert.NotEqual(Guid.Empty, userId);
-            Assert.NotNull(_database.Students.Find(userId));
+            Assert.NotNull(_database.Users.Find(userId));
         }
 
         [Fact]
@@ -51,10 +52,11 @@ namespace UseCases.Users
             const string name = "";
             const string firstname = "John";
             const string email = "john.doe@gmail.com";
-            const LicenceType licenceType = LicenceType.Car;            
+            const string password = "mdp123";
+            const LicenceType licenceType = LicenceType.Car;
 
             // Act
-            var command = new CreateStudent_Command(name, firstname, email, licenceType);
+            var command = new CreateUser_Command(name, firstname, email, password, licenceType, UserType.Student);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
@@ -68,10 +70,11 @@ namespace UseCases.Users
             const string name = "Doe";
             const string firstname = "";
             const string email = "john.doe@gmail.com";
-            const LicenceType licenceType = LicenceType.Car;            
+            const string password = "mdp123";
+            const LicenceType licenceType = LicenceType.Car;
 
             // Act
-            var command = new CreateStudent_Command(name, firstname, email, licenceType);
+            var command = new CreateUser_Command(name, firstname, email, password, licenceType, UserType.Student);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
@@ -85,10 +88,11 @@ namespace UseCases.Users
             const string name = "Doe";
             const string firstname = "John";
             const string email = "";
-            const LicenceType licenceType = LicenceType.Car;            
+            const string password = "mdp123";
+            const LicenceType licenceType = LicenceType.Car;
 
             // Act
-            var command = new CreateStudent_Command(name, firstname, email, licenceType);
+            var command = new CreateUser_Command(name, firstname, email, password, licenceType, UserType.Student);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
@@ -105,14 +109,33 @@ namespace UseCases.Users
             // Arrange
             const string name = "Doe";
             const string firstname = "John";
-            const LicenceType licenceType = LicenceType.Car;            
+            const string password = "mdp123";
+            const LicenceType licenceType = LicenceType.Car;
 
             // Act
-            var command = new CreateStudent_Command(name, firstname, invalidEmail, licenceType);
+            var command = new CreateUser_Command(name, firstname, invalidEmail, password, licenceType, UserType.Student);
 
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
             Assert.Equal("L'adresse email n'est pas valide", exc.Message);
+        }
+
+        [Fact]
+        public async void UserShould_CreateAnAccount_WithPassword()
+        {
+            // Arrange
+            const string name = "Doe";
+            const string firstname = "John";
+            const string email = "john.doe@gmail.com";
+            const string password = "";
+            const LicenceType licenceType = LicenceType.Car;
+
+            // Act
+            var command = new CreateUser_Command(name, firstname, email, password, licenceType, UserType.Student);
+
+            // Assert
+            UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
+            Assert.Equal("Le mot de passe est obligatoire", exc.Message);
         }
     }
 }
