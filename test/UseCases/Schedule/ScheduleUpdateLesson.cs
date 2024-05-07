@@ -157,13 +157,15 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             Vehicle car = DataSet.GetCar(1);
+            Vehicle moto = DataSet.GetMotorcycle(2);
             _database.Users.Add(teacher);
             _database.Vehicles.Add(car);
+            _database.Vehicles.Add(moto);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, teacherId, invalidLicenceType, car.Id);
+            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, teacherId, invalidLicenceType);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -183,14 +185,16 @@ namespace UseCases.Schedule
             User carTeacher = DataSet.GetCarTeacher(carTeacherId);
             User truckTeacher = DataSet.GetTruckTeacher(truckTeacherId);
             Vehicle car = DataSet.GetCar(1);
+            Vehicle car2 = DataSet.GetCar(2);
             _database.Users.Add(carTeacher);
             _database.Users.Add(truckTeacher);
             _database.Vehicles.Add(car);
+            _database.Vehicles.Add(car2);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = carTeacher, Vehicle = car, Type = LicenceType.Car });
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, truckTeacherId, LicenceType.Car, car.Id);
+            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, truckTeacherId, LicenceType.Car);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));

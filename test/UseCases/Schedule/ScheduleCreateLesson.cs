@@ -41,17 +41,17 @@ namespace UseCases.Schedule
             const string lessonName = "Cours 1";
             DateTime dateTime = _clock.Now.AddDays(1);
             const int duration = 30;
-            const LicenceType licenceType = LicenceType.Car;            
+            const LicenceType licenceType = LicenceType.Car;
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             const int vehicleId = 1;
 
             _database.Users.Add(DataSet.GetCarTeacher(teacherId));
-            _database.Vehicles.Add(DataSet.GetCar(vehicleId));
+            _database.Vehicles.Add(DataSet.GetCar(1));
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType, vehicleId);
+            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
             int lessonId = await _mediator.Send(command);
             Lesson? lesson = _database.Lessons.Include(l => l.Teacher).Include(l => l.Vehicle).FirstOrDefault(l => l.Id == lessonId);
 
@@ -63,7 +63,7 @@ namespace UseCases.Schedule
             Assert.Equal(duration, lesson.Duration);
             Assert.Equal(licenceType, lesson.Type);
             Assert.Equal(teacherId, lesson.Teacher.Id);
-            Assert.Equal(vehicleId, lesson.Vehicle.Id);            
+            Assert.Equal(vehicleId, lesson.Vehicle.Id);
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace UseCases.Schedule
             const string lessonName = "";
             DateTime dateTime = _clock.Now;
             const int duration = 30;
-            const LicenceType licenceType = LicenceType.Car;            
+            const LicenceType licenceType = LicenceType.Car;
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
 
@@ -84,7 +84,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType, car.Id);
+            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -98,7 +98,7 @@ namespace UseCases.Schedule
             const string lessonName = "Cours 1";
             DateTime dateTime = _clock.Now.AddDays(-1);
             const int duration = 30;
-            const LicenceType licenceType = LicenceType.Car;            
+            const LicenceType licenceType = LicenceType.Car;
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Vehicle car = DataSet.GetCar(1);
@@ -108,7 +108,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType, car.Id);
+            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -122,7 +122,7 @@ namespace UseCases.Schedule
             const string lessonName = "Cours 1";
             DateTime dateTime = _clock.Now.AddDays(-1);
             const int duration = 30;
-            const LicenceType licenceType = LicenceType.Car;            
+            const LicenceType licenceType = LicenceType.Car;
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Vehicle car = DataSet.GetCar(1);
@@ -131,7 +131,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType, car.Id);
+            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
 
             // Assert
             UserNotFoundException exc = await Assert.ThrowsAsync<UserNotFoundException>(() => _mediator.Send(command));
@@ -145,7 +145,7 @@ namespace UseCases.Schedule
             const string lessonName = "Cours 1";
             DateTime dateTime = _clock.Now;
             const int duration = 30;
-            const LicenceType licenceType = LicenceType.Car;            
+            const LicenceType licenceType = LicenceType.Car;
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Vehicle car = DataSet.GetCar(1);
@@ -155,7 +155,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType, car.Id);
+            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -171,14 +171,16 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             Vehicle vehicle = DataSet.GetCar(1);
+            Vehicle vehicle2 = DataSet.GetCar(2);
 
             _database.Users.Add(teacher);
             _database.Vehicles.Add(vehicle);
+            _database.Vehicles.Add(vehicle2);
             _database.Lessons.Add(new Lesson() { Id = 1, Name = "Cours 1", Start = _clock.Now, Duration = 30, Teacher = teacher, Type = LicenceType.Car, Vehicle = vehicle });
             await _database.SaveChangesAsync();
 
             // Act
-            var createLessonWithSameVehicleAtSameRangeTimeCommand = new CreateLesson_Command("Cours 2", _clock.Now.AddMinutes(20), 30, teacherId, LicenceType.Car, vehicle.Id);
+            var createLessonWithSameVehicleAtSameRangeTimeCommand = new CreateLesson_Command("Cours 2", _clock.Now.AddMinutes(20), 30, teacherId, LicenceType.Car);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(createLessonWithSameVehicleAtSameRangeTimeCommand));
@@ -198,7 +200,7 @@ namespace UseCases.Schedule
 
 
             // Act
-            var createLessonWithSameVehicleAtSameTimeCommand = new CreateLesson_Command("Cours 1", _clock.Now, 30, studentId, LicenceType.Car, car.Id);
+            var createLessonWithSameVehicleAtSameTimeCommand = new CreateLesson_Command("Cours 1", _clock.Now, 30, studentId, LicenceType.Car);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(createLessonWithSameVehicleAtSameTimeCommand));
@@ -213,7 +215,7 @@ namespace UseCases.Schedule
             // Arrange
             const string LessonName = "Cours 1";
             DateTime dateTime = _clock.Now;
-            const LicenceType licenceType = LicenceType.Car;            
+            const LicenceType licenceType = LicenceType.Car;
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Vehicle car = DataSet.GetCar(1);
@@ -223,7 +225,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command(LessonName, dateTime, invalidDuration, teacherId, licenceType, car.Id);
+            var command = new CreateLesson_Command(LessonName, dateTime, invalidDuration, teacherId, licenceType);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -240,11 +242,11 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command("Cours 2", _clock.Now.AddMinutes(20), 30, teacherId, LicenceType.Car, 1);
+            var command = new CreateLesson_Command("Cours 2", _clock.Now.AddMinutes(20), 30, teacherId, LicenceType.Car);
 
             // Assert
-            VehicleNotFoundException exc = await Assert.ThrowsAsync<VehicleNotFoundException>(() => _mediator.Send(command));
-            Assert.Equal("Le vehicule n'existe pas", exc.Message);
+            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
+            Assert.Equal("Aucun vehicule disponibe pour valider ce cours", exc.Message);
         }
 
         [Fact]
@@ -253,45 +255,33 @@ namespace UseCases.Schedule
             // Arrange
             Guid teacherId1 = new Guid("00000000-0000-0000-0000-000000000001");
             Guid teacherId2 = new Guid("00000000-0000-0000-0000-000000000002");
-            int vehicleId = 1;
+            Guid teacherId3 = new Guid("00000000-0000-0000-0000-000000000003");
 
             User teacher1 = DataSet.GetCarTeacher(teacherId1);
             User teacher2 = DataSet.GetCarTeacher(teacherId2);
+            User teacher3 = DataSet.GetCarTeacher(teacherId3);
             Vehicle car = DataSet.GetCar(1);
+            Vehicle car2 = DataSet.GetCar(2);
+            Vehicle car3 = DataSet.GetCar(3);
 
             _database.Users.Add(teacher1);
             _database.Users.Add(teacher2);
+            _database.Users.Add(teacher3);
             _database.Vehicles.Add(car);
+            _database.Vehicles.Add(car2);
+            _database.Vehicles.Add(car3);
             _database.Lessons.Add(new Lesson() { Name = "Cours 1", Start = _clock.Now, Duration = 30, Teacher = teacher1, Type = LicenceType.Car, Vehicle = car });
+            _database.Lessons.Add(new Lesson() { Name = "Cours 2", Start = _clock.Now.AddMinutes(30), Duration = 30, Teacher = teacher2, Type = LicenceType.Car, Vehicle = car2 });
             await _database.SaveChangesAsync();
 
             // Act
-            var createLessonWithSameVehicleAtSameTimeCommand = new CreateLesson_Command("Cours 2", _clock.Now.AddMinutes(20), 30, teacher2.Id, LicenceType.Car, car.Id);
+            var command = new CreateLesson_Command("Cours 3", _clock.Now.AddMinutes(20), 30, teacher3.Id, LicenceType.Car);
+            int lessonId = await _mediator.Send(command);
+            Lesson? lesson = _database.Lessons.Find(lessonId);
 
             // Assert
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(createLessonWithSameVehicleAtSameTimeCommand));
-            Assert.Equal("Le vehicule demandé n'est pas disponible pour cette plage horaire", exc.Message);
+            Assert.NotNull(lesson);
+            Assert.Equal(car3, lesson.Vehicle);
         }
-
-
-        [Fact]
-        public async void ScheduleShould_CreateLesson_WithValidVehiculForLesson()
-        {
-            // Arrange
-            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            Vehicle car = DataSet.GetCar(1);
-
-            _database.Users.Add(DataSet.GetMotorcycleTeacher(teacherId));
-            _database.Vehicles.Add(car);
-            await _database.SaveChangesAsync();
-
-            // Act
-            var createLessonCommand = new CreateLesson_Command("Cours 1", _clock.Now, 30, teacherId, LicenceType.Motorcycle, car.Id);
-
-            // Assert
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(createLessonCommand));
-            Assert.Equal("Le type de vehicule ne correspond pas au type de cours", exc.Message);
-        }
-
     }
 }

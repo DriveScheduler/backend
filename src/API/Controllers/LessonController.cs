@@ -19,7 +19,7 @@ namespace API.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CreateLessonModel input)
         {
-            var command = new CreateLesson_Command(input.Name, input.Start, input.Duration, input.TeacherId, input.Type, input.VehicleId);
+            var command = new CreateLesson_Command(input.Name, input.Start, input.Duration, input.TeacherId, input.Type);
             try
             {
                 int lessonId = await _mediator.Send(command);
