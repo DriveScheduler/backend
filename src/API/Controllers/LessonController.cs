@@ -1,11 +1,9 @@
 ﻿using API.Inputs.Lessons;
-using API.Inputs.Users;
 
 using Application.UseCases.Lessons.Commands;
-using Application.UseCases.Users.Commands;
-
+using Application.UseCases.Users.Queries;
+using Domain.Entities;
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -41,6 +39,21 @@ namespace API.Controllers
             {
                 await _mediator.Send(command);
                 return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var query = new GetLessonById_Query(id);
+            try
+            {
+                Lesson lesson = await _mediator.Send(query);
+                return Ok(lesson);
             }
             catch (Exception e)
             {
