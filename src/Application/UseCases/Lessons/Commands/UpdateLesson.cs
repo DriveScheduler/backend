@@ -29,6 +29,8 @@ namespace Application.UseCases.Lessons.Commands
             if (lesson is null)
                 throw new LessonNotFoundException();
 
+            new LessonTimeValidator(_clock).ThrowIfInvalid(lesson);
+
             Lesson model = new Lesson()
             {
                 Id = request.Id,
@@ -39,7 +41,7 @@ namespace Application.UseCases.Lessons.Commands
                 Teacher = user,
                 Vehicle = vehicle,
                 MaxStudent = request.MaxStudent
-            };
+            };            
 
             new LessonValidator(_clock).ThrowIfInvalid(model);
 

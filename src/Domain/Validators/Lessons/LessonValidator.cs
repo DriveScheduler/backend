@@ -20,7 +20,7 @@ namespace Domain.Validators.Lessons
 
             RuleFor(lesson => lesson.Start)
                 .GreaterThanOrEqualTo(systemClock.Now)
-                .WithMessage("Le date et l'heure du cours ne peuvent pas être inférieur à maintenant");
+                .WithMessage("Le date et l'heure du cours ne peuvent pas être inférieur à maintenant");            
 
             RuleFor(lesson => lesson.Duration)
                 .InclusiveBetween(30, 120)

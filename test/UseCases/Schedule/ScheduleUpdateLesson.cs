@@ -358,6 +358,29 @@ namespace UseCases.Schedule
         }
 
         [Fact]
+        public async void ScheduleShould_UNotpdateLesson_WithLessonIsPassed()
+        {
+            // Arrange
+            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
+            DateTime lessonStart = _clock.Now.AddSeconds(-1);
+            const int lessonId = 1;
+
+            User teacher = DataSet.GetCarTeacher(teacherId);
+            Vehicle car = DataSet.GetCar();            
+            _database.Users.Add(teacher);
+            _database.Vehicles.Add(car);            
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = lessonStart, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
+            await _database.SaveChangesAsync();
+
+            // Act
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, car.RegistrationNumber, 5);
+
+            // Assert
+            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
+            Assert.Equal("Le cours est déjà passé", exc.Message);
+        }
+
+        [Fact]
         public async void CanNotUpdateInvalidLesson()
         {
             // Arrange

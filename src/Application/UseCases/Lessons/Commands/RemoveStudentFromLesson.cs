@@ -11,14 +11,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Lessons.Commands
 {
-    public sealed record RemoveStudent_Command(int LessonId, Guid UserId) : IRequest;
+    public sealed record RemoveStudentFromLesson_Command(int LessonId, Guid UserId) : IRequest;
 
-    internal sealed class RemoveStudent_CommandHandler(IDatabase database, IMediator mediator) : IRequestHandler<RemoveStudent_Command>
+    internal sealed class RemoveStudentFromLesson_CommandHandler(IDatabase database, IMediator mediator, ISystemClock systemClock) : IRequestHandler<RemoveStudentFromLesson_Command>
     {
         private readonly IDatabase _database = database;
         private readonly IMediator _mediator = mediator;
+        private readonly ISystemClock _systemClock = systemClock;
 
-        public async Task Handle(RemoveStudent_Command request, CancellationToken cancellationToken)
+        public async Task Handle(RemoveStudentFromLesson_Command request, CancellationToken cancellationToken)
         {
             User? user = _database.Users.Find(request.UserId);
             if (user is null)
@@ -30,8 +31,8 @@ namespace Application.UseCases.Lessons.Commands
             if (lesson is null)
                 throw new LessonNotFoundException();
 
-            if(lesson.Students.All(u => u.Id != user.Id))
-                throw new LessonValidationException("L'utilisateur n'est pas inscrit à ce cours");
+            if(lesson.Start.AddHours(-24) < _systemClock.Now)
+                throw new LessonValidationException("Il n'est pas possible de se désincrire moins de 24h avant le début du cours");          
 
             if(lesson.Students.Count == lesson.MaxStudent)           
                 await _mediator.Publish(new StudentLeaveLesson_Notification(request.LessonId), cancellationToken);            

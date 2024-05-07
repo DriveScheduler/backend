@@ -8,6 +8,8 @@ namespace UseCases.TestData
 
         #region TEACHER        
         public static User GetTeacher(Guid id, LicenceType type) => new() { Id = id, FirstName = "Teacher", Name = "Teacher", Email = "t.t@gmail.com", Password = "mdp123", LicenceType = type, Type = UserType.Teacher };
+        public static User GetTeacher(Guid id, string name = "Student", string firstName = "Student", string email = "s.s@gmail.com", string password = "mdp123", LicenceType type=LicenceType.Car) => 
+            new() { Id = id, FirstName = firstName, Name = name, Email = email, Password = password, LicenceType = type, Type = UserType.Teacher };
         public static User GetCarTeacher(Guid id) => new() { Id = id, FirstName = "Teacher", Name = "Teacher", Email = "t.t@gmail.com", Password = "mdp123", LicenceType = LicenceType.Car, Type = UserType.Teacher };
         public static User GetMotorcycleTeacher(Guid id) => new() { Id = id, FirstName = "Teacher", Name = "Teacher", Email = "t.t@gmail.com", Password = "mdp123", LicenceType = LicenceType.Motorcycle, Type = UserType.Teacher };
         public static User GetTruckTeacher(Guid id) => new() { Id = id, FirstName = "Teacher", Name = "Teacher", Email = "t.t@gmail.com", Password = "mdp123", LicenceType = LicenceType.Truck, Type = UserType.Teacher };
@@ -16,6 +18,8 @@ namespace UseCases.TestData
 
         #region STUDENT        
         public static User GetStudent(Guid id, LicenceType type) => new() { Id = id, FirstName = "Student", Name = "Student", Email = "s.s@gmail.com", Password = "mdp123", LicenceType = type, Type = UserType.Student };
+        public static User GetStudent(Guid id, string name="Student", string firstName="Student", string email="s.s@gmail.com", string password="mdp123", LicenceType type=LicenceType.Car) => 
+            new() { Id = id, FirstName = firstName, Name = name, Email = email, Password = password, LicenceType = type, Type = UserType.Student };
         public static User GetCarStudent(Guid id) => new() { Id = id, FirstName = "Student", Name = "Student", Email = "s.s@gmail.com", Password = "mdp123", LicenceType = LicenceType.Car, Type = UserType.Student };
         public static User GetMotorcycleStudent(Guid id) => new() { Id = id, FirstName = "Student", Name = "Student", Email = "s.s@gmail.com", Password = "mdp123", LicenceType = LicenceType.Motorcycle, Type = UserType.Student };
         public static User GetTruckStudent(Guid id) => new() { Id = id, FirstName = "Student", Name = "Student", Email = "s.s@gmail.com", Password = "mdp123", LicenceType = LicenceType.Truck, Type = UserType.Student };

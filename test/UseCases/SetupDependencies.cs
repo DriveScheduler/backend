@@ -24,7 +24,8 @@ namespace UseCases
 
             _serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
             
-            AddFakeSystemClock();            
+            AddFakeSystemClock();  
+            AddFakeEmailSender();
 
             ServiceProvider = _serviceCollection.BuildServiceProvider();
         }        
@@ -32,6 +33,11 @@ namespace UseCases
         private void AddFakeSystemClock()
         {
             _serviceCollection.AddSingleton<ISystemClock>(new FakeSystemClock(new DateTime(2024, 04, 25, 8, 30, 00)));
+        }
+
+        private void AddFakeEmailSender()
+        {
+            _serviceCollection.AddScoped<IEmailSender, FakeEmailSender>();
         }
     }
 }

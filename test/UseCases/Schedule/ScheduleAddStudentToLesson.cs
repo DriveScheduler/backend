@@ -4,6 +4,7 @@ using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
+using Domain.Exceptions.Users;
 
 using MediatR;
 
@@ -52,7 +53,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new AddStudent_Command(lessonId, studentId);
+            var command = new AddStudentToLesson_Command(lessonId, studentId);
             await _mediator.Send(command);
 
             // Assert
@@ -85,7 +86,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new AddStudent_Command(lessonId, studentId3);
+            var command = new AddStudentToLesson_Command(lessonId, studentId3);
 
             // Assert            
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -111,7 +112,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new AddStudent_Command(lessonId, studentId);
+            var command = new AddStudentToLesson_Command(lessonId, studentId);
 
             // Assert            
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -136,140 +137,111 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new AddStudent_Command(lessonId, studentId);
+            var command = new AddStudentToLesson_Command(lessonId, studentId);
 
             // Assert            
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
             Assert.Equal("Le permis de l'utilisateur ne correspond pas au type de cours", exc.Message);
         }
 
-
         [Fact]
-        public async void SheduleShould_AddAStudentToWaitingList_WhenLessonIsFull()
+        public async void ScheduleShould_NotAddTeacherToLesson()
         {
             // Arrange
-            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            Guid studentId1 = new Guid("00000000-0000-0000-0000-000000000002");
-            Guid studentId2 = new Guid("00000000-0000-0000-0000-000000000003");
-            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");
+            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");            
+            Guid teacherId2 = new Guid("00000000-0000-0000-0000-000000000003");
             int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student1 = DataSet.GetCarStudent(studentId1);
-            User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
+            User teacher = DataSet.GetCarTeacher(teacherId);            
+            User teacher2 = DataSet.GetCarTeacher(teacherId2);
             Vehicle car = DataSet.GetCar();
-            _database.Users.Add(teacher);
-            _database.Users.Add(student1);
-            _database.Users.Add(student2);
-            _database.Users.Add(student3);
+            _database.Users.Add(teacher);            
+            _database.Users.Add(teacher2);
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2, Students = [student1, student2] });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2 });
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new AddStudentToWaitingList(lessonId, studentId3);
-            await _mediator.Send(command);
-
-            // Assert            
-            Lesson? lesson = _database.Lessons.Include(l => l.WaitingList).FirstOrDefault(l => l.Id == lessonId);
-            Assert.NotNull(lesson);
-            Assert.Contains(student3, lesson.WaitingList);
-        }
-
-        [Fact]
-        public async void SheduleShould_NotAddStudentToWaitingList_WhenLessonIsNotFull()
-        {
-            // Arrange
-            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            Guid studentId1 = new Guid("00000000-0000-0000-0000-000000000002");
-            Guid studentId2 = new Guid("00000000-0000-0000-0000-000000000003");
-            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");
-            int lessonId = 1;
-
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student1 = DataSet.GetCarStudent(studentId1);
-            User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
-            Vehicle car = DataSet.GetCar();
-            _database.Users.Add(teacher);
-            _database.Users.Add(student1);
-            _database.Users.Add(student2);
-            _database.Users.Add(student3);
-            _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 3, Students = [student1, student2] });
-            await _database.SaveChangesAsync();
-
-            // Act
-            var command = new AddStudentToWaitingList(lessonId, studentId3);
+            var command = new AddStudentToLesson_Command(lessonId, teacherId2);
 
             // Assert            
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("Le cours n'est pas complet", exc.Message);
+            Assert.Equal("L'utilisateur doit être un élève pour s'incrire au cours", exc.Message);
         }
 
         [Fact]
-        public async void SheduleShould_NotAddSameStudentToSameWaitingList()
+        public async void ScheduleShould_NotAddInvalidUserToLesson()
         {
             // Arrange
-            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            Guid studentId1 = new Guid("00000000-0000-0000-0000-000000000002");
-            Guid studentId2 = new Guid("00000000-0000-0000-0000-000000000003");
-            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");
+            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");            
+            Guid invalidUserId = new Guid("00000000-0000-0000-0000-000000000003");
             int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student1 = DataSet.GetCarStudent(studentId1);
-            User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
+            User teacher = DataSet.GetCarTeacher(teacherId);                       
             Vehicle car = DataSet.GetCar();
-            _database.Users.Add(teacher);
-            _database.Users.Add(student1);
-            _database.Users.Add(student2);
-            _database.Users.Add(student3);
+            _database.Users.Add(teacher);            
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2, Students = [student1, student2], WaitingList = [student3] });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2 });
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new AddStudentToWaitingList(lessonId, studentId3);
+            var command = new AddStudentToLesson_Command(lessonId, invalidUserId);
 
             // Assert            
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("L'utilisateur est déjà dans la liste d'attente", exc.Message);
+            UserNotFoundException exc = await Assert.ThrowsAsync<UserNotFoundException>(() => _mediator.Send(command));
+            Assert.Equal("L'utilisateur n'existe pas", exc.Message);
         }
 
         [Fact]
-        public async void SheduleShould_NotAddStudentToWaitingList_WhenLicenceTypeNotMatch()
+        public async void ScheduleShould_NotAddStudentToInvalidLesson()
         {
             // Arrange
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            Guid studentId1 = new Guid("00000000-0000-0000-0000-000000000002");
-            Guid studentId2 = new Guid("00000000-0000-0000-0000-000000000003");
-            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");
-            int lessonId = 1;
+            Guid studentId = new Guid("00000000-0000-0000-0000-000000000002");
+            const int lessonId = 1;
+            const int invalidLessonId = 2;
 
             User teacher = DataSet.GetCarTeacher(teacherId);
-            User student1 = DataSet.GetCarStudent(studentId1);
-            User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetMotorcycleStudent(studentId3);
+            User student = DataSet.GetCarStudent(studentId);
             Vehicle car = DataSet.GetCar();
             _database.Users.Add(teacher);
-            _database.Users.Add(student1);
-            _database.Users.Add(student2);
-            _database.Users.Add(student3);
+            _database.Users.Add(student);
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2, Students = [student1, student2] });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2 });
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new AddStudentToWaitingList(lessonId, studentId3);
+            var command = new AddStudentToLesson_Command(invalidLessonId, studentId);
+
+            // Assert            
+            LessonNotFoundException exc = await Assert.ThrowsAsync<LessonNotFoundException>(() => _mediator.Send(command));
+            Assert.Equal("Le cours n'existe pas", exc.Message);
+        }
+
+        [Fact]
+        public async void ScheduleShould_NotAddStudentToLesson_WhenLessonPassed()
+        {
+            // Arrange
+            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
+            Guid studentId = new Guid("00000000-0000-0000-0000-000000000002");
+            DateTime lessonStart = _clock.Now.AddSeconds(-1);
+            const int lessonId = 1;            
+
+            User teacher = DataSet.GetCarTeacher(teacherId);
+            User student = DataSet.GetCarStudent(studentId);
+            Vehicle car = DataSet.GetCar();
+            _database.Users.Add(teacher);
+            _database.Users.Add(student);
+            _database.Vehicles.Add(car);
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = lessonStart, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2 });
+            await _database.SaveChangesAsync();
+
+            // Act
+            var command = new AddStudentToLesson_Command(lessonId, studentId);
 
             // Assert            
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("Le permis de l'utilisateur ne correspond pas au type de cours", exc.Message);
+            Assert.Equal("Le cours est déjà passé", exc.Message);
         }
-
-
     }
 }

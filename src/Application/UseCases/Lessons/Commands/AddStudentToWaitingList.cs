@@ -12,9 +12,10 @@ namespace Application.UseCases.Lessons.Commands
 {
     public sealed record AddStudentToWaitingList(int LessonId, Guid UserId) : IRequest;
 
-    internal sealed class AddStudentToWaitingList_CommandHandler(IDatabase database) : IRequestHandler<AddStudentToWaitingList>
+    internal sealed class AddStudentToWaitingList_CommandHandler(IDatabase database, ISystemClock systemClock) : IRequestHandler<AddStudentToWaitingList>
     {
         private readonly IDatabase _database = database;
+        private readonly ISystemClock _systemClock = systemClock;
 
         public async Task Handle(AddStudentToWaitingList request, CancellationToken cancellationToken)
         {
@@ -28,6 +29,9 @@ namespace Application.UseCases.Lessons.Commands
                 .FirstOrDefault(l => l.Id == request.LessonId);
             if (lesson is null)
                 throw new LessonNotFoundException();
+
+            new LessonTimeValidator(_systemClock)
+                .ThrowIfInvalid(lesson);
 
             lesson.WaitingList.Add(user);
             new UserLessonValidator()

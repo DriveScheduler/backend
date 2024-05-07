@@ -10,13 +10,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Lessons.Commands
 {
-    public sealed record AddStudent_Command(int LessonId, Guid UserId) : IRequest;
+    public sealed record AddStudentToLesson_Command(int LessonId, Guid UserId) : IRequest;
 
-    internal sealed class AddStudent_CommandHandler(IDatabase database) : IRequestHandler<AddStudent_Command>
+    internal sealed class AddStudentToLesson_CommandHandler(IDatabase database, ISystemClock systemClock) : IRequestHandler<AddStudentToLesson_Command>
     {
         private readonly IDatabase _database = database;        
+        private readonly ISystemClock _systemClock = systemClock;
 
-        public async Task Handle(AddStudent_Command request, CancellationToken cancellationToken)
+        public async Task Handle(AddStudentToLesson_Command request, CancellationToken cancellationToken)
         {
             User? user = _database.Users.Find(request.UserId);
             if (user is null)
@@ -27,6 +28,9 @@ namespace Application.UseCases.Lessons.Commands
                 .FirstOrDefault(l => l.Id == request.LessonId);
             if (lesson is null)
                 throw new LessonNotFoundException();
+
+            new LessonTimeValidator(_systemClock)
+                .ThrowIfInvalid(lesson);
 
             lesson.Students.Add(user);
             new UserLessonValidator()
