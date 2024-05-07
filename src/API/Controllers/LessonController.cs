@@ -19,7 +19,7 @@ namespace API.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CreateLessonModel input)
         {
-            var command = new CreateLesson_Command(input.Name, input.Start, input.Duration, input.TeacherId, input.Type, input.VehicleId, input.MaxStudent);
+            var command = new CreateLesson_Command(input.Name, input.Start, input.Duration, input.TeacherId, input.Type, input.VehicleId);
             try
             {
                 int lessonId = await _mediator.Send(command);
@@ -34,7 +34,7 @@ namespace API.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateLessonModel input)
         {
-            var command = new UpdateLesson_Command(input.Id, input.Name, input.Start, input.Duration, input.TeacherId, input.Type, input.VehicleId, input.MaxStudent);
+            var command = new UpdateLesson_Command(input.Id, input.Name, input.Start, input.Duration, input.TeacherId, input.Type, input.VehicleId);
             try
             {
                 await _mediator.Send(command);

@@ -11,6 +11,5 @@ namespace API.Inputs.Lessons
         public Guid TeacherId { get; set; }
         public LicenceType Type { get; set; }
         public int VehicleId { get; set; }
-        public int MaxStudent { get; set; }
     }
 }

@@ -49,7 +49,7 @@ namespace UseCases.Schedule
             _database.Users.Add(teacher);
             _database.Users.Add(student);
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 5 });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car });
             await _database.SaveChangesAsync();
 
             // Act
@@ -57,9 +57,9 @@ namespace UseCases.Schedule
             await _mediator.Send(command);
 
             // Assert
-            Lesson? lesson = _database.Lessons.Include(l => l.Students).FirstOrDefault(l => l.Id == lessonId);
+            Lesson? lesson = _database.Lessons.Include(l => l.Student).FirstOrDefault(l => l.Id == lessonId);
             Assert.NotNull(lesson);
-            Assert.Contains(student, lesson.Students);
+            Assert.Equal(student, lesson.Student);
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace UseCases.Schedule
             _database.Users.Add(student2);
             _database.Users.Add(student3);
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2, Students = [student1, student2] });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, Student = student1 });
             await _database.SaveChangesAsync();
 
             // Act
@@ -91,33 +91,7 @@ namespace UseCases.Schedule
             // Assert            
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
             Assert.Equal("Le cours est complet", exc.Message);
-        }
-
-        [Fact]
-        public async void ScheduleShould_NotAddSameStudentToTheSameLesson()
-        {
-            // Arrange
-            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            Guid studentId = new Guid("00000000-0000-0000-0000-000000000002");
-            int lessonId = 1;
-            LicenceType licenceType = LicenceType.Car;
-
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student = DataSet.GetCarStudent(studentId);
-            Vehicle car = DataSet.GetCar(1);
-            _database.Users.Add(teacher);
-            _database.Users.Add(student);
-            _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = licenceType, Teacher = teacher, Vehicle = car, MaxStudent = 2, Students = [student] });
-            await _database.SaveChangesAsync();
-
-            // Act
-            var command = new AddStudentToLesson_Command(lessonId, studentId);
-
-            // Assert            
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("L'utilisateur est déjà inscrit au cours", exc.Message);
-        }
+        }    
 
         [Fact]
         public async void ScheduleShould_NotAddStudentToLesson_WhenLicenceTypeNotMatch()
@@ -133,7 +107,7 @@ namespace UseCases.Schedule
             _database.Users.Add(teacher);
             _database.Users.Add(student);
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2 });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car });
             await _database.SaveChangesAsync();
 
             // Act
@@ -158,7 +132,7 @@ namespace UseCases.Schedule
             _database.Users.Add(teacher);            
             _database.Users.Add(teacher2);
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2 });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car });
             await _database.SaveChangesAsync();
 
             // Act
@@ -181,7 +155,7 @@ namespace UseCases.Schedule
             Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);            
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2 });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car });
             await _database.SaveChangesAsync();
 
             // Act
@@ -207,7 +181,7 @@ namespace UseCases.Schedule
             _database.Users.Add(teacher);
             _database.Users.Add(student);
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2 });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car });
             await _database.SaveChangesAsync();
 
             // Act
@@ -233,7 +207,7 @@ namespace UseCases.Schedule
             _database.Users.Add(teacher);
             _database.Users.Add(student);
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = lessonStart, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2 });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = lessonStart, Type = LicenceType.Car, Teacher = teacher, Vehicle = car });
             await _database.SaveChangesAsync();
 
             // Act

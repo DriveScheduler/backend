@@ -12,9 +12,8 @@ namespace Domain.Entities
         public Guid TeacherId { get; set; }
         public User Teacher { get; set; }
         public LicenceType Type { get; set; }
-        public Vehicle Vehicle { get; set; }
-        public int MaxStudent { get; set; }
-        public List<User> Students { get; set; }
+        public Vehicle Vehicle { get; set; }        
+        public User? Student { get; set; }
         public List<User> WaitingList { get; set; }
 
     }

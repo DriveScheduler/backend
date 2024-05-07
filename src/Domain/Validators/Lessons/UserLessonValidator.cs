@@ -9,27 +9,23 @@ namespace Domain.Validators.Lessons
     {
         public UserLessonValidator()
         {
-            RuleFor(lesson => lesson.Students.Count)
-              .LessThanOrEqualTo(lesson => lesson.MaxStudent)
-              .WithMessage("Le cours est complet");
-
             RuleFor(lesson => lesson)
                 .Custom((lesson, context) =>
                 {
-                    if (lesson.WaitingList is null || lesson.Students is null) return;
+                    if (lesson.WaitingList is null) return;
 
-                    if (lesson.WaitingList.Count > 0 && lesson.Students.Count < lesson.MaxStudent)
+                    if (lesson.WaitingList.Count > 0 && lesson.Student is null)
                     {
                         context.AddFailure("Le cours n'est pas complet");
                     }
                 });
 
-            RuleFor(lesson => lesson.Students)
-               .Custom((students, context) =>
+            RuleFor(lesson => lesson.Student)
+               .Custom((student, context) =>
                {
-                   if (students is null) return;
+                   if (student is null) return;
 
-                   if (students.Where(u => u.Type != Enums.UserType.Student).Count() > 0)
+                   if (student.Type != Enums.UserType.Student)
                    {
                        context.AddFailure("L'utilisateur doit être un élève pour s'incrire au cours");
                    }
@@ -46,17 +42,6 @@ namespace Domain.Validators.Lessons
                }
            });
 
-            RuleFor(lesson => lesson.Students)
-                .Custom((students, context) =>
-                {
-                    if (students is null) return;
-
-                    List<User> distinctList = students.DistinctBy(student => student.Id).ToList();
-                    if (distinctList.Count != students.Count)
-                    {
-                        context.AddFailure("L'utilisateur est déjà inscrit au cours");
-                    }
-                });
 
             RuleFor(lesson => lesson.WaitingList)
              .Custom((waitingList, context) =>
@@ -73,18 +58,11 @@ namespace Domain.Validators.Lessons
             RuleFor(lesson => lesson)
                 .Custom((lesson, context) =>
                 {
-                    if (lesson.Students is not null)
-                    {
-                        foreach (var student in lesson.Students)
-                        {
-                            if (student.LicenceType != lesson.Type)
-                            {
-                                context.AddFailure("Le permis de l'utilisateur ne correspond pas au type de cours");
-                                break;
-                            }
-                        }
+                    if (lesson.Student is not null && lesson.Student.LicenceType != lesson.Type)
+                    {                       
+                        context.AddFailure("Le permis de l'utilisateur ne correspond pas au type de cours");                            
                     }
-                    if(lesson.WaitingList is not null)
+                    if (lesson.WaitingList is not null)
                     {
                         foreach (var student in lesson.WaitingList)
                         {

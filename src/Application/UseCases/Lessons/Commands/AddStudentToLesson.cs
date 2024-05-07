@@ -14,7 +14,7 @@ namespace Application.UseCases.Lessons.Commands
 
     internal sealed class AddStudentToLesson_CommandHandler(IDatabase database, ISystemClock systemClock) : IRequestHandler<AddStudentToLesson_Command>
     {
-        private readonly IDatabase _database = database;        
+        private readonly IDatabase _database = database;
         private readonly ISystemClock _systemClock = systemClock;
 
         public async Task Handle(AddStudentToLesson_Command request, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ namespace Application.UseCases.Lessons.Commands
                 throw new UserNotFoundException();
 
             Lesson? lesson = _database.Lessons
-                .Include(Lesson => Lesson.Students)
+                .Include(Lesson => Lesson.Student)
                 .FirstOrDefault(l => l.Id == request.LessonId);
             if (lesson is null)
                 throw new LessonNotFoundException();
@@ -32,12 +32,14 @@ namespace Application.UseCases.Lessons.Commands
             new LessonTimeValidator(_systemClock)
                 .ThrowIfInvalid(lesson);
 
-            lesson.Students.Add(user);
-            new UserLessonValidator()
-                .ExecuteBeforeThrowing(obj => obj.Students.Remove(user))
-                .ThrowIfInvalid(lesson);
+            if (lesson.Student is not null)
+                throw new LessonValidationException("Le cours est complet");
 
-            if(await _database.SaveChangesAsync() != 1)
+
+            lesson.Student = user;
+            new UserLessonValidator().ThrowIfInvalid(lesson);
+
+            if (await _database.SaveChangesAsync() != 1)
                 throw new LessonSaveException();
         }
     }

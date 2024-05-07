@@ -24,7 +24,7 @@ namespace Application.UseCases.Lessons.Commands
                 throw new UserNotFoundException();
 
             Lesson? lesson = _database.Lessons
-                .Include(Lesson => Lesson.Students)
+                .Include(Lesson => Lesson.Student)
                 .Include(Lesson => Lesson.WaitingList)
                 .FirstOrDefault(l => l.Id == request.LessonId);
             if (lesson is null)
@@ -34,9 +34,7 @@ namespace Application.UseCases.Lessons.Commands
                 .ThrowIfInvalid(lesson);
 
             lesson.WaitingList.Add(user);
-            new UserLessonValidator()
-                .ExecuteBeforeThrowing(obj => obj.WaitingList.Remove(user))
-                .ThrowIfInvalid(lesson);
+            new UserLessonValidator().ThrowIfInvalid(lesson);
 
             if (await _database.SaveChangesAsync() != 1)
                 throw new LessonSaveException();

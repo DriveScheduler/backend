@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Lessons.Commands
 {
-    public sealed record CreateLesson_Command(string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type, int VehicleId, int MaxStudent) : IRequest<int>;
+    public sealed record CreateLesson_Command(string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type, int VehicleId) : IRequest<int>;
 
     internal sealed class CreateLesson_CommandHandler(IDatabase database, ISystemClock systemClock) : IRequestHandler<CreateLesson_Command, int>
     {
@@ -31,8 +31,7 @@ namespace Application.UseCases.Lessons.Commands
                 Duration = request.Duration,
                 Type = request.Type,
                 Teacher = user,
-                Vehicle = vehicle,
-                MaxStudent = request.MaxStudent
+                Vehicle = vehicle,                
             };
 
             new LessonValidator(_systemClock).ThrowIfInvalid(lesson);

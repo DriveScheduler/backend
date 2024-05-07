@@ -42,8 +42,7 @@ namespace UseCases.Schedule
             const string updatedLessonName = "Cours 2";
             DateTime updatedStartTime = _clock.Now.AddDays(1);
             const int updatedDuration = 30;
-            const LicenceType updatedLicenceType = LicenceType.Truck;
-            const int updatedMaxStudent = 5;
+            const LicenceType updatedLicenceType = LicenceType.Truck;            
 
 
             Guid carTeacherId = new Guid("00000000-0000-0000-0000-000000000001");
@@ -63,7 +62,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, updatedLessonName, updatedStartTime, updatedDuration, truckTeacherId, updatedLicenceType, truck.Id, updatedMaxStudent);
+            var command = new UpdateLesson_Command(lessonId, updatedLessonName, updatedStartTime, updatedDuration, truckTeacherId, updatedLicenceType, truck.Id);
             await _mediator.Send(command);
             Lesson? updatedLesson = _database.Lessons.Include(l => l.Teacher).Include(l => l.Vehicle).FirstOrDefault(l => l.Id == lessonId);
 
@@ -74,8 +73,7 @@ namespace UseCases.Schedule
             Assert.Equal(updatedDuration, updatedLesson.Duration);
             Assert.Equal(truckTeacherId, updatedLesson.Teacher.Id);
             Assert.Equal(updatedLicenceType, updatedLesson.Type);
-            Assert.Equal(truck.RegistrationNumber, updatedLesson.Vehicle.RegistrationNumber);
-            Assert.Equal(updatedMaxStudent, updatedLesson.MaxStudent);
+            Assert.Equal(truck.RegistrationNumber, updatedLesson.Vehicle.RegistrationNumber);            
         }
 
         [Fact]
@@ -93,7 +91,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "", _clock.Now, 30, teacherId, LicenceType.Car, car.Id, 5);
+            var command = new UpdateLesson_Command(lessonId, "", _clock.Now, 30, teacherId, LicenceType.Car, car.Id);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -116,7 +114,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now.AddMinutes(-1), 30, teacherId, LicenceType.Car, car.Id, 5);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now.AddMinutes(-1), 30, teacherId, LicenceType.Car, car.Id);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -140,7 +138,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, invalidTeacherId, LicenceType.Car, car.Id, 5);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, invalidTeacherId, LicenceType.Car, car.Id);
 
             // Assert
             UserNotFoundException exc = await Assert.ThrowsAsync<UserNotFoundException>(() => _mediator.Send(command));
@@ -165,7 +163,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, teacherId, invalidLicenceType, car.Id, 5);
+            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, teacherId, invalidLicenceType, car.Id);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -192,7 +190,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, truckTeacherId, LicenceType.Car, car.Id, 5);
+            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, truckTeacherId, LicenceType.Car, car.Id);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -222,7 +220,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var comamnd = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now.AddMinutes(20), 30, teacherId2, LicenceType.Car, car1.Id, 5);
+            var comamnd = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now.AddMinutes(20), 30, teacherId2, LicenceType.Car, car1.Id);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(comamnd));
@@ -249,7 +247,7 @@ namespace UseCases.Schedule
 
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, studentId, LicenceType.Car, car.Id, 5);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, studentId, LicenceType.Car, car.Id);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -273,7 +271,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, invalidDuration, teacherId, LicenceType.Car, car.Id, 5);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, invalidDuration, teacherId, LicenceType.Car, car.Id);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -296,7 +294,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, invalidCarId, 5);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, invalidCarId);
 
             // Assert
             VehicleNotFoundException exc = await Assert.ThrowsAsync<VehicleNotFoundException>(() => _mediator.Send(command));
@@ -326,7 +324,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new UpdateLesson_Command(lessonId1, "Cours 1", _clock.Now, 30, teacherId1, LicenceType.Car, car2.Id, 5);
+            var command = new UpdateLesson_Command(lessonId1, "Cours 1", _clock.Now, 30, teacherId1, LicenceType.Car, car2.Id);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -351,7 +349,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, truck.Id, 5);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, truck.Id);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -374,7 +372,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, car.Id, 5);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, car.Id);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -395,7 +393,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new UpdateLesson_Command(invalidLessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, car.Id, 5);
+            var command = new UpdateLesson_Command(invalidLessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, car.Id);
 
             // Assert
             LessonNotFoundException exc = await Assert.ThrowsAsync<LessonNotFoundException>(() => _mediator.Send(command));

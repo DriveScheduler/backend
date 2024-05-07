@@ -26,7 +26,7 @@ namespace Application.UseCases.Lessons.Commands
                 throw new UserNotFoundException();
 
             Lesson? lesson = _database.Lessons
-                .Include(Lesson => Lesson.Students)
+                .Include(Lesson => Lesson.Student)
                 .FirstOrDefault(l => l.Id == request.LessonId);
             if (lesson is null)
                 throw new LessonNotFoundException();
@@ -34,10 +34,10 @@ namespace Application.UseCases.Lessons.Commands
             if(lesson.Start.AddHours(-24) < _systemClock.Now)
                 throw new LessonValidationException("Il n'est pas possible de se désincrire moins de 24h avant le début du cours");          
 
-            if(lesson.Students.Count == lesson.MaxStudent)           
-                await _mediator.Publish(new StudentLeaveLesson_Notification(request.LessonId), cancellationToken);            
+            if(lesson.Student is not null)           
+                await _mediator.Publish(new StudentLeaveLesson_Notification(request.LessonId), cancellationToken);
 
-            lesson.Students.Remove(user);
+            lesson.Student = null;
 
             if(await _database.SaveChangesAsync() != 1)
                 throw new LessonSaveException();            

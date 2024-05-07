@@ -35,11 +35,9 @@ namespace Infrastructure.Configurations
                 .HasOne(c => c.Vehicle)
                 .WithMany(v => v.Lessons);
 
-
             builder
-                .HasMany(l => l.Students)
-                .WithMany(u => u.LessonsAsStudent)
-                .UsingEntity(j => j.ToTable("LessonStudents"));
+                .HasOne(l => l.Student)
+                .WithMany(u => u.LessonsAsStudent);                
 
             builder
                 .HasMany(l => l.WaitingList)

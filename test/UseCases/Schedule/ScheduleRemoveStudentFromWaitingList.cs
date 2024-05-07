@@ -42,34 +42,27 @@ namespace UseCases.Schedule
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Guid studentId1 = new Guid("00000000-0000-0000-0000-000000000002");
             Guid studentId2 = new Guid("00000000-0000-0000-0000-000000000003");
-            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");
-            Guid studentId4 = new Guid("00000000-0000-0000-0000-000000000005");
-            Guid studentId5 = new Guid("00000000-0000-0000-0000-000000000006");
+            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");            
             DateTime lessonStart = _clock.Now.AddHours(24);
             List<string> studentEmails = ["student1@gmail.com", "student2@gmail.com"];
             
-            const int lessonId = 1;
-            const int maxStudent = 3;
+            const int lessonId = 1;            
 
             User teacher = DataSet.GetCarTeacher(teacherId);
-            User student1 = DataSet.GetCarStudent(studentId1);
-            User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
-            User student4 = DataSet.GetStudent(studentId4, email: studentEmails[0]);
-            User student5 = DataSet.GetStudent(studentId5, email: studentEmails[1]);
+            User student1 = DataSet.GetCarStudent(studentId1);            
+            User student2 = DataSet.GetStudent(studentId2, email: studentEmails[0]);
+            User student3 = DataSet.GetStudent(studentId3, email: studentEmails[1]);
             Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
-            _database.Users.Add(student3);
-            _database.Users.Add(student4);
-            _database.Users.Add(student5);
+            _database.Users.Add(student3);            
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = lessonStart, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = maxStudent, Students = [student1, student2, student3], WaitingList = [student4, student5] });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = lessonStart, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, Student = student1, WaitingList = [student2, student3] });
             await _database.SaveChangesAsync();
 
             // Act
-            await _mediator.Send(new RemoveStudentFromLesson_Command(lessonId, student3.Id));            
+            await _mediator.Send(new RemoveStudentFromLesson_Command(lessonId, student1.Id));            
 
             // Assert
             List<string> emailsSentToAddress = _emailSender.EmailsSent.Select(s => s.To).ToList();
@@ -80,42 +73,36 @@ namespace UseCases.Schedule
 
 
         [Fact]
-        public async void ScheduleShould_RemoveStudentWaitingList()
+        public async void ScheduleShould_RemoveStudentFromWaitingList()
         {
             // Arrange
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Guid studentId1 = new Guid("00000000-0000-0000-0000-000000000002");
             Guid studentId2 = new Guid("00000000-0000-0000-0000-000000000003");
-            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");
-            Guid studentId4 = new Guid("00000000-0000-0000-0000-000000000005");
-            Guid studentId5 = new Guid("00000000-0000-0000-0000-000000000006");
+            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");            
             
             const int lessonId = 1;
-            const int maxStudent = 3;
+            
             User teacher = DataSet.GetCarTeacher(teacherId);
             User student1 = DataSet.GetCarStudent(studentId1);
             User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
-            User student4 = DataSet.GetCarStudent(studentId4);
-            User student5 = DataSet.GetCarStudent(studentId5);
+            User student3 = DataSet.GetCarStudent(studentId3);            
             Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
-            _database.Users.Add(student3);
-            _database.Users.Add(student4);
-            _database.Users.Add(student5);
+            _database.Users.Add(student3);            
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = maxStudent, Students = [student1, student2, student3], WaitingList = [student4, student5] });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, Student = student1, WaitingList = [student2, student3] });
             await _database.SaveChangesAsync();
 
             // Act
-            await _mediator.Send(new RemoveStudentFromWaitingList_Command(lessonId, student4.Id));
+            await _mediator.Send(new RemoveStudentFromWaitingList_Command(lessonId, student3.Id));
             Lesson lesson = _database.Lessons.Find(lessonId)!;
 
             // Assert
             Assert.Single(lesson.WaitingList);
-            Assert.DoesNotContain(student4, lesson.WaitingList);
+            Assert.DoesNotContain(student3, lesson.WaitingList);
         }
 
         [Fact]
@@ -125,28 +112,22 @@ namespace UseCases.Schedule
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Guid studentId1 = new Guid("00000000-0000-0000-0000-000000000002");
             Guid studentId2 = new Guid("00000000-0000-0000-0000-000000000003");
-            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");
-            Guid studentId4 = new Guid("00000000-0000-0000-0000-000000000005");
-            Guid studentId5 = new Guid("00000000-0000-0000-0000-000000000006");
+            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");           
             Guid invalidUserId = new Guid("00000000-0000-0000-0000-000000000007");
 
             const int lessonId = 1;
-            const int maxStudent = 3;
+            
             User teacher = DataSet.GetCarTeacher(teacherId);
             User student1 = DataSet.GetCarStudent(studentId1);
             User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
-            User student4 = DataSet.GetCarStudent(studentId4);
-            User student5 = DataSet.GetCarStudent(studentId5);
+            User student3 = DataSet.GetCarStudent(studentId3);            
             Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
-            _database.Users.Add(student3);
-            _database.Users.Add(student4);
-            _database.Users.Add(student5);
+            _database.Users.Add(student3);            
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = maxStudent, Students = [student1, student2, student3], WaitingList = [student4, student5] });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, Student = student1, WaitingList = [student2, student3] });
             await _database.SaveChangesAsync();
 
             // Act
@@ -163,33 +144,26 @@ namespace UseCases.Schedule
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Guid studentId1 = new Guid("00000000-0000-0000-0000-000000000002");
             Guid studentId2 = new Guid("00000000-0000-0000-0000-000000000003");
-            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");
-            Guid studentId4 = new Guid("00000000-0000-0000-0000-000000000005");
-            Guid studentId5 = new Guid("00000000-0000-0000-0000-000000000006");            
+            Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");                       
 
             const int lessonId = 1;
-            const int invalidLessonId = 2;
-            const int maxStudent = 3;
+            const int invalidLessonId = 2;            
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             User student1 = DataSet.GetCarStudent(studentId1);
             User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
-            User student4 = DataSet.GetCarStudent(studentId4);
-            User student5 = DataSet.GetCarStudent(studentId5);
+            User student3 = DataSet.GetCarStudent(studentId3);            
             Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
-            _database.Users.Add(student3);
-            _database.Users.Add(student4);
-            _database.Users.Add(student5);
+            _database.Users.Add(student3);            
             _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = maxStudent, Students = [student1, student2, student3], WaitingList = [student4, student5] });
+            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, Student = student1, WaitingList = [student2, student3] });
             await _database.SaveChangesAsync();
 
             // Act
-            LessonNotFoundException exc = await Assert.ThrowsAsync<LessonNotFoundException>(() => _mediator.Send(new RemoveStudentFromWaitingList_Command(invalidLessonId, studentId4)));
+            LessonNotFoundException exc = await Assert.ThrowsAsync<LessonNotFoundException>(() => _mediator.Send(new RemoveStudentFromWaitingList_Command(invalidLessonId, student3.Id)));
 
             // Assert
             Assert.Equal("Le cours n'existe pas", exc.Message);

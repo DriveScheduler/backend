@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.UseCases.Lessons.Commands
 {
 
-    public sealed record UpdateLesson_Command(int Id, string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type, int VehicleId, int MaxStudent) : IRequest;
+    public sealed record UpdateLesson_Command(int Id, string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type, int VehicleId) : IRequest;
 
     internal sealed class UpdateLesson_CommandHandler(IDatabase database, ISystemClock clock) : IRequestHandler<UpdateLesson_Command>
     {
@@ -39,8 +39,7 @@ namespace Application.UseCases.Lessons.Commands
                 Duration = request.Duration,
                 Type = request.Type,
                 Teacher = user,
-                Vehicle = vehicle,
-                MaxStudent = request.MaxStudent
+                Vehicle = vehicle,                
             };            
 
             new LessonValidator(_clock).ThrowIfInvalid(model);
@@ -50,8 +49,7 @@ namespace Application.UseCases.Lessons.Commands
             lesson.Duration = model.Duration;
             lesson.Type = model.Type;
             lesson.Teacher = model.Teacher;
-            lesson.Vehicle = model.Vehicle;
-            lesson.MaxStudent = model.MaxStudent;
+            lesson.Vehicle = model.Vehicle;            
 
             if (await _database.SaveChangesAsync(cancellationToken) != 1)
                 throw new LessonSaveException();
