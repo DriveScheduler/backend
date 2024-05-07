@@ -13,7 +13,7 @@ namespace Infrastructure
         public static void InfrastructureDependencyInjection(this IServiceCollection services)
         {
             services.AddScoped<ISystemClock, SystemClock>();
-            services.AddScoped<IEmailSender, EmailSender>();
+            services.AddSingleton<IEmailSender, EmailSender>();
         }
 
         public static void SetupDatabase(this IServiceCollection services, string connectionString)
