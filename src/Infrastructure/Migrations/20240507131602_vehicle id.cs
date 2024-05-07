@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class LessonUsersWaitingListVehicleregistrationnumber : Migration
+    public partial class vehicleid : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,13 +32,15 @@ namespace Infrastructure.Migrations
                 name: "Vehicle",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     RegistrationNumber = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     Type = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vehicle", x => x.RegistrationNumber);
+                    table.PrimaryKey("PK_Vehicle", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,7 +54,7 @@ namespace Infrastructure.Migrations
                     Duration = table.Column<int>(type: "INTEGER", nullable: false),
                     TeacherId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    VehicleRegistrationNumber = table.Column<string>(type: "TEXT", nullable: false),
+                    VehicleId = table.Column<int>(type: "INTEGER", nullable: false),
                     MaxStudent = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -65,10 +67,10 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Lesson_Vehicle_VehicleRegistrationNumber",
-                        column: x => x.VehicleRegistrationNumber,
+                        name: "FK_Lesson_Vehicle_VehicleId",
+                        column: x => x.VehicleId,
                         principalTable: "Vehicle",
-                        principalColumn: "RegistrationNumber",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -126,9 +128,9 @@ namespace Infrastructure.Migrations
                 column: "TeacherId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Lesson_VehicleRegistrationNumber",
+                name: "IX_Lesson_VehicleId",
                 table: "Lesson",
-                column: "VehicleRegistrationNumber");
+                column: "VehicleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LessonStudents_StudentsId",

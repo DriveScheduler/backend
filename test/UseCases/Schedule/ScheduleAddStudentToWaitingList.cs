@@ -49,7 +49,7 @@ namespace UseCases.Schedule
             User student2 = DataSet.GetCarStudent(studentId2);
             User student3 = DataSet.GetCarStudent(studentId3);
             User student4 = DataSet.GetCarStudent(studentId4);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
@@ -60,7 +60,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            await _mediator.Send(new AddStudentToWaitingList(lessonId, student4.Id));
+            await _mediator.Send(new AddStudentToWaitingList_Command(lessonId, student4.Id));
             Lesson lesson = _database.Lessons.Find(lessonId)!;
 
             // Assert
@@ -86,7 +86,7 @@ namespace UseCases.Schedule
             User student2 = DataSet.GetCarStudent(studentId2);
             User student3 = DataSet.GetCarStudent(studentId3);
             User student4 = DataSet.GetCarStudent(studentId4);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
@@ -97,7 +97,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(new AddStudentToWaitingList(lessonId, student4.Id)));
+            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(new AddStudentToWaitingList_Command(lessonId, student4.Id)));
 
             // Assert
             Assert.Equal("Le cours n'est pas complet", exc.Message);
@@ -121,7 +121,7 @@ namespace UseCases.Schedule
             User student2 = DataSet.GetCarStudent(studentId2);
             User student3 = DataSet.GetCarStudent(studentId3);
             User student4 = DataSet.GetCarStudent(studentId4);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
@@ -132,7 +132,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            LessonNotFoundException exc = await Assert.ThrowsAsync<LessonNotFoundException>(() => _mediator.Send(new AddStudentToWaitingList(invalidLessonId, student4.Id)));
+            LessonNotFoundException exc = await Assert.ThrowsAsync<LessonNotFoundException>(() => _mediator.Send(new AddStudentToWaitingList_Command(invalidLessonId, student4.Id)));
 
             // Assert
             Assert.Equal("Le cours n'existe pas", exc.Message);
@@ -155,7 +155,7 @@ namespace UseCases.Schedule
             User student2 = DataSet.GetCarStudent(studentId2);
             User student3 = DataSet.GetCarStudent(studentId3);
             User teacher2 = DataSet.GetCarTeacher(teacherId2);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
@@ -166,7 +166,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(new AddStudentToWaitingList(lessonId, teacher2.Id)));
+            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(new AddStudentToWaitingList_Command(lessonId, teacher2.Id)));
 
             // Assert
             Assert.Equal("L'utilisateur doit être un élève pour s'incrire à la file d'attente du cours", exc.Message);
@@ -186,7 +186,7 @@ namespace UseCases.Schedule
             User student1 = DataSet.GetCarStudent(studentId1);
             User student2 = DataSet.GetCarStudent(studentId2);
             User student3 = DataSet.GetCarStudent(studentId3);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
@@ -196,7 +196,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new AddStudentToWaitingList(lessonId, studentId3);
+            var command = new AddStudentToWaitingList_Command(lessonId, studentId3);
 
             // Assert            
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -217,7 +217,7 @@ namespace UseCases.Schedule
             User student1 = DataSet.GetCarStudent(studentId1);
             User student2 = DataSet.GetCarStudent(studentId2);
             User student3 = DataSet.GetMotorcycleStudent(studentId3);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
@@ -227,7 +227,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new AddStudentToWaitingList(lessonId, studentId3);
+            var command = new AddStudentToWaitingList_Command(lessonId, studentId3);
 
             // Assert            
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -247,7 +247,7 @@ namespace UseCases.Schedule
             User teacher = DataSet.GetCarTeacher(teacherId);
             User student1 = DataSet.GetCarStudent(studentId1);
             User student2 = DataSet.GetCarStudent(studentId2);            
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);            
@@ -256,7 +256,7 @@ namespace UseCases.Schedule
             await _database.SaveChangesAsync();
 
             // Act
-            var command = new AddStudentToWaitingList(lessonId, invalidStudentId);
+            var command = new AddStudentToWaitingList_Command(lessonId, invalidStudentId);
 
             // Assert            
             UserNotFoundException exc = await Assert.ThrowsAsync<UserNotFoundException>(() => _mediator.Send(command));
@@ -278,7 +278,7 @@ namespace UseCases.Schedule
             User student1 = DataSet.GetCarStudent(studentId1);
             User student2 = DataSet.GetCarStudent(studentId2);
             User student3 = DataSet.GetCarStudent(studentId3);            
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);

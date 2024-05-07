@@ -16,7 +16,7 @@ namespace API.Controllers
         private readonly IMediator _mediator = mediator;
 
 
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<IActionResult> Create(CreateLessonModel input)
         {
             var command = new CreateLesson_Command(input.Name, input.Start, input.Duration, input.TeacherId, input.Type, input.VehicleId, input.MaxStudent);
@@ -31,7 +31,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateLessonModel input)
         {
             var command = new UpdateLesson_Command(input.Id, input.Name, input.Start, input.Duration, input.TeacherId, input.Type, input.VehicleId, input.MaxStudent);
@@ -54,6 +54,66 @@ namespace API.Controllers
             {
                 Lesson lesson = await _mediator.Send(query);
                 return Ok(lesson);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut("AddStudentToLesson")]
+        public async Task<IActionResult> AddStudentToLesson(UpdateLessonStudentModel input)
+        {
+            var query = new AddStudentToLesson_Command(input.LessonId, input.StudentId);
+            try
+            {
+                await _mediator.Send(query);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut("RemoveStudentFromLesson")]
+        public async Task<IActionResult> RemoveStudentFromLesson(UpdateLessonStudentModel input)
+        {
+            var query = new RemoveStudentFromLesson_Command(input.LessonId, input.StudentId);
+            try
+            {
+                await _mediator.Send(query);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut("AddStudentToWaitingList")]
+        public async Task<IActionResult> AddStudentToWaitingList(UpdateLessonStudentModel input)
+        {
+            var query = new AddStudentToWaitingList_Command(input.LessonId, input.StudentId);
+            try
+            {
+                await _mediator.Send(query);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut("RemoveStudentFromWaitingList")]
+        public async Task<IActionResult> RemoveStudentFromWaitingList(UpdateLessonStudentModel input)
+        {
+            var query = new RemoveStudentFromWaitingList_Command(input.LessonId, input.StudentId);
+            try
+            {
+                await _mediator.Send(query);
+                return Ok();
             }
             catch (Exception e)
             {

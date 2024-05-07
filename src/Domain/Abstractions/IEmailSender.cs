@@ -4,7 +4,7 @@ namespace Domain.Abstractions
 {
     public interface IEmailSender
     {
-        public Task SendAsync(NotificationType type, string emailContent, string email);
-        public Task SendAsync(NotificationType type, string emailContent, List<string> emailList);
+        public Task SendAsync(string subject, string emailContent, string email);
+        public Task SendAsync(string subject, string emailContent, List<string> emailList);
     }
 }

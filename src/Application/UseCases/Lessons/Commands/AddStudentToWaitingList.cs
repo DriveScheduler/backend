@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Lessons.Commands
 {
-    public sealed record AddStudentToWaitingList(int LessonId, Guid UserId) : IRequest;
+    public sealed record AddStudentToWaitingList_Command(int LessonId, Guid UserId) : IRequest;
 
-    internal sealed class AddStudentToWaitingList_CommandHandler(IDatabase database, ISystemClock systemClock) : IRequestHandler<AddStudentToWaitingList>
+    internal sealed class AddStudentToWaitingList_CommandHandler(IDatabase database, ISystemClock systemClock) : IRequestHandler<AddStudentToWaitingList_Command>
     {
         private readonly IDatabase _database = database;
         private readonly ISystemClock _systemClock = systemClock;
 
-        public async Task Handle(AddStudentToWaitingList request, CancellationToken cancellationToken)
+        public async Task Handle(AddStudentToWaitingList_Command request, CancellationToken cancellationToken)
         {
             User? user = _database.Users.Find(request.UserId);
             if (user is null)

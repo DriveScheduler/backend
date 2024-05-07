@@ -38,8 +38,8 @@ namespace Infrastructure.Persistence
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
             base.OnModelCreating(modelBuilder);
-        } 
-
+        }
+        
         internal DbSet<User> Users { get; set; }        
         internal DbSet<Lesson> Lessons { get; set; }
         internal DbSet<Vehicle> Vehicles { get; set; }

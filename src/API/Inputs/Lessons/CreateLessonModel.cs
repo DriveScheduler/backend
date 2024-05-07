@@ -9,7 +9,7 @@ namespace API.Inputs.Lessons
         public int Duration { get; set; }
         public Guid TeacherId { get; set; }
         public LicenceType Type { get; set; }
-        public string VehicleId { get; set; }
+        public int VehicleId { get; set; }
         public int MaxStudent { get; set; }
     }
 }

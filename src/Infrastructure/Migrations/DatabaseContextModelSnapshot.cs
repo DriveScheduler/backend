@@ -43,15 +43,14 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("VehicleRegistrationNumber")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TeacherId");
 
-                    b.HasIndex("VehicleRegistrationNumber");
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("Lesson");
                 });
@@ -94,18 +93,23 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Vehicle", b =>
                 {
-                    b.Property<string>("RegistrationNumber")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RegistrationNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("RegistrationNumber");
+                    b.HasKey("Id");
 
                     b.ToTable("Vehicle");
                 });
@@ -150,7 +154,7 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("Domain.Entities.Vehicle", "Vehicle")
                         .WithMany("Lessons")
-                        .HasForeignKey("VehicleRegistrationNumber")
+                        .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

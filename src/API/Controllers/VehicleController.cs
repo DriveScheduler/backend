@@ -1,7 +1,10 @@
-using API.Inputs.Users;
+﻿using API.Inputs.Users;
+using API.Inputs.Vehicles;
 
 using Application.UseCases.Users.Commands;
 using Application.UseCases.Users.Queries;
+using Application.UseCases.Vehicles.Commands;
+using Application.UseCases.Vehicles.Queries;
 
 using Domain.Entities;
 
@@ -13,19 +16,18 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController(IMediator mediator) : ControllerBase
+    public class VehicleController(IMediator mediator) : ControllerBase
     {
-
         private readonly IMediator _mediator = mediator;
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(CreateUserModel input)
+        public async Task<IActionResult> Create(CreateVehicleModel input)
         {
-            var command = new CreateUser_Command(input.Name, input.FirstName, input.Email, input.Password, input.LicenceType, input.Type);
+            var command = new CreateVehicle_Command(input.RegistrationNumber, input.Name, input.Type);
             try
             {
-                Guid userId = await _mediator.Send(command);
-                return Ok(userId);
+                int id = await _mediator.Send(command);
+                return Ok(id);
             }
             catch (Exception e)
             {
@@ -34,9 +36,9 @@ namespace API.Controllers
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(UpdateUserModel input)
+        public async Task<IActionResult> Update(UpdateVehicleModel input)
         {
-            var command = new UpdateUser_Command(input.Id, input.Name, input.FirstName, input.Email, input.LicenceType);
+            var command = new UpdateVehicle_Command(input.Id, input.RegistrationNumber, input.Name, input.Type);
             try
             {
                 await _mediator.Send(command);
@@ -49,13 +51,13 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(int id)
         {
-            var query = new GetUserById_Query(id);
+            var query = new GetVehicleById_Query(id);
             try
             {
-                User user = await _mediator.Send(query);
-                return Ok(user);
+                Vehicle vehicle = await _mediator.Send(query);
+                return Ok(vehicle);
             }
             catch (Exception e)
             {

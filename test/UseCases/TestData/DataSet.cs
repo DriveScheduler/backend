@@ -27,15 +27,11 @@ namespace UseCases.TestData
         #endregion
 
 
-        #region VEHICLES
-        public static Vehicle GetCar() => new() { RegistrationNumber = "VV 123 VV", Name = "Peugeot 208", Type = LicenceType.Car };
-        public static Vehicle GetCar(string id) => new() { RegistrationNumber = id, Name = "Peugeot 208", Type = LicenceType.Car };
-        public static Vehicle GetMotorcycle() => new() { RegistrationNumber = "MM 123 MM", Name = "Yamaha MT07", Type = LicenceType.Motorcycle };
-        public static Vehicle GetMotorcycle(string id) => new() { RegistrationNumber = id, Name = "Yamaha MT07", Type = LicenceType.Motorcycle };
-        public static Vehicle GetTruck() => new() { RegistrationNumber = "TT 123 TT", Name = "Man ...", Type = LicenceType.Truck };
-        public static Vehicle GetTruck(string id) => new() { RegistrationNumber = id, Name = "Man ...", Type = LicenceType.Truck };
-        public static Vehicle GetBus() => new() { RegistrationNumber = "BB 123 BB", Name = "Mercedes ...", Type = LicenceType.Bus };
-        public static Vehicle GetBus(string id) => new() { RegistrationNumber = id, Name = "Mercedes ...", Type = LicenceType.Bus };
+        #region VEHICLES       
+        public static Vehicle GetCar(int id) => new() { Id = id, RegistrationNumber = "VV123VV", Name = "Peugeot 208", Type = LicenceType.Car };        
+        public static Vehicle GetMotorcycle(int id) => new() { Id = id, RegistrationNumber = "MM123MM", Name = "Yamaha MT07", Type = LicenceType.Motorcycle };        
+        public static Vehicle GetTruck(int id) => new() { Id = id, RegistrationNumber = "TT123TT", Name = "Man ...", Type = LicenceType.Truck };        
+        public static Vehicle GetBus(int id) => new() { Id = id, RegistrationNumber = "BB123BB", Name = "Mercedes ...", Type = LicenceType.Bus };
         #endregion
 
     }

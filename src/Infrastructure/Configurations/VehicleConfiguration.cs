@@ -9,9 +9,11 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Vehicle> builder)
         {
-            builder.HasKey(v => v.RegistrationNumber);
+            builder.Property(v => v.Id)
+                .IsRequired()
+                .ValueGeneratedOnAdd();
 
-            builder.Property(v => v.RegistrationNumber)                
+            builder.Property(v => v.RegistrationNumber)
                 .IsRequired();
 
             builder.Property(v => v.Name)

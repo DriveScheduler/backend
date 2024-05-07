@@ -1,5 +1,4 @@
 ﻿using Domain.Abstractions;
-using Domain.Enums;
 
 using MailKit.Net.Smtp;
 
@@ -19,14 +18,14 @@ namespace Infrastructure.ExternalServices
             _client.Authenticate("drivescheduler@gmail.com", "vxom emjl prqi noxj");            
         }
 
-        public Task SendAsync(NotificationType type, string emailContent, string email)
+        public Task SendAsync(string subject, string emailContent, string email)
         {            
             try
             {                
                 MimeMessage mail = new MimeMessage();
                 mail.From.Add(new MailboxAddress("Drive Scheduler", "drivescheduler@gmail.com"));
                 mail.To.Add(new MailboxAddress("", email));
-                mail.Subject = "Wesh le J";
+                mail.Subject = subject;
                 mail.Body = new TextPart("plain") { Text = emailContent };
                 return _client.SendAsync(mail);                                
             }
@@ -36,7 +35,7 @@ namespace Infrastructure.ExternalServices
             
         }
 
-        public async Task SendAsync(NotificationType type, string emailContent, List<string> emailList)
+        public async Task SendAsync(string subject, string emailContent, List<string> emailList)
         {            
             try
             {
@@ -44,7 +43,7 @@ namespace Infrastructure.ExternalServices
                 {                    
                     MimeMessage mail = new MimeMessage();
                     mail.From.Add(new MailboxAddress("Drive Scheduler", "drivescheduler@gmail.com"));              
-                    mail.Subject = "Wesh le J";
+                    mail.Subject = subject;
                     mail.Body = new TextPart("plain") { Text = emailContent };
                     mail.To.Add(new MailboxAddress("", email));
                     await _client.SendAsync(mail);

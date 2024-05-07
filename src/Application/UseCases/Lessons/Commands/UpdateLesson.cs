@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.UseCases.Lessons.Commands
 {
 
-    public sealed record UpdateLesson_Command(int Id, string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type, string VehicleId, int MaxStudent) : IRequest;
+    public sealed record UpdateLesson_Command(int Id, string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type, int VehicleId, int MaxStudent) : IRequest;
 
     internal sealed class UpdateLesson_CommandHandler(IDatabase database, ISystemClock clock) : IRequestHandler<UpdateLesson_Command>
     {
@@ -69,11 +69,11 @@ namespace Application.UseCases.Lessons.Commands
             return user;
         }
 
-        private Vehicle GetVehicle(string id)
+        private Vehicle GetVehicle(int id)
         {
             Vehicle? vehicle = _database.Vehicles
                 .Include(v => v.Lessons)
-                .FirstOrDefault(v => v.RegistrationNumber == id);
+                .FirstOrDefault(v => v.Id == id);
             if (vehicle is null)
                 throw new VehicleNotFoundException();
 

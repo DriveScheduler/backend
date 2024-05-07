@@ -1,6 +1,5 @@
 ﻿using Domain.Abstractions;
 using Domain.Entities;
-using Domain.Enums;
 
 using MediatR;
 
@@ -21,7 +20,7 @@ namespace Application.UseCases.Lessons.Events
             if (lesson is null)
                 return;
 
-            await _email.SendAsync(NotificationType.StudentLeaveLesson, $"Un élève vient de se désister du cours {lesson.Name}", lesson.WaitingList.Select(u => u.Email).ToList());
+            await _email.SendAsync("Une place vient de se libérer", $"Un élève vient de se désister du cours {lesson.Name}", lesson.WaitingList.Select(u => u.Email).ToList());
         }
     }
 }

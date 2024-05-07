@@ -45,7 +45,7 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             User student = DataSet.GetCarStudent(studentId);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student);
             _database.Vehicles.Add(car);
@@ -76,7 +76,7 @@ namespace UseCases.Schedule
             User student1 = DataSet.GetCarStudent(studentId1);
             User student2 = DataSet.GetCarStudent(studentId2);
             User student3 = DataSet.GetCarStudent(studentId3);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student1);
             _database.Users.Add(student2);
@@ -104,7 +104,7 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             User student = DataSet.GetCarStudent(studentId);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student);
             _database.Vehicles.Add(car);
@@ -129,7 +129,7 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             User student = DataSet.GetMotorcycleStudent(studentId);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student);
             _database.Vehicles.Add(car);
@@ -154,7 +154,7 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);            
             User teacher2 = DataSet.GetCarTeacher(teacherId2);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);            
             _database.Users.Add(teacher2);
             _database.Vehicles.Add(car);
@@ -178,7 +178,7 @@ namespace UseCases.Schedule
             int lessonId = 1;
 
             User teacher = DataSet.GetCarTeacher(teacherId);                       
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);            
             _database.Vehicles.Add(car);
             _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Type = LicenceType.Car, Teacher = teacher, Vehicle = car, MaxStudent = 2 });
@@ -203,7 +203,7 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             User student = DataSet.GetCarStudent(studentId);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student);
             _database.Vehicles.Add(car);
@@ -229,7 +229,7 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             User student = DataSet.GetCarStudent(studentId);
-            Vehicle car = DataSet.GetCar();
+            Vehicle car = DataSet.GetCar(1);
             _database.Users.Add(teacher);
             _database.Users.Add(student);
             _database.Vehicles.Add(car);
