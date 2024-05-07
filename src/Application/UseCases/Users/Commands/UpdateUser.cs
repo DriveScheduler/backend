@@ -20,6 +20,9 @@ namespace Application.UseCases.Users.Commands
             if (user is null)
                 throw new UserNotFoundException();
 
+            if (_database.Users.FirstOrDefault(u => u.Email == request.Email) is not null)
+                throw new UserValidationException("L'adresse email est déjà utilisée");
+
             User model = new User()
             {
                 Id = request.UserId,

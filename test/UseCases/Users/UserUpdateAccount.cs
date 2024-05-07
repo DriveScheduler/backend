@@ -146,6 +146,30 @@ namespace UseCases.Users
         }
 
         [Fact]
+        public async void UserShould_CreateAnAccount_WithUnusedEmail()
+        {
+            // Arrange        
+            Guid userId = new Guid("00000000-0000-0000-0000-000000000001");
+            const string name = "Doe";
+            const string firstname = "John";
+            const string email = "john.doe@gmail.com";
+            const LicenceType licenceType = LicenceType.Car;
+
+            User user = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000002"));
+            string existingEmail = user.Email;
+            _database.Users.Add(DataSet.GetStudent(userId, licenceType));
+            _database.Users.Add(user);
+            await _database.SaveChangesAsync();
+
+            // Act
+            var updateCommand = new UpdateUser_Command(userId, name, firstname, existingEmail, licenceType);
+
+            // Assert
+            UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(updateCommand));
+            Assert.Equal("L'adresse email est déjà utilisée", exc.Message);
+        }
+
+        [Fact]
         public async void CanNotUpdateInvalidUser()
         {
             // Arrange

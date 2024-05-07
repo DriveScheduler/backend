@@ -1,12 +1,15 @@
 using Application.UseCases.Users.Commands;
 
 using Domain.Abstractions;
+using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions.Users;
 
 using MediatR;
 
 using Microsoft.Extensions.DependencyInjection;
+
+using UseCases.TestData;
 
 namespace UseCases.Users
 {
@@ -118,6 +121,28 @@ namespace UseCases.Users
             // Assert
             UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
             Assert.Equal("L'adresse email n'est pas valide", exc.Message);
+        }
+
+        [Fact]
+        public async void UserShould_CreateAnAccount_WithUnusedEmail()
+        {
+            // Arrange
+            const string name = "Doe";
+            const string firstname = "John";
+            const string password = "mdp123";
+            const LicenceType licenceType = LicenceType.Car;
+
+            User user = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
+            string existingEmail = user.Email;
+            _database.Users.Add(user);
+            await _database.SaveChangesAsync();
+
+            // Act
+            var command = new CreateUser_Command(name, firstname, existingEmail, password, licenceType, UserType.Student);
+
+            // Assert
+            UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
+            Assert.Equal("L'adresse email est déjà utilisée", exc.Message);
         }
 
         [Fact]
