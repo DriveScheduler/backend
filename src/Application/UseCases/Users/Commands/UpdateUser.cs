@@ -1,5 +1,5 @@
 ﻿using Domain.Abstractions;
-using Domain.Entities;
+using Domain.Entities.Database;
 using Domain.Enums;
 using Domain.Exceptions.Users;
 using Domain.Validators.Users;
@@ -18,28 +18,14 @@ namespace Application.UseCases.Users.Commands
         {
             User? user = _database.Users.Find(request.UserId);
             if (user is null)
-                throw new UserNotFoundException();
+                throw new UserNotFoundException();          
 
-            if (_database.Users.FirstOrDefault(u => u.Email == request.Email) is not null)
-                throw new UserValidationException("L'adresse email est déjà utilisée");
+            user.Name = request.Name;
+            user.FirstName = request.Firstname;
+            user.Email = request.Email;
+            user.LicenceType = request.LicenceType;
 
-            User model = new User()
-            {
-                Id = request.UserId,
-                Name = request.Name,
-                FirstName = request.Firstname,
-                Email = request.Email,
-                LicenceType = request.LicenceType,
-                Password = user.Password,
-                Type = user.Type
-            };
-
-            new UserValidator().ThrowIfInvalid(model);
-
-            user.Name = model.Name;
-            user.FirstName = model.FirstName;
-            user.Email = model.Email;
-            user.LicenceType = model.LicenceType;
+            new UserValidator(_database).ThrowIfInvalid(user);
 
             if (await _database.SaveChangesAsync(cancellationToken) != 1)
                 throw new UserSaveException();

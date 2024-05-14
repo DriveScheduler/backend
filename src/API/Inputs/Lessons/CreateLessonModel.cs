@@ -8,6 +8,6 @@ namespace API.Inputs.Lessons
         public DateTime Start { get; set; }
         public int Duration { get; set; }
         public Guid TeacherId { get; set; }
-        public LicenceType Type { get; set; }        
+        public LicenceType Type { get; set; }
     }
 }

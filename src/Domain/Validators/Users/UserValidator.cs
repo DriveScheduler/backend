@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.Abstractions;
+using Domain.Entities.Database;
 using Domain.Exceptions.Users;
 
 using FluentValidation;
@@ -7,7 +8,7 @@ namespace Domain.Validators.Users
 {
     public sealed class UserValidator : CustomValidator<User, UserValidationException>
     {
-        public UserValidator()
+        public UserValidator(IDatabase database)
         {
             RuleFor(user => user.Name)
                 .NotEmpty()
@@ -26,6 +27,13 @@ namespace Domain.Validators.Users
             RuleFor(user => user.Password)
                 .NotEmpty()
                 .WithMessage("Le mot de passe est obligatoire");
+
+            RuleFor(user => user.Email)
+                .Custom((email, context) =>
+                {
+                    if (database.Users.FirstOrDefault(u => u.Email == email) is not null)
+                        context.AddFailure("L'adresse email est déjà utilisée");
+                });
         }
     }
 }

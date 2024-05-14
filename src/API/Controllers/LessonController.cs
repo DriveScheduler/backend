@@ -2,15 +2,16 @@
 
 using Application.UseCases.Lessons.Commands;
 using Application.UseCases.Users.Queries;
-using Domain.Entities;
+using Domain.Entities.Database;
 using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class LessonController(IMediator mediator) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;

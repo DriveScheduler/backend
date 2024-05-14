@@ -1,5 +1,5 @@
 ﻿using Domain.Abstractions;
-using Domain.Entities;
+using Domain.Entities.Database;
 using Domain.Enums;
 using Domain.Exceptions.Vehicles;
 using Domain.Validators.Vehicles;
@@ -16,18 +16,14 @@ namespace Application.UseCases.Vehicles.Commands
 
         public async Task<int> Handle(CreateVehicle_Command request, CancellationToken cancellationToken)
         {
-            Vehicle? vehicle = _database.Vehicles.FirstOrDefault(v => v.RegistrationNumber == request.RegistrationNumber);
-            if (vehicle is not null)
-                throw new VehicleValidationException("Un véhicule avec cette immatriculation existe déjà");
-
-            vehicle = new Vehicle()
-            {                
+            Vehicle vehicle = new Vehicle()
+            {
                 RegistrationNumber = request.RegistrationNumber,
                 Name = request.Name,
                 Type = request.Type
             };
 
-            new VehicleValidator().ThrowIfInvalid(vehicle);
+            new VehicleValidator(_database).ThrowIfInvalid(vehicle);
 
             _database.Vehicles.Add(vehicle);
             if (await _database.SaveChangesAsync() != 1)

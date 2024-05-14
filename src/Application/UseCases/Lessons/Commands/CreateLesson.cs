@@ -1,5 +1,5 @@
 ﻿using Domain.Abstractions;
-using Domain.Entities;
+using Domain.Entities.Database;
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;
@@ -33,7 +33,9 @@ namespace Application.UseCases.Lessons.Commands
                 Vehicle = vehicle,
             };
 
-            new LessonValidator(_systemClock).ThrowIfInvalid(lesson);
+            new LessonValidator(_systemClock)
+                .CreateRules()
+                .ThrowIfInvalid(lesson);            
 
             _database.Lessons.Add(lesson);
             if (await _database.SaveChangesAsync() != 1)
@@ -48,9 +50,7 @@ namespace Application.UseCases.Lessons.Commands
                 .Include(u => u.LessonsAsTeacher)
                 .FirstOrDefault(u => u.Id == id);
             if (user is null)
-                throw new UserNotFoundException();
-            if (user.Type != UserType.Teacher)
-                throw new LessonValidationException("La personne en charge du cours doit être un moniteur");
+                throw new UserNotFoundException();            
 
             return user;
         }

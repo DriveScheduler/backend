@@ -1,6 +1,6 @@
 ﻿using Domain.Enums;
 
-namespace Domain.Entities
+namespace Domain.Entities.Database
 {
     public sealed class Lesson
     {
@@ -12,7 +12,7 @@ namespace Domain.Entities
         public Guid TeacherId { get; set; }
         public User Teacher { get; set; }
         public LicenceType Type { get; set; }
-        public Vehicle Vehicle { get; set; }        
+        public Vehicle Vehicle { get; set; }
         public User? Student { get; set; }
         public List<User> WaitingList { get; set; }
 

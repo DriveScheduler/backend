@@ -1,7 +1,7 @@
 ﻿using Application.UseCases.Vehicles.Commands;
 
 using Domain.Abstractions;
-using Domain.Entities;
+using Domain.Entities.Database;
 using Domain.Enums;
 using Domain.Exceptions.Vehicles;
 

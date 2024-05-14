@@ -1,13 +1,9 @@
-﻿using API.Inputs.Users;
-using API.Inputs.Vehicles;
+﻿using API.Inputs.Vehicles;
+using API.Output.Vehicles;
 
-using Application.UseCases.Users.Commands;
-using Application.UseCases.Users.Queries;
 using Application.UseCases.Vehicles.Commands;
 using Application.UseCases.Vehicles.Queries;
-
-using Domain.Entities;
-
+using Domain.Entities.Database;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class VehicleController(IMediator mediator) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
@@ -57,7 +53,7 @@ namespace API.Controllers
             try
             {
                 Vehicle vehicle = await _mediator.Send(query);
-                return Ok(vehicle);
+                return Ok(new VehicleLight(vehicle));
             }
             catch (Exception e)
             {

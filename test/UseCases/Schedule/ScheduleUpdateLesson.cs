@@ -2,7 +2,7 @@
 using Application.UseCases.Users.Commands;
 
 using Domain.Abstractions;
-using Domain.Entities;
+using Domain.Entities.Database;
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;
@@ -361,7 +361,7 @@ namespace UseCases.Schedule
         }
 
         [Fact]
-        public async void ScheduleShould_UNotpdateLesson_WithLessonIsPassed()
+        public async void ScheduleShould_NotUpdateLesson_WhenLessonIsPassed()
         {
             // Arrange
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");

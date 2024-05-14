@@ -1,7 +1,7 @@
 ﻿using Application.UseCases.Vehicles.Commands;
 
 using Domain.Abstractions;
-using Domain.Entities;
+using Domain.Entities.Database;
 using Domain.Enums;
 using Domain.Exceptions.Vehicles;
 
@@ -90,7 +90,7 @@ namespace UseCases.Vehicles
         public async void AdminShould_NotCreateAVehicle_WithRegistrationNumberThatAlreadyUsed()
         {
             // Arrange
-            const string name = "";
+            const string name = "Peugeot 208";
             const LicenceType type = LicenceType.Car;
 
             Vehicle vehicle = DataSet.GetTruck(1);

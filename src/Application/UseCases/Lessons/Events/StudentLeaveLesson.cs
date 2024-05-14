@@ -1,6 +1,5 @@
 ﻿using Domain.Abstractions;
-using Domain.Entities;
-
+using Domain.Entities.Database;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;

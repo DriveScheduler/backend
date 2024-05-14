@@ -1,5 +1,5 @@
 ﻿using Domain.Abstractions;
-using Domain.Entities;
+using Domain.Entities.Database;
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;
@@ -22,34 +22,24 @@ namespace Application.UseCases.Lessons.Commands
 
         public async Task Handle(UpdateLesson_Command request, CancellationToken cancellationToken)
         {
-            User user = GetTeacher(request.TeacherId);
+            User teacher = GetTeacher(request.TeacherId);
             Vehicle vehicle = GetVehicle(request.VehicleId);
 
             Lesson? lesson = _database.Lessons.Find(request.Id);
             if (lesson is null)
                 throw new LessonNotFoundException();
 
-            new LessonTimeValidator(_clock).ThrowIfInvalid(lesson);
+            LessonValidator validator = new LessonValidator(lesson, _clock)
+                .UpdateRules();            
 
-            Lesson model = new Lesson()
-            {
-                Id = request.Id,
-                Name = request.Name,
-                Start = request.Date,
-                Duration = request.Duration,
-                Type = request.Type,
-                Teacher = user,
-                Vehicle = vehicle,                
-            };            
+            lesson.Name = request.Name;
+            lesson.Start = request.Date;
+            lesson.Duration = request.Duration;
+            lesson.Type = request.Type;
+            lesson.Teacher = teacher;
+            lesson.Vehicle = vehicle;
 
-            new LessonValidator(_clock).ThrowIfInvalid(model);
-
-            lesson.Name = model.Name;
-            lesson.Start = model.Start;
-            lesson.Duration = model.Duration;
-            lesson.Type = model.Type;
-            lesson.Teacher = model.Teacher;
-            lesson.Vehicle = model.Vehicle;            
+            validator.ThrowIfInvalid(lesson);
 
             if (await _database.SaveChangesAsync(cancellationToken) != 1)
                 throw new LessonSaveException();
@@ -62,8 +52,7 @@ namespace Application.UseCases.Lessons.Commands
                 .FirstOrDefault(u => u.Id == id);
             if (user is null)
                 throw new UserNotFoundException();
-            if (user.Type != UserType.Teacher)
-                throw new LessonValidationException("La personne en charge du cours doit être un moniteur");
+
             return user;
         }
 

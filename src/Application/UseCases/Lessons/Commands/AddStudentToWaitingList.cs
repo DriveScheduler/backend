@@ -1,5 +1,5 @@
 ﻿using Domain.Abstractions;
-using Domain.Entities;
+using Domain.Entities.Database;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;
 using Domain.Validators.Lessons;
@@ -19,8 +19,8 @@ namespace Application.UseCases.Lessons.Commands
 
         public async Task Handle(AddStudentToWaitingList_Command request, CancellationToken cancellationToken)
         {
-            User? user = _database.Users.Find(request.UserId);
-            if (user is null)
+            User? student = _database.Users.Find(request.UserId);
+            if (student is null)
                 throw new UserNotFoundException();
 
             Lesson? lesson = _database.Lessons
@@ -29,12 +29,11 @@ namespace Application.UseCases.Lessons.Commands
                 .FirstOrDefault(l => l.Id == request.LessonId);
             if (lesson is null)
                 throw new LessonNotFoundException();
-
-            new LessonTimeValidator(_systemClock)
-                .ThrowIfInvalid(lesson);
-
-            lesson.WaitingList.Add(user);
-            new UserLessonValidator().ThrowIfInvalid(lesson);
+                        
+            lesson.WaitingList.Add(student);            
+            new LessonValidator(_systemClock)
+                .AddStudentToWaitingListRules()
+                .ThrowIfInvalid(lesson);            
 
             if (await _database.SaveChangesAsync() != 1)
                 throw new LessonSaveException();

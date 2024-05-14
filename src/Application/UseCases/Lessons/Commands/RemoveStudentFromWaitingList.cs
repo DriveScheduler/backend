@@ -1,5 +1,5 @@
 ﻿using Domain.Abstractions;
-using Domain.Entities;
+using Domain.Entities.Database;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;
 
