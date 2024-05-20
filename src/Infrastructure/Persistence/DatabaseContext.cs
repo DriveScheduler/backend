@@ -15,6 +15,7 @@ namespace Infrastructure.Persistence
         DbSet<User> IDatabase.Users => Users;        
         DbSet<Lesson> IDatabase.Lessons => Lessons;
         DbSet<Vehicle> IDatabase.Vehicles => Vehicles;
+        DbSet<DrivingSchool> IDatabase.DrivingSchools => DrivingSchools;
 
         public async new Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
@@ -26,6 +27,7 @@ namespace Infrastructure.Persistence
             Users.RemoveRange(Users.ToList());            
             Lessons.RemoveRange(Lessons.ToList());
             Vehicles.RemoveRange(Vehicles.ToList());
+            DrivingSchools.RemoveRange(DrivingSchools.ToList());
             SaveChanges();
 
             ChangeTracker.Clear();
@@ -41,5 +43,6 @@ namespace Infrastructure.Persistence
         internal DbSet<User> Users { get; set; }        
         internal DbSet<Lesson> Lessons { get; set; }
         internal DbSet<Vehicle> Vehicles { get; set; }
+        internal DbSet<DrivingSchool> DrivingSchools { get; set; }
     }
 }
