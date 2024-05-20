@@ -7,14 +7,14 @@ namespace API.Output.Vehicles
         public int Id { get; }
         public string RegistrationNumber { get; }
         public string Name { get; }
-        public Licence Type { get; }
+        public LicenceTypeOutput Type { get; }
 
         public VehicleLight(Vehicle vehicle)
         {
             Id = vehicle.Id;
             RegistrationNumber = vehicle.RegistrationNumber;
             Name = vehicle.Name;
-            Type = new Licence(vehicle.Type);
+            Type = new LicenceTypeOutput(vehicle.Type);
         }
     }
 }

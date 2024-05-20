@@ -8,7 +8,8 @@ namespace API.Output.Users
         public string Name { get; }
         public string FirstName { get; }
         public string Email { get; }
-        public Licence LicenceType { get; }
+        public LicenceTypeOutput LicenceType { get; }
+        public UserTypeOutput UserType { get; }
 
         public UserLight(User user)
         {
@@ -16,7 +17,8 @@ namespace API.Output.Users
             Name = user.Name;
             FirstName = user.FirstName;
             Email = user.Email;
-            LicenceType = new Licence(user.LicenceType);
+            LicenceType = new LicenceTypeOutput(user.LicenceType);
+            UserType = new UserTypeOutput(user.Type);
         }
     }
 }

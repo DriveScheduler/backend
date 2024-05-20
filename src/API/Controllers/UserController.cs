@@ -64,6 +64,21 @@ namespace API.Controllers
             }
         }
 
+        [HttpGet("Teachers")]
+        public async Task<IActionResult> Teachers()
+        {
+            var query = new GetTeachers_Query();
+            try
+            {
+                List<User> teachers = await _mediator.Send(query);
+                return Ok(teachers.Select(teacher => new UserLight(teacher)));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         [HttpGet("{id}/Dashboard")]
         public async Task<IActionResult> GetUserDashboard(Guid id)
         {

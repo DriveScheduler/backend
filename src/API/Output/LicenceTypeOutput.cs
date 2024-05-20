@@ -2,12 +2,12 @@
 
 namespace API.Output
 {
-    public class Licence
+    public sealed class LicenceTypeOutput
     {
         public int Value { get; }
         public string Label { get; }
 
-        public Licence(LicenceType licenceType)
+        public LicenceTypeOutput(LicenceType licenceType)
         {
             Value = (int)licenceType;
             Label = licenceType.ToText();
