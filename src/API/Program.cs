@@ -14,7 +14,7 @@ internal class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        
+
         builder.Services.SetupDatabase($"Data Source={builder.Configuration.GetConnectionString("Database")}");
 
         builder.Services.ApplicationMediator();
@@ -29,6 +29,12 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseCors(builder =>
+           builder
+           .AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader());
 
         app.UseAuthorization();
 
