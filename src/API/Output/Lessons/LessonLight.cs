@@ -19,12 +19,12 @@ namespace API.Output.Lessons
         public LessonLight(Lesson lesson)
         {
             Id = lesson.Id;
-            Title = lesson.Name;
-            Date = $"{lesson.Start.ToString("dddd", new CultureInfo("fr-FR"))} - {lesson.Start:dd/MM/yyyy}";
+            Title = lesson.Name;            
+            Date = lesson.Start.ToShortDateString();
             Status = "PAS ENCORE FAIT";
             StartTime = lesson.Start;
             EndTime = lesson.End;
-            Time = $"{lesson.Start:HHhmm} à {lesson.End:HHhmm}";
+            Time = $"{lesson.Start:HH:mm} à {lesson.End:HH:mm}";
             Duration = $"{lesson.Duration} min";
 
             Teacher = lesson.Teacher != null ?

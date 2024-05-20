@@ -1,6 +1,8 @@
 ﻿using API.Inputs.Lessons;
+using API.Output.Lessons;
 
 using Application.UseCases.Lessons.Commands;
+using Application.UseCases.Lessons.Queries;
 using Application.UseCases.Users.Queries;
 using Domain.Entities.Database;
 using MediatR;
@@ -55,6 +57,21 @@ namespace API.Controllers
             {
                 Lesson lesson = await _mediator.Send(query);
                 return Ok(lesson);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("Lessons")]
+        public async Task<IActionResult> GetLessons(Guid userId, DateTime startDate, DateTime endDate, bool? onlyEmptyLesson)
+        {
+            var query = new GetLessons_Query(userId, startDate, endDate, onlyEmptyLesson);
+            try
+            {
+                List<Lesson> lessons = await _mediator.Send(query);
+                return Ok(lessons.Select(lesson => new LessonLight(lesson)));
             }
             catch (Exception e)
             {

@@ -16,5 +16,15 @@ namespace Domain.Entities.Database
         public User? Student { get; set; }
         public List<User> WaitingList { get; set; }
 
+        public UserLessonState State(User user)
+        {
+            if(user is null || Student is null) return UserLessonState.Free;
+            
+            if (WaitingList.Contains(user)) return UserLessonState.InWaitingList;
+            
+            if(Student.Id == user.Id) return UserLessonState.BookedByUser;
+            else return UserLessonState.BookedByOther;            
+        }
+
     }
 }
