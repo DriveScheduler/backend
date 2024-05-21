@@ -1,8 +1,8 @@
-﻿using API.Output.Lessons;
+﻿using API.Outputs.Lessons;
 
 using Domain.Entities.Business;
 
-namespace API.Output.Users
+namespace API.Outputs.Users
 {
     public sealed class UserLessonHistoryOutput
     {

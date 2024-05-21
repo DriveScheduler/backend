@@ -1,16 +1,18 @@
 ﻿using API.Inputs.DrivingSchools;
-using API.Output.DrivingSchools;
+using API.Outputs.DrivingSchools;
 
 using Application.UseCases.DrivingSchools.Commands;
 using Application.UseCases.DrivingSchools.Queries;
 using Domain.Entities.Database;
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class DrivingSchoolController(IMediator mediator) : ControllerBase
     {

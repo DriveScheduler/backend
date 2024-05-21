@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Database;
 
-namespace API.Output.Users
+namespace API.Outputs.Users
 {
     public sealed class UserLight
     {

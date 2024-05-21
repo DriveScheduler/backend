@@ -1,5 +1,7 @@
+using API.Authorization;
 using API.Inputs.Users;
-using API.Output.Users;
+using API.Outputs.Users;
+using API.Outputs.Users;
 
 using Application.UseCases.Users.Commands;
 using Application.UseCases.Users.Queries;
@@ -14,10 +16,11 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController(IMediator mediator) : ControllerBase
+    public class UserController(IMediator mediator, JwtTokenProvider tokenProvider) : ControllerBase
     {
 
         private readonly IMediator _mediator = mediator;
+        private readonly JwtTokenProvider _tokenProvider = tokenProvider;
 
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CreateUserModel input)
@@ -122,6 +125,6 @@ namespace API.Controllers
             {
                 return BadRequest(e.Message);
             }
-        }
+        }    
     }
 }

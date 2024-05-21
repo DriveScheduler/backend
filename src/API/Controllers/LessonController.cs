@@ -1,5 +1,5 @@
 ﻿using API.Inputs.Lessons;
-using API.Output.Lessons;
+using API.Outputs.Lessons;
 
 using Application.UseCases.Lessons.Commands;
 using Application.UseCases.Lessons.Queries;

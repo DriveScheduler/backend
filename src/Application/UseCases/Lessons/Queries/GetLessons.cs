@@ -27,11 +27,8 @@ namespace Application.UseCases.Lessons.Queries
             User? user = await _database.Users.FindAsync(request.UserId);
             if (user is null)
                 throw new UserNotFoundException();
-            if (user.Type == UserType.Student)
-            {
-                query = query.Where(lesson => lesson.Student == user || lesson.WaitingList.Contains(user));
-                query = query.Where(lesson => lesson.Type == user.LicenceType);
-            }
+            if (user.Type == UserType.Student)                         
+                query = query.Where(lesson => lesson.Type == user.LicenceType);            
             else if (user.Type == UserType.Teacher)
                 query = query.Where(lesson => lesson.Teacher == user);       
             
@@ -42,7 +39,7 @@ namespace Application.UseCases.Lessons.Queries
 
             DateTime calculatedEndDate = request.End.AddDays(1).Date;
             return await query
-                .Where(lesson => lesson.Start >= request.Start.Date && lesson.Start <= calculatedEndDate)
+                .Where(lesson => lesson.Start >= request.Start.Date && lesson.Start.AddMinutes(lesson.Duration) <= calculatedEndDate)
                 .ToListAsync();
         }
     }

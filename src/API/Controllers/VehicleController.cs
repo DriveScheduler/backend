@@ -1,5 +1,5 @@
 ﻿using API.Inputs.Vehicles;
-using API.Output.Vehicles;
+using API.Outputs.Vehicles;
 
 using Application.UseCases.Vehicles.Commands;
 using Application.UseCases.Vehicles.Queries;

@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Database;
 
-namespace API.Output.Vehicles
+namespace API.Outputs.Vehicles
 {
     public sealed class VehicleLight
     {

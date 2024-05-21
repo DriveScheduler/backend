@@ -1,9 +1,9 @@
-﻿using API.Output.Lessons;
-using API.Output.Vehicles;
+﻿using API.Outputs.Lessons;
+using API.Outputs.Vehicles;
 
 using Domain.Entities.Business;
 
-namespace API.Output.Users
+namespace API.Outputs.Users
 {
     public sealed class UserDashboardOutput
     {

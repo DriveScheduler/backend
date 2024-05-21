@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Database;
 
-namespace API.Output.DrivingSchools
+namespace API.Outputs.DrivingSchools
 {
     public sealed class DrivingSchoolLight
     {

@@ -1,7 +1,6 @@
 ﻿using Domain.Entities.Database;
-using System.Globalization;
 
-namespace API.Output.Lessons
+namespace API.Outputs.Lessons
 {
     public sealed class LessonLight
     {

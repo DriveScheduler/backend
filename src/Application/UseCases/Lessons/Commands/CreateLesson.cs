@@ -61,7 +61,21 @@ namespace Application.UseCases.Lessons.Commands
                 .Include(v => v.Lessons)
                 .Where(v => v.Type == vehicleType)];
 
-            Vehicle? vehicle = vehicles.FirstOrDefault(v => !v.Lessons.Any(lesson => lessonStart < lesson.End || lessonEnd > lesson.Start));
+            Vehicle? vehicle = vehicles.FirstOrDefault(v => !v.Lessons.Any(lesson => (lesson.End >= lessonStart && lessonStart >= lesson.Start) || (lesson.Start <= lessonEnd && lessonEnd <= lesson.End)));
+            //Vehicle? vehicle = null;
+            //foreach (Vehicle v in vehicles)
+            //{
+            //    List<Lesson> list = v.Lessons.Where(lesson => (lesson.End >= lessonStart && lessonStart >= lesson.Start) || ( lesson.Start <= lessonEnd && lessonEnd <= lesson.End)).ToList();
+
+            //    if (list.Count == 0)
+            //    {
+            //        vehicle = v;
+            //        break;
+            //    }
+            //}
+
+            //Vehicle? vehicle = vehicles.FirstOrDefault(v => !v.Lessons.Any(lesson => lessonStart < lesson.End || lessonEnd > lesson.Start));
+
             if (vehicle is null)
                 throw new LessonValidationException("Aucun vehicule disponibe pour valider ce cours");
 

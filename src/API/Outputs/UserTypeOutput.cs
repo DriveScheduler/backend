@@ -1,6 +1,6 @@
 ﻿using Domain.Enums;
 
-namespace API.Output
+namespace API.Outputs
 {
     public sealed class UserTypeOutput
     {
