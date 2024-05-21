@@ -1,6 +1,4 @@
-using API.Authorization;
 using API.Inputs.Users;
-using API.Outputs.Users;
 using API.Outputs.Users;
 
 using Application.UseCases.Users.Commands;
@@ -8,6 +6,7 @@ using Application.UseCases.Users.Queries;
 
 using Domain.Entities.Business;
 using Domain.Entities.Database;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +15,10 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController(IMediator mediator, JwtTokenProvider tokenProvider) : ControllerBase
+    public class UserController(IMediator mediator) : ControllerBase
     {
 
-        private readonly IMediator _mediator = mediator;
-        private readonly JwtTokenProvider _tokenProvider = tokenProvider;
+        private readonly IMediator _mediator = mediator;        
 
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CreateUserModel input)
