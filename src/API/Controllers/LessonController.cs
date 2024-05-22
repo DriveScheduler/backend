@@ -87,8 +87,10 @@ namespace API.Controllers
             var query = new AddStudentToLesson_Command(input.LessonId, input.StudentId);
             try
             {
-                await _mediator.Send(query);
-                return Ok();
+                var t = User.Claims;
+                Lesson lesson = await _mediator.Send(query);
+                User user = await _mediator.Send(new GetUserById_Query(input.StudentId));
+                return Ok(new LessonDetail(lesson, user));
             }
             catch (Exception e)
             {

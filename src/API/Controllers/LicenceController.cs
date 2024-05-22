@@ -12,7 +12,7 @@ namespace API.Controllers
     {
         [HttpGet]
         public IActionResult Licences()
-        {
+        {            
             return Ok(Enum.GetValues(typeof(LicenceType)).Cast<LicenceType>().Select(x => new LicenceTypeOutput(x)));
         }
     }

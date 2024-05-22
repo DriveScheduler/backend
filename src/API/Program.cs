@@ -1,3 +1,5 @@
+using API.Authorization;
+
 using Application;
 
 using Infrastructure;
@@ -20,13 +22,16 @@ internal class Program
         builder.Services.ApplicationMediator();
         builder.Services.InfrastructureDependencyInjection();
 
+        builder.Services.AddJwtTokenService(builder.Configuration);
+        builder.Services.AddSwaggerJwtTokenService();
+
 
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
+            app.UseSwagger();            
             app.UseSwaggerUI();
         }
 
