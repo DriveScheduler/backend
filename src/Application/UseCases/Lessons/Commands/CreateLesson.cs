@@ -35,7 +35,7 @@ namespace Application.UseCases.Lessons.Commands
 
             new LessonValidator(_systemClock)
                 .CreateRules()
-                .ThrowIfInvalid(lesson);            
+                .ThrowIfInvalid(lesson);
 
             _database.Lessons.Add(lesson);
             if (await _database.SaveChangesAsync() != 1)
@@ -50,7 +50,7 @@ namespace Application.UseCases.Lessons.Commands
                 .Include(u => u.LessonsAsTeacher)
                 .FirstOrDefault(u => u.Id == id);
             if (user is null)
-                throw new UserNotFoundException();            
+                throw new UserNotFoundException();
 
             return user;
         }
@@ -62,20 +62,6 @@ namespace Application.UseCases.Lessons.Commands
                 .Where(v => v.Type == vehicleType)];
 
             Vehicle? vehicle = vehicles.FirstOrDefault(v => !v.Lessons.Any(lesson => (lesson.End >= lessonStart && lessonStart >= lesson.Start) || (lesson.Start <= lessonEnd && lessonEnd <= lesson.End)));
-            //Vehicle? vehicle = null;
-            //foreach (Vehicle v in vehicles)
-            //{
-            //    List<Lesson> list = v.Lessons.Where(lesson => (lesson.End >= lessonStart && lessonStart >= lesson.Start) || ( lesson.Start <= lessonEnd && lessonEnd <= lesson.End)).ToList();
-
-            //    if (list.Count == 0)
-            //    {
-            //        vehicle = v;
-            //        break;
-            //    }
-            //}
-
-            //Vehicle? vehicle = vehicles.FirstOrDefault(v => !v.Lessons.Any(lesson => lessonStart < lesson.End || lessonEnd > lesson.Start));
-
             if (vehicle is null)
                 throw new LessonValidationException("Aucun vehicule disponibe pour valider ce cours");
 

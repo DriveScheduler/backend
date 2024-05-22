@@ -68,10 +68,12 @@ namespace API.Controllers
         public async Task<IActionResult> GetLessons(Guid userId, DateTime startDate, DateTime endDate, bool? onlyEmptyLesson)
         {
             var query = new GetLessons_Query(userId, startDate, endDate, onlyEmptyLesson);
+            var userQuery = new GetUserById_Query(userId);
             try
             {
                 List<Lesson> lessons = await _mediator.Send(query);
-                return Ok(lessons.Select(lesson => new LessonLight(lesson)));
+                User user = await _mediator.Send(userQuery);
+                return Ok(lessons.Select(lesson => new LessonDetail(lesson, user)));
             }
             catch (Exception e)
             {

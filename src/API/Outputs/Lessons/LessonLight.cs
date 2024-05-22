@@ -2,7 +2,7 @@
 
 namespace API.Outputs.Lessons
 {
-    public sealed class LessonLight
+    public class LessonLight
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -13,7 +13,7 @@ namespace API.Outputs.Lessons
         public string Time { get; }
         public string Duration { get; }
         public string Teacher { get; }
-        public string Vehicle { get; }
+        public string Vehicle { get; }        
 
         public LessonLight(Lesson lesson)
         {
@@ -30,7 +30,7 @@ namespace API.Outputs.Lessons
                 $"{lesson.Teacher.FirstName}" : "Erreur";
 
             Vehicle = lesson.Vehicle != null ?
-                $"{lesson.Vehicle.Name}" : "Erreur";
+                $"{lesson.Vehicle.Name}" : "Erreur";            
         }
     }
 }
