@@ -1,9 +1,10 @@
-﻿using Application.UseCases.Users.Queries;
+﻿using Application.Abstractions;
+using Application.UseCases.Users.Queries;
 
-using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Entities.Business;
 using Domain.Exceptions.Users;
+using Domain.Repositories;
 
 using MediatR;
 
@@ -14,23 +15,25 @@ using UseCases.TestData;
 
 namespace UseCases.Users
 {
-    public class UserGetDashboard : IClassFixture<SetupDependencies>, IDisposable
+    public class UserGetDashboard : IClassFixture<SetupDependencies>
     {
-        private IMediator _mediator;
-        private IDatabase _database;
-        private FakeSystemClock _clock;
+        private readonly IUserRepository _userRepository;
+        private readonly ILessonRepository _lessonRepository;
+        private readonly IVehicleRepository _vehicleRepository;
+
+        private readonly IMediator _mediator;
+        private readonly FakeSystemClock _clock;
 
         public UserGetDashboard(SetupDependencies fixture)
         {
+            _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
+            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
+            _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
+
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDatabase>();
             _clock = (FakeSystemClock)fixture.ServiceProvider.GetRequiredService<ISystemClock>();
         }
 
-        public void Dispose()
-        {
-            _database.Clear();
-        }      
 
         [Fact]
         public async void UserShould_GetHisLessonHistory()
@@ -39,12 +42,11 @@ namespace UseCases.Users
 
             // Arrange
             User user = PlanningDataSet.Student;
-            
-            _database.Users.Add(user);
-            _database.Users.AddRange(PlanningDataSet.GetAllTeachers());
-            _database.Vehicles.AddRange(PlanningDataSet.GetAllVehicles());
-            _database.Lessons.AddRange(PlanningDataSet.GetAllLessons());
-            await _database.SaveChangesAsync();
+
+            _userRepository.Insert(user);
+            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
+            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
+            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
 
             // Act
             var command = new GetUserLessonHistory_Query(user.Id);
@@ -55,7 +57,7 @@ namespace UseCases.Users
             int expectedTotalTime = PlanningDataSet.AchievedLessonsTotalTime();
             Assert.NotNull(history);
             Assert.Equal(expected.Count, history.Lessons.Count);
-            Assert.Equal(expectedTotalTime, history.LessonTotalTime);          
+            Assert.Equal(expectedTotalTime, history.LessonTotalTime);
         }
 
         [Fact]
@@ -66,17 +68,16 @@ namespace UseCases.Users
             // Arrange
             User user = DataSet.GetCarStudent(Guid.NewGuid());
 
-            _database.Users.Add(PlanningDataSet.Student);
-            _database.Users.AddRange(PlanningDataSet.GetAllTeachers());
-            _database.Vehicles.AddRange(PlanningDataSet.GetAllVehicles());
-            _database.Lessons.AddRange(PlanningDataSet.GetAllLessons());
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(PlanningDataSet.Student);
+            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
+            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
+            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
 
             // Act
             var command = new GetUserLessonHistory_Query(user.Id);
 
             // Assert
-            await Assert.ThrowsAsync<UserNotFoundException>( () => _mediator.Send(command));           
+            await Assert.ThrowsAsync<UserNotFoundException>(() => _mediator.Send(command));
         }
 
         [Fact]
@@ -87,11 +88,10 @@ namespace UseCases.Users
             // Arrange
             User user = PlanningDataSet.Student;
 
-            _database.Users.Add(user);
-            _database.Users.AddRange(PlanningDataSet.GetAllTeachers());
-            _database.Vehicles.AddRange(PlanningDataSet.GetAllVehicles());
-            _database.Lessons.AddRange(PlanningDataSet.GetAllLessons());
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(user);
+            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
+            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
+            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
 
             // Act
             var command = new GetUserLessonPlanning_Query(user.Id);
@@ -124,11 +124,10 @@ namespace UseCases.Users
             // Arrange
             User user = DataSet.GetCarStudent(Guid.NewGuid());
 
-            _database.Users.Add(PlanningDataSet.Student);
-            _database.Users.AddRange(PlanningDataSet.GetAllTeachers());
-            _database.Vehicles.AddRange(PlanningDataSet.GetAllVehicles());
-            _database.Lessons.AddRange(PlanningDataSet.GetAllLessons());
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(PlanningDataSet.Student);
+            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
+            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
+            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
 
             // Act
             var command = new GetUserLessonPlanning_Query(user.Id);
@@ -145,11 +144,10 @@ namespace UseCases.Users
             // Arrange
             User user = PlanningDataSet.Student;
 
-            _database.Users.Add(user);
-            _database.Users.AddRange(PlanningDataSet.GetAllTeachers());
-            _database.Vehicles.AddRange(PlanningDataSet.GetAllVehicles());
-            _database.Lessons.AddRange(PlanningDataSet.GetAllLessons());
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(user);
+            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
+            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
+            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
 
             // Act
             var command = new GetUserDashboard_Query(user.Id);
@@ -163,7 +161,7 @@ namespace UseCases.Users
             Vehicle expectedFavoriteVehicle = PlanningDataSet.FavoriteVehicle();
             int expectedFavoriteVehicleTime = PlanningDataSet.FavoriteVehicleTotalTime();
             int expectedTotalLessonTimeThisWeek = PlanningDataSet.LessonTotalTimeThisWeek();
-            
+
             Assert.NotNull(dashboard);
             Assert.Equal(expectedNextLesson, dashboard.NextLesson);
             Assert.Equal(expectedLastLessons, dashboard.LastLesson);
@@ -172,9 +170,9 @@ namespace UseCases.Users
             Assert.Equal(expectedFavoriteTeacherTime, dashboard.FavoriteTeacherTimeSpent);
 
             Assert.Equal(expectedFavoriteVehicle, dashboard.FavoriteVehicle);
-            Assert.Equal(expectedFavoriteVehicleTime, dashboard.FavoriteVehicleTimeSpent);            
-            
-            Assert.Equal(expectedTotalLessonTimeThisWeek, dashboard.TimeSpentThisWeek);            
+            Assert.Equal(expectedFavoriteVehicleTime, dashboard.FavoriteVehicleTimeSpent);
+
+            Assert.Equal(expectedTotalLessonTimeThisWeek, dashboard.TimeSpentThisWeek);
         }
 
         [Fact]
@@ -185,11 +183,10 @@ namespace UseCases.Users
             // Arrange
             User user = DataSet.GetCarStudent(Guid.NewGuid());
 
-            _database.Users.Add(PlanningDataSet.Student);
-            _database.Users.AddRange(PlanningDataSet.GetAllTeachers());
-            _database.Vehicles.AddRange(PlanningDataSet.GetAllVehicles());
-            _database.Lessons.AddRange(PlanningDataSet.GetAllLessons());
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(PlanningDataSet.Student);
+            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
+            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
+            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
 
             // Act
             var command = new GetUserDashboard_Query(user.Id);

@@ -25,8 +25,8 @@ namespace Infrastructure.Entities
             Id = domainModel.Id;
             Name = domainModel.Name;
             Start = domainModel.Start;
-            Duration = domainModel.Duration;
-            TeacherId = domainModel.TeacherId;
+            Duration = domainModel.Duration.Value;
+            TeacherId = domainModel.Teacher.Id;
             Teacher = new User_Database(domainModel.Teacher);
             Type = domainModel.Type;
             Vehicle = new Vehicle_Database(domainModel.Vehicle);
@@ -36,19 +36,7 @@ namespace Infrastructure.Entities
 
         public override Lesson ToDomainModel()
         {
-            return new Lesson()
-            {
-                Id = Id,
-                Name = Name,
-                Start = Start,
-                Duration = Duration,
-                TeacherId = TeacherId,
-                Teacher = Teacher.ToDomainModel(),
-                Type = Type,
-                Vehicle = Vehicle.ToDomainModel(),
-                Student = Student is null ? null : Student.ToDomainModel(),
-                WaitingList = WaitingList.Select(user => user.ToDomainModel()).ToList()
-            };
+            return new Lesson(Id, Name, Start, Duration, Teacher.ToDomainModel(), Type, Vehicle.ToDomainModel(), Student?.ToDomainModel());          
         }
     }
 }

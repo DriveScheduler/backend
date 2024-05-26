@@ -13,6 +13,14 @@ namespace Domain.Entities
         public readonly List<Lesson> _lessons;
         public IReadOnlyList<Lesson> Lessons => _lessons;
 
+        public Vehicle(string registrationNumber, string name, LicenceType type)
+        {            
+            RegistrationNumber = new RegistrationNumber(registrationNumber);
+            Name = name;
+            Type = type;
+            _lessons = [];
+        }
+
         public Vehicle(int id, string registrationNumber, string name, LicenceType type)
         {
             Id = id;

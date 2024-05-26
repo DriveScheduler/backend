@@ -21,7 +21,7 @@ namespace Infrastructure.Entities
 
         public override DrivingSchool ToDomainModel()
         {
-            return DrivingSchool.Create(Id, Name, Address);            
+            return new DrivingSchool(Id, Name, Address);            
         }
     }
 }

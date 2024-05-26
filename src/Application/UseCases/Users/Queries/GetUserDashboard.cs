@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.Entities.Business;
 using Domain.Exceptions.Users;
 using Domain.Repositories;
+using Domain.Utils;
 
 using MediatR;
 
@@ -24,14 +25,16 @@ namespace Application.UseCases.Users.Queries
 
         public async Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)
         {
-            User? student = _database.Users.Find(request.UserId);
-            if (student is null)
-                throw new UserNotFoundException();
+            //User? student = _database.Users.Find(request.UserId);
+            //if (student is null)
+            //    throw new UserNotFoundException();
 
-            List<Lesson> allStudentLessons = await _database.Lessons
-                .Include(l => l.Student)
-                .Where(l => l.Student == student)
-                .ToListAsync();
+            //List<Lesson> allStudentLessons = await _database.Lessons
+            //    .Include(l => l.Student)
+            //    .Where(l => l.Student == student)
+            //    .ToListAsync();
+
+            List<Lesson> allStudentLessons = await _lessonRepository.GetAllStudentLesson(request.UserId);
 
             List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End < _clock.Now).ToList();
             User? favouriteTeacher = FavouriteTeacher(achievedLessons, out int teacherTotalTime);
@@ -47,7 +50,7 @@ namespace Application.UseCases.Users.Queries
                 FavoriteTeacherTimeSpent = teacherTotalTime,
                 FavoriteVehicle = favouriteVehicle,
                 FavoriteVehicleTimeSpent = vehicleTotalTime,
-                TimeSpentThisWeek = allStudentLessons.Where(lesson => lesson.Start.Date >= firstDayOfThisWeek && lesson.End < _clock.Now).Sum(lesson => lesson.Duration)
+                TimeSpentThisWeek = allStudentLessons.Where(lesson => lesson.Start.Date >= firstDayOfThisWeek && lesson.End < _clock.Now).Sum(lesson => lesson.Duration.Value)
             };
 
             return dashboard;
@@ -61,14 +64,14 @@ namespace Application.UseCases.Users.Queries
             Dictionary<User, List<Lesson>> teacherLessons = studentLessons.GroupBy(l => l.Teacher).ToDictionary(row => row.Key, row => row.ToList());
             if (teacherLessons.Count == 1)
             {
-                totalTime = teacherLessons.First().Value.Sum(l => l.Duration);
+                totalTime = teacherLessons.First().Value.Sum(l => l.Duration.Value);
                 return teacherLessons.First().Key;
             }
 
             int maxDuration = 0;
             foreach (KeyValuePair<User, List<Lesson>> row in teacherLessons)
             {
-                int total = row.Value.Sum(l => l.Duration);
+                int total = row.Value.Sum(l => l.Duration.Value);
                 if (total > maxDuration)
                 {
                     maxDuration = total;
@@ -87,14 +90,14 @@ namespace Application.UseCases.Users.Queries
             Dictionary<Vehicle, List<Lesson>> vehicleLessons = studentLessons.GroupBy(l => l.Vehicle).ToDictionary(row => row.Key, row => row.ToList());
             if (vehicleLessons.Count == 1)
             {
-                totalTime = vehicleLessons.First().Value.Sum(l => l.Duration);
+                totalTime = vehicleLessons.First().Value.Sum(l => l.Duration.Value);
                 return vehicleLessons.First().Key;
             }
 
             int maxDuration = 0;
             foreach (KeyValuePair<Vehicle, List<Lesson>> row in vehicleLessons)
             {
-                int total = row.Value.Sum(l => l.Duration);
+                int total = row.Value.Sum(l => l.Duration.Value);
                 if (total > maxDuration)
                 {
                     maxDuration = total;

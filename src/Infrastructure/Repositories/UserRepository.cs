@@ -10,7 +10,37 @@ namespace Infrastructure.Repositories
     {
         private readonly DatabaseContext _database = database;
 
+        public Task<List<User>> GetAllTeachers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User> GetStudentById(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User> GetTeacherById(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User> GetUserByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<User> GetUserByIdAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid Insert(User user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Guid> Insert(List<User> user)
         {
             throw new NotImplementedException();
         }
@@ -26,6 +56,11 @@ namespace Infrastructure.Repositories
         }
 
         public Task<User> UpdateUserAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Guid> IUserRepository.InsertAsync(User user)
         {
             throw new NotImplementedException();
         }

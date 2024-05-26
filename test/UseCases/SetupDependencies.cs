@@ -1,6 +1,5 @@
 ﻿using Application;
-
-using Domain.Abstractions;
+using Application.Abstractions;
 
 using Infrastructure;
 

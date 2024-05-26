@@ -1,9 +1,9 @@
 using Application.UseCases.Users.Commands;
 
-using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions.Users;
+using Domain.Repositories;
 
 using MediatR;
 
@@ -13,20 +13,15 @@ using UseCases.TestData;
 
 namespace UseCases.Users
 {
-    public class UserCreateAccount : IClassFixture<SetupDependencies>, IDisposable
+    public class UserCreateAccount : IClassFixture<SetupDependencies>
     {
-        private IMediator _mediator;
-        private IDatabase _database;
+        private readonly IUserRepository _userRepository;
+        private readonly IMediator _mediator;
 
         public UserCreateAccount(SetupDependencies fixture)
         {
+            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDatabase>();
-        }
-
-        public void Dispose()
-        {
-            _database.Clear();
         }
 
         [Fact]
@@ -45,7 +40,7 @@ namespace UseCases.Users
 
             // Assert
             Assert.NotEqual(Guid.Empty, userId);
-            Assert.NotNull(_database.Users.Find(userId));
+            Assert.NotNull(await _userRepository.GetUserByIdAsync(userId));
         }
 
         [Fact]
@@ -133,9 +128,8 @@ namespace UseCases.Users
             const LicenceType licenceType = LicenceType.Car;
 
             User user = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
-            string existingEmail = user.Email;
-            _database.Users.Add(user);
-            await _database.SaveChangesAsync();
+            string existingEmail = user.Email.Value;
+            _userRepository.Insert(user);
 
             // Act
             var command = new CreateUser_Command(name, firstname, existingEmail, password, licenceType, UserType.Student);

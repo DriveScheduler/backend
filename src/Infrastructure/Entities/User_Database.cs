@@ -1,10 +1,5 @@
 ﻿using Domain.Entities;
 using Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Entities
 {
@@ -31,7 +26,7 @@ namespace Infrastructure.Entities
             Id = domainModel.Id;
             Name = domainModel.Name;
             FirstName = domainModel.FirstName;
-            Email = domainModel.Email;
+            Email = domainModel.Email.Value;
             Password = domainModel.Password;
             LicenceType = domainModel.LicenceType;
             Type = domainModel.Type;
@@ -42,17 +37,7 @@ namespace Infrastructure.Entities
 
         public override User ToDomainModel()
         {
-            return new User()
-            {
-                Id = Id,
-                Name = Name,
-                FirstName = FirstName,
-                Email = Email,
-                Password = Password,
-                LicenceType = LicenceType,
-                Type = Type,
-                LessonsAsTeacher = LessonsAsTeacher.Select(lesson => lesson.ToDomainModel()).ToList(),
-            };
+            return new User(Id, Name, FirstName, Email, Password, LicenceType, Type);           
         }
     }
 }

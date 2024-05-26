@@ -29,7 +29,7 @@ namespace Domain.Entities
             Student = null;
             WaitingList = [];
         }
-        public Lesson(int id, string name, DateTime start, int duration, User teacher, LicenceType type, Vehicle vehicle, User? student)
+        public Lesson(int id, string name, DateTime start, int duration, User teacher, LicenceType type, Vehicle vehicle, User? student=null)
         {
             Id = id;
             Name = name;

@@ -60,28 +60,30 @@ namespace Application.UseCases.Lessons.Commands
             //return lesson.Id;
         }
 
-        private User GetTeacher(Guid id)
-        {
-            User? user = _database.Users
-                .Include(u => u.LessonsAsTeacher)
-                .FirstOrDefault(u => u.Id == id);
-            if (user is null)
-                throw new UserNotFoundException();
+        //private async Task<User> GetTeacher(Guid id)
+        //{
+        //    //User? user = _database.Users
+        //    //    .Include(u => u.LessonsAsTeacher)
+        //    //    .FirstOrDefault(u => u.Id == id);
+        //    User teacher = await _userRepository.GetTeacherById(id);
+        //    if (teacher is null)
+        //        throw new UserNotFoundException();
 
-            return user;
-        }
+        //    return teacher;
+        //}
 
-        private Vehicle FindAvailableVehicle(LicenceType vehicleType, DateTime lessonStart, DateTime lessonEnd)
-        {
-            List<Vehicle> vehicles = [.. _database.Vehicles
-                .Include(v => v.Lessons)
-                .Where(v => v.Type == vehicleType)];
+        //private async Task<Vehicle> FindAvailableVehicle(LicenceType vehicleType, DateTime lessonStart, DateTime lessonEnd)
+        //{
+        //    //List<Vehicle> vehicles = [.. _database.Vehicles
+        //    //    .Include(v => v.Lessons)
+        //    //    .Where(v => v.Type == vehicleType)];
+        //    List<Vehicle> vehicles = await _vehicleRepository.GetVehiclesByTypeAsync(vehicleType);
 
-            Vehicle? vehicle = vehicles.FirstOrDefault(v => !v.Lessons.Any(lesson => (lesson.End >= lessonStart && lessonStart >= lesson.Start) || (lesson.Start <= lessonEnd && lessonEnd <= lesson.End)));
-            if (vehicle is null)
-                throw new LessonValidationException("Aucun vehicule disponibe pour valider ce cours");
+        //    Vehicle? vehicle = vehicles.FirstOrDefault(v => !v.Lessons.Any(lesson => (lesson.End >= lessonStart && lessonStart >= lesson.Start) || (lesson.Start <= lessonEnd && lessonEnd <= lesson.End)));
+        //    if (vehicle is null)
+        //        throw new LessonValidationException("Aucun vehicule disponibe pour valider ce cours");
 
-            return vehicle;
-        }
+        //    return vehicle;
+        //}
     }
 }

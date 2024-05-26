@@ -1,9 +1,9 @@
 ﻿using Application.UseCases.Vehicles.Commands;
 
-using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions.Vehicles;
+using Domain.Repositories;
 
 using MediatR;
 
@@ -13,20 +13,15 @@ using UseCases.TestData;
 
 namespace UseCases.Vehicles
 {
-    public class AdminUpdateVehicle : IClassFixture<SetupDependencies>, IDisposable
+    public class AdminUpdateVehicle : IClassFixture<SetupDependencies>
     {
-        private IMediator _mediator;
-        private IDatabase _database;
+        private readonly IVehicleRepository _vehicleRepository;
+        private readonly IMediator _mediator;
 
         public AdminUpdateVehicle(SetupDependencies fixture)
         {
+            _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDatabase>();
-        }
-
-        public void Dispose()
-        {
-            _database.Clear();
         }
 
         [Fact]
@@ -38,16 +33,15 @@ namespace UseCases.Vehicles
             const string updatedName = "Renault Clio";
             const LicenceType updatedType = LicenceType.Car;
 
-            _database.Vehicles.Add(DataSet.GetTruck(vehicleId));
-            await _database.SaveChangesAsync();
+            _vehicleRepository.Insert(DataSet.GetTruck(vehicleId));
 
             // Act
             var command = new UpdateVehicle_Command(vehicleId, registrationNumber, updatedName, updatedType);
             await _mediator.Send(command);
-            Vehicle? vehicle = _database.Vehicles.Find(vehicleId);
+            Vehicle? vehicle = await _vehicleRepository.GetVehicleByIdAsync(vehicleId);
 
             // Assert            
-            Assert.NotNull(vehicle);            
+            Assert.NotNull(vehicle);
             Assert.Equal(updatedName, vehicle.Name);
             Assert.Equal(updatedType, vehicle.Type);
         }
@@ -61,10 +55,9 @@ namespace UseCases.Vehicles
         public async void AdminShould_UpdateAVehicle_WithValidRegistrationNumber(string invalidRegistrationNumber)
         {
             // Arrange
-            const int vehicleId = 1;            
+            const int vehicleId = 1;
 
-            _database.Vehicles.Add(DataSet.GetCar(vehicleId));
-            await _database.SaveChangesAsync();
+            _vehicleRepository.Insert(DataSet.GetCar(vehicleId));
 
             // Act
             var command = new UpdateVehicle_Command(vehicleId, invalidRegistrationNumber, "Car", LicenceType.Car);
@@ -83,8 +76,7 @@ namespace UseCases.Vehicles
             const string name = "";
             const LicenceType type = LicenceType.Car;
 
-            _database.Vehicles.Add(DataSet.GetCar(vehicleId));
-            await _database.SaveChangesAsync();
+            _vehicleRepository.Insert(DataSet.GetCar(vehicleId));
 
             // Act
             var command = new UpdateVehicle_Command(vehicleId, registrationNumber, name, type);
@@ -102,11 +94,10 @@ namespace UseCases.Vehicles
             const int vehicleId = 1;
 
             Vehicle car = DataSet.GetCar(2);
-            string existingRegistrationNumber = car.RegistrationNumber;
+            string existingRegistrationNumber = car.RegistrationNumber.Value;
 
-            _database.Vehicles.Add(car);
-            _database.Vehicles.Add(DataSet.GetMotorcycle(vehicleId));
-            await _database.SaveChangesAsync();
+            _vehicleRepository.Insert(car);
+            _vehicleRepository.Insert(DataSet.GetMotorcycle(vehicleId));
 
             // Act
             var command = new UpdateVehicle_Command(vehicleId, existingRegistrationNumber, "moto", LicenceType.Motorcycle);

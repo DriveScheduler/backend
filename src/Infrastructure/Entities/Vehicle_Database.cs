@@ -18,7 +18,7 @@ namespace Infrastructure.Entities
         public override void FromDomainModel(Vehicle domainModel)
         {
             Id = domainModel.Id;
-            RegistrationNumber = domainModel.RegistrationNumber;
+            RegistrationNumber = domainModel.RegistrationNumber.Value;
             Name = domainModel.Name;
             Type = domainModel.Type;
             Lessons = domainModel.Lessons.Select(lesson => new Lesson_Database(lesson)).ToList();
@@ -26,14 +26,7 @@ namespace Infrastructure.Entities
 
         public override Vehicle ToDomainModel()
         {
-            return new Vehicle()
-            {
-                Id = Id,
-                RegistrationNumber = RegistrationNumber,
-                Name = Name,
-                Type = Type,
-                Lessons = Lessons.Select(lesson => lesson.ToDomainModel()).ToList()
-            };
+            return new Vehicle(Id, RegistrationNumber, Name, Type);          
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Domain.Repositories;
 
 using Infrastructure.Persistence;
@@ -10,7 +11,32 @@ namespace Infrastructure.Repositories
     {
         private readonly DatabaseContext _database = database;
 
+        public Task<Vehicle> FindAvailable(DateTime start, int duration)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Vehicle> GetVehicleByIdAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Vehicle> GetVehicleByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Vehicle>> GetVehiclesByTypeAsync(LicenceType type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Insert(Vehicle vehicle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<int> Insert(List<Vehicle> vehicle)
         {
             throw new NotImplementedException();
         }

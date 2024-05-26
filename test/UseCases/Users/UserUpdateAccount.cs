@@ -1,10 +1,10 @@
 ﻿using Application.UseCases.Users.Commands;
 
-using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Enums;
 
 using Domain.Exceptions.Users;
+using Domain.Repositories;
 
 using MediatR;
 
@@ -14,20 +14,15 @@ using UseCases.TestData;
 
 namespace UseCases.Users
 {
-    public class UserUpdateAccount : IClassFixture<SetupDependencies>, IDisposable
+    public class UserUpdateAccount : IClassFixture<SetupDependencies>
     {
+        private readonly IUserRepository _userRepository;
         private IMediator _mediator;
-        private IDatabase _database;
 
         public UserUpdateAccount(SetupDependencies fixture)
         {
+            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDatabase>();
-        }
-
-        public void Dispose()
-        {
-            _database.Clear();
         }
 
         [Fact]
@@ -40,20 +35,19 @@ namespace UseCases.Users
             const string updatedEmail = "john.doe@gmail.com";
             const LicenceType updatedLicenceType = LicenceType.Motorcycle;
 
-            _database.Users.Add(DataSet.GetCarStudent(userId));
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(DataSet.GetCarStudent(userId));
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, updatedName, updatedFirstname, updatedEmail, updatedLicenceType);
             await _mediator.Send(updateCommand);
-            User? user = _database.Users.Find(userId);
+            User? user = await _userRepository.GetUserByIdAsync(userId);
 
             // Assert
             Assert.NotNull(user);
             Assert.Equal(userId, user.Id);
             Assert.Equal(updatedName, user.Name);
             Assert.Equal(updatedFirstname, user.FirstName);
-            Assert.Equal(updatedEmail, user.Email);
+            Assert.Equal(updatedEmail, user.Email.Value);
             Assert.Equal(updatedLicenceType, user.LicenceType);
         }
 
@@ -67,8 +61,7 @@ namespace UseCases.Users
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
 
-            _database.Users.Add(DataSet.GetStudent(userId, licenceType));
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(DataSet.GetStudent(userId, licenceType));
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, string.Empty, firstname, email, licenceType);
@@ -88,8 +81,7 @@ namespace UseCases.Users
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
 
-            _database.Users.Add(DataSet.GetStudent(userId, licenceType));
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(DataSet.GetStudent(userId, licenceType));
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, name, string.Empty, email, licenceType);
@@ -109,8 +101,7 @@ namespace UseCases.Users
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
 
-            _database.Users.Add(DataSet.GetStudent(userId, licenceType));
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(DataSet.GetStudent(userId, licenceType));
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, name, firstname, string.Empty, licenceType);
@@ -134,8 +125,7 @@ namespace UseCases.Users
             const string email = "john.doe@gmail.com";
             const LicenceType licenceType = LicenceType.Car;
 
-            _database.Users.Add(DataSet.GetStudent(userId, licenceType));
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(DataSet.GetStudent(userId, licenceType));
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, name, firstname, invalidEmail, licenceType);
@@ -156,10 +146,9 @@ namespace UseCases.Users
             const LicenceType licenceType = LicenceType.Car;
 
             User user = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000002"));
-            string existingEmail = user.Email;
-            _database.Users.Add(DataSet.GetStudent(userId, licenceType));
-            _database.Users.Add(user);
-            await _database.SaveChangesAsync();
+            string existingEmail = user.Email.Value;
+            _userRepository.Insert(DataSet.GetStudent(userId, licenceType));
+            _userRepository.Insert(user);
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, name, firstname, existingEmail, licenceType);

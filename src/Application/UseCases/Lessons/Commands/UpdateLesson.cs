@@ -58,26 +58,26 @@ namespace Application.UseCases.Lessons.Commands
             //    throw new LessonSaveException();
         }
 
-        private User GetTeacher(Guid id)
-        {
-            User? user = _database.Users
-                .Include(u => u.LessonsAsTeacher)
-                .FirstOrDefault(u => u.Id == id);
-            if (user is null)
-                throw new UserNotFoundException();
+        //private User GetTeacher(Guid id)
+        //{
+        //    User? user = _database.Users
+        //        .Include(u => u.LessonsAsTeacher)
+        //        .FirstOrDefault(u => u.Id == id);
+        //    if (user is null)
+        //        throw new UserNotFoundException();
 
-            return user;
-        }
+        //    return user;
+        //}
 
-        private Vehicle GetVehicle(int id)
-        {
-            Vehicle? vehicle = _database.Vehicles
-                .Include(v => v.Lessons)
-                .FirstOrDefault(v => v.Id == id);
-            if (vehicle is null)
-                throw new VehicleNotFoundException();
+        //private Vehicle GetVehicle(int id)
+        //{
+        //    Vehicle? vehicle = _database.Vehicles
+        //        .Include(v => v.Lessons)
+        //        .FirstOrDefault(v => v.Id == id);
+        //    if (vehicle is null)
+        //        throw new VehicleNotFoundException();
 
-            return vehicle;
-        }
+        //    return vehicle;
+        //}
     }
 }
