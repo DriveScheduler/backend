@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("api/[controller]")]
     public class DrivingSchoolController(IMediator mediator) : ControllerBase
     {
@@ -57,6 +56,20 @@ namespace API.Controllers
                 DrivingSchool drivingSchool = await _mediator.Send(query);
                 return Ok(new DrivingSchoolLight(drivingSchool));
             }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var query = new GetAllDrivingSchool_Query();
+            try
+            {
+                List<DrivingSchool> drivingSchools = await _mediator.Send(query);
+                return Ok(drivingSchools.Select(drivingSchool => new DrivingSchoolLight(drivingSchool)));}
             catch (Exception e)
             {
                 return BadRequest(e.Message);
