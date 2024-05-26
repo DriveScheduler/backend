@@ -2,7 +2,7 @@
 using Application.UseCases.Users.Commands;
 
 using Domain.Abstractions;
-using Domain.Entities.Database;
+using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;

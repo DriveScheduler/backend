@@ -1,21 +1,16 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
+﻿using Infrastructure.Entities;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    internal sealed class DatabaseContext : DbContext, IDatabase
+    internal sealed class DatabaseContext : DbContext
     {
         public DatabaseContext() { }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
-        }
-
-        DbSet<User> IDatabase.Users => Users;        
-        DbSet<Lesson> IDatabase.Lessons => Lessons;
-        DbSet<Vehicle> IDatabase.Vehicles => Vehicles;
-        DbSet<DrivingSchool> IDatabase.DrivingSchools => DrivingSchools;
+        }        
 
         public async new Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
@@ -40,9 +35,9 @@ namespace Infrastructure.Persistence
             base.OnModelCreating(modelBuilder);
         }
         
-        internal DbSet<User> Users { get; set; }        
-        internal DbSet<Lesson> Lessons { get; set; }
-        internal DbSet<Vehicle> Vehicles { get; set; }
-        internal DbSet<DrivingSchool> DrivingSchools { get; set; }
+        internal DbSet<User_Database> Users { get; set; }        
+        internal DbSet<Lesson_Database> Lessons { get; set; }
+        internal DbSet<Vehicle_Database> Vehicles { get; set; }
+        internal DbSet<DrivingSchool_Database> DrivingSchools { get; set; }
     }
 }

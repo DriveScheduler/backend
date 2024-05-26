@@ -1,48 +1,61 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
-using Domain.Enums;
-using Domain.Exceptions.Lessons;
+﻿using Application.Abstractions;
+
+using Domain.Entities;
 using Domain.Exceptions.Users;
 using Domain.Exceptions.Vehicles;
-using Domain.Validators.Lessons;
+using Domain.Repositories;
 
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Lessons.Commands
 {
 
-    public sealed record UpdateLesson_Command(int Id, string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type, int VehicleId) : IRequest;
+    public sealed record UpdateLesson_Command(int Id, string Name, DateTime Date, int Duration, Guid TeacherId) : IRequest;
 
-    internal sealed class UpdateLesson_CommandHandler(IDatabase database, ISystemClock clock) : IRequestHandler<UpdateLesson_Command>
+    internal sealed class UpdateLesson_CommandHandler(
+        ILessonRepository lessonRepository, 
+        IUserRepository userRepository,
+        IVehicleRepository vehicleRepository,
+        ISystemClock clock) : IRequestHandler<UpdateLesson_Command>
     {
-        private readonly IDatabase _database = database;
+        private readonly ILessonRepository _lessonRepository = lessonRepository;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
         private readonly ISystemClock _clock = clock;
 
         public async Task Handle(UpdateLesson_Command request, CancellationToken cancellationToken)
         {
-            User teacher = GetTeacher(request.TeacherId);
-            Vehicle vehicle = GetVehicle(request.VehicleId);
+            User teacher = await _userRepository.GetTeacherById(request.TeacherId);
+            Vehicle vehicle = await _vehicleRepository.FindAvailable(request.Date, request.Duration);
+            //User teacher = GetTeacher(request.TeacherId);
+            //Vehicle vehicle = GetVehicle(request.VehicleId);
 
-            Lesson? lesson = _database.Lessons.Find(request.Id);
-            if (lesson is null)
-                throw new LessonNotFoundException();
+            Lesson lesson = await _lessonRepository.GetByIdAsync(request.Id);
+            //Lesson? lesson = _database.Lessons.Find(request.Id);
+            //if (lesson is null)
+            //    throw new LessonNotFoundException();
 
-            LessonValidator validator = new LessonValidator(lesson, _clock)
-                .UpdateRules();            
+            lesson.Update(
+                request.Name,
+                request.Date,
+                request.Duration,
+                teacher,
+                vehicle);
+            //LessonValidator validator = new LessonValidator(lesson, _clock)
+            //    .UpdateRules();            
 
-            lesson.Name = request.Name;
-            lesson.Start = request.Date;
-            lesson.Duration = request.Duration;
-            lesson.Type = request.Type;
-            lesson.Teacher = teacher;
-            lesson.Vehicle = vehicle;
+            //lesson.Name = request.Name;
+            //lesson.Start = request.Date;
+            //lesson.Duration = request.Duration;
+            //lesson.Type = request.Type;
+            //lesson.Teacher = teacher;
+            //lesson.Vehicle = vehicle;
 
-            validator.ThrowIfInvalid(lesson);
+            //validator.ThrowIfInvalid(lesson);
 
-            if (await _database.SaveChangesAsync(cancellationToken) != 1)
-                throw new LessonSaveException();
+            await _lessonRepository.UpdateAsync(lesson);
+            //if (await _database.SaveChangesAsync(cancellationToken) != 1)
+            //    throw new LessonSaveException();
         }
 
         private User GetTeacher(Guid id)

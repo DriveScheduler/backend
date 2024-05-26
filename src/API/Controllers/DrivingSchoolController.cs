@@ -3,7 +3,7 @@ using API.Outputs.DrivingSchools;
 
 using Application.UseCases.DrivingSchools.Commands;
 using Application.UseCases.DrivingSchools.Queries;
-using Domain.Entities.Database;
+using Domain.Entities;
 using MediatR;
 
 using Microsoft.AspNetCore.Authorization;

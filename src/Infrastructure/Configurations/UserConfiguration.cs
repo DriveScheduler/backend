@@ -1,12 +1,13 @@
-﻿using Domain.Entities.Database;
+﻿using Infrastructure.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
+    internal sealed class UserConfiguration : IEntityTypeConfiguration<User_Database>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<User_Database> builder)
         {
             builder.Property(u => u.Id)
                .IsRequired()

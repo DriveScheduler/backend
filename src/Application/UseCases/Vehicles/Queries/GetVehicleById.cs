@@ -1,5 +1,5 @@
 ﻿using Domain.Abstractions;
-using Domain.Entities.Database;
+using Domain.Entities;
 using Domain.Exceptions.Vehicles;
 
 using MediatR;

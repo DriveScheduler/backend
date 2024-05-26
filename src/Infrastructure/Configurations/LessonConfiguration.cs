@@ -1,12 +1,13 @@
-﻿using Domain.Entities.Database;
+﻿using Infrastructure.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal class LessonConfiguration : IEntityTypeConfiguration<Lesson>
+    internal class LessonConfiguration : IEntityTypeConfiguration<Lesson_Database>
     {
-        public void Configure(EntityTypeBuilder<Lesson> builder)
+        public void Configure(EntityTypeBuilder<Lesson_Database> builder)
         {
             builder.Property(c => c.Id)
                 .IsRequired()
@@ -41,10 +42,7 @@ namespace Infrastructure.Configurations
             builder
                 .HasMany(l => l.WaitingList)
                 .WithMany(u => u.WaitingList)
-                .UsingEntity(j => j.ToTable("LessonUsersPending"));
-
-
-            builder.Ignore(c => c.End);
+                .UsingEntity(j => j.ToTable("LessonUsersPending"));            
         }
     }
 }

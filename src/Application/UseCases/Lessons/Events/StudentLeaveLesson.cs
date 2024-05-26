@@ -1,25 +1,27 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
-using MediatR;
+﻿using Application.Abstractions;
 
-using Microsoft.EntityFrameworkCore;
+using Domain.Entities;
+using Domain.Repositories;
+
+using MediatR;
 
 namespace Application.UseCases.Lessons.Events
 {
     internal sealed record StudentLeaveLesson_Notification(int LessonId) : INotification;
     
-    internal class StudentLeaveLesson_NotificationHandler(IDatabase database, IEmailSender email) : INotificationHandler<StudentLeaveLesson_Notification>
+    internal class StudentLeaveLesson_NotificationHandler(ILessonRepository lessonRepository, IEmailSender email) : INotificationHandler<StudentLeaveLesson_Notification>
     {
-        private readonly IDatabase _database = database;
+        private readonly ILessonRepository _lessonRepository = lessonRepository;
         private readonly IEmailSender _email = email;
 
         public async Task Handle(StudentLeaveLesson_Notification notification, CancellationToken cancellationToken)
         {
-            Lesson? lesson = _database.Lessons.Include(l => l.WaitingList).FirstOrDefault(l => l.Id == notification.LessonId);
-            if (lesson is null)
-                return;
+            Lesson lesson = await _lessonRepository.GetByIdAsync(notification.LessonId);
+            //Lesson? lesson = _database.Lessons.Include(l => l.WaitingList).FirstOrDefault(l => l.Id == notification.LessonId);
+            //if (lesson is null)
+            //    return;
 
-            await _email.SendAsync("Une place vient de se libérer", $"Un élève vient de se désister du cours {lesson.Name}", lesson.WaitingList.Select(u => u.Email).ToList());
+            await _email.SendAsync("Une place vient de se libérer", $"Un élève vient de se désister du cours {lesson.Name}", lesson.WaitingList.Select(u => u.Email.Value).ToList());
         }
     }
 }

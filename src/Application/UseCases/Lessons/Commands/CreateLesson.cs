@@ -1,47 +1,63 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
+﻿using Application.Abstractions;
+
+using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;
-using Domain.Validators.Lessons;
+using Domain.Repositories;
 
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Lessons.Commands
 {
     public sealed record CreateLesson_Command(string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type) : IRequest<int>;
 
-    internal sealed class CreateLesson_CommandHandler(IDatabase database, ISystemClock systemClock) : IRequestHandler<CreateLesson_Command, int>
+    internal sealed class CreateLesson_CommandHandler(
+        ILessonRepository lessonRepository,
+        IUserRepository userRepository, 
+        IVehicleRepository vehicleRepository,
+        ISystemClock systemClock
+        ) : IRequestHandler<CreateLesson_Command, int>
     {
-        private readonly IDatabase _database = database;
+        private readonly ILessonRepository _lessonRepository = lessonRepository;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
         private readonly ISystemClock _systemClock = systemClock;
 
         public async Task<int> Handle(CreateLesson_Command request, CancellationToken cancellationToken)
         {
-            User user = GetTeacher(request.TeacherId);
-            Vehicle vehicle = FindAvailableVehicle(request.Type, request.Date, request.Date.AddMinutes(request.Duration));
+            User teacher = await _userRepository.GetTeacherById(request.TeacherId);
+            Vehicle vehicle = await _vehicleRepository.FindAvailable(request.Date, request.Duration);
+            //User user = GetTeacher(request.TeacherId);
+            //Vehicle vehicle = FindAvailableVehicle(request.Type, request.Date, request.Date.AddMinutes(request.Duration));
 
-            Lesson lesson = new Lesson()
-            {
-                Name = request.Name,
-                Start = request.Date,
-                Duration = request.Duration,
-                Type = request.Type,
-                Teacher = user,
-                Vehicle = vehicle,
-            };
+            Lesson lesson = new Lesson(
+                request.Name,
+                request.Date,
+                request.Duration,
+                teacher,
+                request.Type,
+                vehicle);
+            //Lesson lesson = new Lesson()
+            //{
+            //Name = request.Name,
+            //Start = request.Date,
+            //Duration = request.Duration,
+            //Type = request.Type,
+            //Teacher = user,
+            //Vehicle = vehicle,
+            //};
 
-            new LessonValidator(_systemClock)
-                .CreateRules()
-                .ThrowIfInvalid(lesson);
+            //new LessonValidator(_systemClock)
+            //    .CreateRules()
+            //    .ThrowIfInvalid(lesson);
 
-            _database.Lessons.Add(lesson);
-            if (await _database.SaveChangesAsync() != 1)
-                throw new LessonSaveException();
+            //_database.Lessons.Add(lesson);
+            //if (await _database.SaveChangesAsync() != 1)
+            //    throw new LessonSaveException();
 
-            return lesson.Id;
+            return await _lessonRepository.InsertAsync(lesson);
+            //return lesson.Id;
         }
 
         private User GetTeacher(Guid id)

@@ -1,6 +1,4 @@
-﻿using Domain.Entities.Database;
-
-namespace Domain.Entities.Business
+﻿namespace Domain.Entities.Business
 {
     public sealed class UserDashboard
     {

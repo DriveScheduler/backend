@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Database;
+﻿using Domain.Entities;
 
 namespace API.Outputs.DrivingSchools
 {

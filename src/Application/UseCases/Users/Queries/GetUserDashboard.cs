@@ -1,20 +1,25 @@
-﻿using Domain.Abstractions;
+﻿using Application.Abstractions;
+
+using Domain.Entities;
 using Domain.Entities.Business;
-using Domain.Entities.Database;
 using Domain.Exceptions.Users;
-using Domain.ValueObjects;
+using Domain.Repositories;
 
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Users.Queries
 {
     public sealed record GetUserDashboard_Query(Guid UserId) : IRequest<UserDashboard>;
 
-    internal sealed class GetUserDashboard_QueryHandler(IDatabase database, ISystemClock clock) : IRequestHandler<GetUserDashboard_Query, UserDashboard>
+    internal sealed class GetUserDashboard_QueryHandler(
+        ILessonRepository lessonRepository, 
+        IUserRepository userRepository,
+        IVehicleRepository vehicleRepository,
+        ISystemClock clock) : IRequestHandler<GetUserDashboard_Query, UserDashboard>
     {
-        private readonly IDatabase _database = database;
+        private readonly ILessonRepository _lessonRepository = lessonRepository;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
         private readonly ISystemClock _clock = clock;
 
         public async Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)

@@ -1,6 +1,6 @@
 ﻿using Domain.Abstractions;
+using Domain.Entities;
 using Domain.Entities.Business;
-using Domain.Entities.Database;
 using Domain.Exceptions.Users;
 
 using MediatR;

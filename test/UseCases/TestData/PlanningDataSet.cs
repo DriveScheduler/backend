@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Database;
+﻿using Domain.Entities;
 using Domain.Enums;
 
 namespace UseCases.TestData

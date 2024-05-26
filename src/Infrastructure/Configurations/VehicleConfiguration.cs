@@ -1,12 +1,13 @@
-﻿using Domain.Entities.Database;
+﻿using Infrastructure.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
+    internal class VehicleConfiguration : IEntityTypeConfiguration<Vehicle_Database>
     {
-        public void Configure(EntityTypeBuilder<Vehicle> builder)
+        public void Configure(EntityTypeBuilder<Vehicle_Database> builder)
         {
             builder.Property(v => v.Id)
                 .IsRequired()

@@ -3,9 +3,8 @@ using API.Outputs.Users;
 
 using Application.UseCases.Users.Commands;
 using Application.UseCases.Users.Queries;
-
+using Domain.Entities;
 using Domain.Entities.Business;
-using Domain.Entities.Database;
 
 using MediatR;
 
