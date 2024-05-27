@@ -1,6 +1,6 @@
 ﻿using Application.UseCases.Users.Commands;
 
-using Domain.Entities;
+using Domain.Models;
 using Domain.Enums;
 
 using Domain.Exceptions.Users;

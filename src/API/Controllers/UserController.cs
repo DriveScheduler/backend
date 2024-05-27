@@ -1,10 +1,11 @@
 using API.Inputs.Users;
 using API.Outputs.Users;
 
+using Application.Models;
 using Application.UseCases.Users.Commands;
 using Application.UseCases.Users.Queries;
-using Domain.Entities;
-using Domain.Entities.Business;
+
+using Domain.Models;
 
 using MediatR;
 

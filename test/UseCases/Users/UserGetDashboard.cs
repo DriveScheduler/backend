@@ -1,8 +1,8 @@
 ﻿using Application.Abstractions;
 using Application.UseCases.Users.Queries;
 
-using Domain.Entities;
-using Domain.Entities.Business;
+using Domain.Models;
+using Application.Models;
 using Domain.Exceptions.Users;
 using Domain.Repositories;
 

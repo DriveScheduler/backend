@@ -1,71 +1,63 @@
-﻿using Domain.Entities;
+﻿using Domain.Exceptions.DrivingSchools;
+using Domain.Models;
 using Domain.Repositories;
 
+using Infrastructure.Entities;
 using Infrastructure.Persistence;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    // FULL LOAD
     internal sealed class DrivingSchoolRepository(DatabaseContext database) : IDrivingSchoolRepository
     {
         private readonly DatabaseContext _database = database;
 
         public Task<List<DrivingSchool>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return _database.DrivingSchools
+                .Select(d => d.ToDomainModel())
+                .ToListAsync();
         }
 
-        public Task<DrivingSchool> GetByIdAsync(int id)
+        public async Task<DrivingSchool> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            DrivingSchool_Database? dbDrivingSchool = await _database.DrivingSchools.FindAsync(id);
+            if (dbDrivingSchool is null)
+                throw new DrivingSchoolNotFoundException();
+            return dbDrivingSchool.ToDomainModel();
         }
 
-        public Task<int> InsertAsync(DrivingSchool drivingSchool)
+        public async Task<int> InsertAsync(DrivingSchool drivingSchool)
         {
-            throw new NotImplementedException();
+            DrivingSchool_Database dbDrivingSchool = new(drivingSchool);           
+            try
+            {
+                _database.DrivingSchools.Add(dbDrivingSchool);
+                await _database.SaveChangesAsync();
+                return dbDrivingSchool.Id;
+            }
+            catch (Exception)
+            {
+                throw new DrivingSchoolSaveException();
+            }
         }
 
-        public Task UpdateAsync(DrivingSchool drivingSchool)
+        public async Task UpdateAsync(DrivingSchool drivingSchool)
         {
-            throw new NotImplementedException();
+            DrivingSchool_Database? dbDrivingSchool = await _database.DrivingSchools.FindAsync(drivingSchool.Id);
+            if (dbDrivingSchool is null)
+                throw new DrivingSchoolNotFoundException();
+
+            dbDrivingSchool.FromDomainModel(drivingSchool);
+            try
+            {
+                await _database.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw new DrivingSchoolSaveException();
+            }
         }
-
-        //public async Task<DrivingSchool> InsertAsync(DrivingSchool entity)
-        //{
-        //    DrivingSchool_Database dbDrivingSchool = new DrivingSchool_Database(entity);
-        //    _database.DrivingSchools.Add(dbDrivingSchool);
-        //    await _database.SaveChangesAsync();
-        //    return DrivingSchool.Create(dbDrivingSchool.Id, entity.Name, entity.Address);
-        //}
-
-        //public Task UpdateAsync(DrivingSchool entity)
-        //{
-        //    DrivingSchool_Database? dbDrivingSchool = _database.DrivingSchools.Find(entity.Id);
-        //    if (dbDrivingSchool is null)
-        //        throw new DrivingSchoolNotFoundException();
-
-        //    dbDrivingSchool.FromDomainModel(entity);
-
-        //    return _database.SaveChangesAsync();
-        //}
-
-        //public Task DeleteAsync(int id)
-        //{
-        //    DrivingSchool_Database? drivingSchool = _database.DrivingSchools.Find(id);
-        //    if (drivingSchool is not null)
-        //    {
-        //        _database.DrivingSchools.Remove(drivingSchool);
-        //        return _database.SaveChangesAsync();
-        //    }
-        //    return Task.CompletedTask;
-        //}
-
-        //public async Task<DrivingSchool> GetByIdAsync(int id)
-        //{
-        //    DrivingSchool_Database? dbDrivingSchool = await _database.DrivingSchools.FindAsync(id);
-        //    if (dbDrivingSchool is null)
-        //        throw new DrivingSchoolNotFoundException();
-        //    return dbDrivingSchool.ToDomainModel();
-        //}        
     }
 }

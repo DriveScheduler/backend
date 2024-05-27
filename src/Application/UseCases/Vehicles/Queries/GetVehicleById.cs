@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Models;
 using Domain.Repositories;
 
 using MediatR;
@@ -17,7 +17,7 @@ namespace Application.UseCases.Vehicles.Queries
             //if (vehicle is null)
             //    throw new VehicleNotFoundException();
             //return Task.FromResult(vehicle);
-            return _vehicleRepository.GetVehicleByIdAsync(request.Id);
+            return _vehicleRepository.GetByIdAsync(request.Id);
         }
     }
 }

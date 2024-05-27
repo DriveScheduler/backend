@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Models;
 using Domain.Enums;
 using Domain.Repositories;
 
@@ -17,7 +17,7 @@ namespace Application.UseCases.Vehicles.Commands
             //Vehicle? vehicle = _database.Vehicles.Find(request.Id);
             //if (vehicle is null)
             //    throw new VehicleNotFoundException();
-            Vehicle vehicle = await _vehicleRepository.GetVehicleByIdAsync(request.Id);
+            Vehicle vehicle = await _vehicleRepository.GetByIdAsync(request.Id);
 
             //vehicle.RegistrationNumber = request.RegistrationNumber;
             //vehicle.Name = request.Name;

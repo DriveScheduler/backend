@@ -1,74 +1,102 @@
-﻿using Domain.Entities;
+﻿using Domain.Models;
 using Domain.Enums;
 using Domain.Repositories;
 
 using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Infrastructure.Entities;
+using Domain.Exceptions.Lessons;
+using Domain.Exceptions.Vehicles;
 
 namespace Infrastructure.Repositories
-{
-    // FULL LOAD
+{    
     internal sealed class VehicleRepository(DatabaseContext database) : IVehicleRepository
     {
         private readonly DatabaseContext _database = database;
 
-        public Task<Vehicle> FindAvailable(DateTime start, int duration)
+        public async Task<Vehicle> FindAvailable(DateTime start, int duration, LicenceType vehicleType)
         {
-            throw new NotImplementedException();
+            List<Vehicle_Database> vehicles = await IncludeAllSubEntities().Where(v => v.Type == vehicleType).ToListAsync();                
+
+            DateTime lessonEnd = start.AddMinutes(duration);
+            Vehicle_Database? vehicle = vehicles.FirstOrDefault(v => !v.Lessons.Any(lesson => (lesson.Start.AddMinutes(lesson.Duration) >= start && start >= lesson.Start) || (lesson.Start <= lessonEnd && lessonEnd <= lesson.Start.AddMinutes(lesson.Duration))));
+            if (vehicle is null)
+                throw new LessonValidationException("Aucun vehicule disponibe pour valider ce cours");
+
+            return vehicle.ToDomainModel();
         }
 
-        public Task<Vehicle> GetVehicleByIdAsync(Guid id)
+        public async Task<Vehicle> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Vehicle> GetVehicleByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Vehicle>> GetVehiclesByTypeAsync(LicenceType type)
-        {
-            throw new NotImplementedException();
-        }
+            Vehicle_Database? vehicle = await IncludeAllSubEntities().FirstOrDefaultAsync(v => v.Id == id);
+            if(vehicle is null) throw new VehicleNotFoundException();
+            return vehicle.ToDomainModel();
+        }       
 
         public int Insert(Vehicle vehicle)
         {
-            throw new NotImplementedException();
+            Vehicle_Database dbVehicle = new(vehicle);
+            try
+            {
+                _database.Vehicles.Add(dbVehicle);
+                _database.SaveChanges();
+                return dbVehicle.Id;
+            }
+            catch (Exception)
+            {
+                throw new VehicleSaveException();
+            }
         }
 
         public List<int> Insert(List<Vehicle> vehicle)
         {
-            throw new NotImplementedException();
+            List<Vehicle_Database> dbVehicles = vehicle.Select(v => new Vehicle_Database(v)).ToList();
+            try
+            {
+                _database.Vehicles.AddRange(dbVehicles);
+                _database.SaveChangesAsync();
+                return dbVehicles.Select(v => v.Id).ToList();
+            }
+            catch (Exception)
+            {
+                throw new VehicleSaveException();
+            }
         }
 
-        public Task<int> InsertAsync(Vehicle vehicle)
+        public async Task<int> InsertAsync(Vehicle vehicle)
         {
-            throw new NotImplementedException();
+            Vehicle_Database dbVehicle = new(vehicle);
+            try
+            {
+                _database.Vehicles.Add(dbVehicle);
+                await _database.SaveChangesAsync();
+                return dbVehicle.Id;
+            }
+            catch (Exception)
+            {
+                throw new VehicleSaveException();
+            }
         }
 
-        public Task UpdateAsync(Vehicle vehicle)
+        public async Task UpdateAsync(Vehicle vehicle)
         {
-            throw new NotImplementedException();
+            Vehicle_Database? dbVehicle = _database.Vehicles.Find(vehicle.Id);
+            if(dbVehicle is null) throw new VehicleNotFoundException();
+            dbVehicle.FromDomainModel(vehicle);
+            try
+            {
+                await _database.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw new VehicleSaveException();
+            }
         }
 
-        //public Task<int> Delete(int id)
-        //{
-        //    _database.Vehicles.Remove(_database.Vehicles.Find(id));
-        //    return _database.SaveChangesAsync();
-        //}
-
-        //public Task<int> InsertAsync(Vehicle entity)
-        //{            
-        //    _database.Vehicles.Add(new Vehicle_Database(entity));
-        //    return _database.SaveChangesAsync();
-        //}
-
-        //public Task<int> Update(Vehicle entity)
-        //{
-        //    Vehicle_Database? dbVehicle = _database.Vehicles.Find(entity.Id);
-        //    if(dbVehicle is null) return Task.FromResult(1);
-        //    dbVehicle.FromDomainModel(entity);
-        //    return _database.SaveChangesAsync();
-        //}
+        private IQueryable<Vehicle_Database> IncludeAllSubEntities()
+        {
+            return _database.Vehicles
+                .Include(v => v.Lessons);                
+        }      
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Domain.Exceptions.DrivingSchools;
 
-namespace Domain.Entities;
+namespace Domain.Models;
 
 public class DrivingSchool
 {

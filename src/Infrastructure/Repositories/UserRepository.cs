@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Models;
 using Domain.Repositories;
 
 using Infrastructure.Persistence;
@@ -43,24 +43,14 @@ namespace Infrastructure.Repositories
         public List<Guid> Insert(List<User> user)
         {
             throw new NotImplementedException();
-        }
-
-        public Task<int> InsertAsync(User user)
-        {
-            throw new NotImplementedException();
-        }
+        }     
 
         public Task UpdateAsync(User user)
         {
             throw new NotImplementedException();
-        }
+        }    
 
-        public Task<User> UpdateUserAsync(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Guid> IUserRepository.InsertAsync(User user)
+        public Task<Guid> InsertAsync(User user)
         {
             throw new NotImplementedException();
         }

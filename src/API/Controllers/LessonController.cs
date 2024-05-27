@@ -4,7 +4,7 @@ using API.Outputs.Lessons;
 using Application.UseCases.Lessons.Commands;
 using Application.UseCases.Lessons.Queries;
 using Application.UseCases.Users.Queries;
-using Domain.Entities;
+using Domain.Models;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;

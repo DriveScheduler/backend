@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
+using Application.Models;
 
-using Domain.Entities;
-using Domain.Entities.Business;
+using Domain.Models;
 using Domain.Repositories;
 using Domain.Utils;
 

@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions;
 
-using Domain.Entities;
+using Domain.Models;
 using Domain.Exceptions.Lessons;
 using Domain.Repositories;
 

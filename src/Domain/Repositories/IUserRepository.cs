@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Models;
 
 namespace Domain.Repositories
 {
@@ -11,8 +11,7 @@ namespace Domain.Repositories
         public Task<User> GetUserByIdAsync(Guid id);
         public Task<User> GetStudentById(Guid id);
         public Task<User> GetTeacherById(Guid id);  
-        public Task<User> GetUserByEmailAsync(string email);
-        public Task<User> UpdateUserAsync(string email);
+        public Task<User> GetUserByEmailAsync(string email);        
         public Task<List<User>> GetAllTeachers();
     }
 }

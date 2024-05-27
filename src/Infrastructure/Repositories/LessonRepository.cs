@@ -1,18 +1,22 @@
-﻿using Domain.Entities;
+﻿using Domain.Models;
 using Domain.Repositories;
 
+using Infrastructure.Entities;
 using Infrastructure.Persistence;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Infrastructure.Repositories
-{
-    // FULL LOAD
+{    
     internal sealed class LessonRepository(DatabaseContext database) : ILessonRepository
     {
         private readonly DatabaseContext _database = database;
 
         public Task<List<Lesson>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return IncludeAllSubEntities()
+                .Select(lesson => lesson.ToDomainModel())
+                .ToListAsync();
         }
 
         public Task<List<Lesson>> GetAllStudentLesson(Guid userId)
@@ -73,6 +77,15 @@ namespace Infrastructure.Repositories
         public Task UpdateAsync(Lesson lesson)
         {
             throw new NotImplementedException();
+        }
+
+        private IQueryable<Lesson_Database> IncludeAllSubEntities()
+        {
+            return _database.Lessons
+                .Include(lesson => lesson.Teacher)
+                .Include(lesson => lesson.Student)
+                .Include(lesson => lesson.Vehicle)
+                .Include(lesson => lesson.WaitingList);
         }
 
         //public Task DeleteAsync(int id)

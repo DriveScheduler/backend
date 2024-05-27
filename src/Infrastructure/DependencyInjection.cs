@@ -18,6 +18,11 @@ namespace Infrastructure
             services.AddScoped<ISystemClock, SystemClock>();
             services.AddSingleton<IEmailSender, EmailSender>();
 
+            services.AddRepositories();
+        }
+
+        public static void AddRepositories(this IServiceCollection services)
+        {
             services.AddScoped<IDrivingSchoolRepository, DrivingSchoolRepository>();
             services.AddScoped<ILessonRepository, LessonRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

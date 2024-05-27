@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Models;
 using Domain.Enums;
 
 namespace Domain.Repositories
@@ -9,8 +9,7 @@ namespace Domain.Repositories
         public List<int> Insert(List<Vehicle> vehicle);
         public Task<int> InsertAsync(Vehicle vehicle);
         public Task UpdateAsync(Vehicle vehicle);
-        public Task<Vehicle> GetVehicleByIdAsync(int id);
-        public Task<List<Vehicle>> GetVehiclesByTypeAsync(LicenceType type);
-        public Task<Vehicle> FindAvailable(DateTime start, int duration);
+        public Task<Vehicle> GetByIdAsync(int id);        
+        public Task<Vehicle> FindAvailable(DateTime start, int duration, LicenceType vehicleType);
     }
 }

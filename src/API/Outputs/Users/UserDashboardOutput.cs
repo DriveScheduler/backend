@@ -1,7 +1,7 @@
 ﻿using API.Outputs.Lessons;
 using API.Outputs.Vehicles;
 
-using Domain.Entities.Business;
+using Application.Models;
 
 namespace API.Outputs.Users
 {

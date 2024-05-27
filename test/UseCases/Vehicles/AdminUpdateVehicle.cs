@@ -1,6 +1,6 @@
 ﻿using Application.UseCases.Vehicles.Commands;
 
-using Domain.Entities;
+using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Vehicles;
 using Domain.Repositories;
@@ -38,7 +38,7 @@ namespace UseCases.Vehicles
             // Act
             var command = new UpdateVehicle_Command(vehicleId, registrationNumber, updatedName, updatedType);
             await _mediator.Send(command);
-            Vehicle? vehicle = await _vehicleRepository.GetVehicleByIdAsync(vehicleId);
+            Vehicle? vehicle = await _vehicleRepository.GetByIdAsync(vehicleId);
 
             // Assert            
             Assert.NotNull(vehicle);

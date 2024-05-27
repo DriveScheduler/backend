@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities.Business
+﻿using Domain.Models;
+
+namespace Application.Models
 {
     public sealed record UserLessonPlanning
     {

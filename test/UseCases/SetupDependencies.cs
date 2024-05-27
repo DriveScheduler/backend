@@ -20,6 +20,7 @@ namespace UseCases
             _serviceCollection = new ServiceCollection();
 
             _serviceCollection.ApplicationMediator();
+            _serviceCollection.AddRepositories();
 
             _serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
             
