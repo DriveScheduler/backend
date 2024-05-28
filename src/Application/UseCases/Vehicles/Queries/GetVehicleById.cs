@@ -17,7 +17,7 @@ namespace Application.UseCases.Vehicles.Queries
             //if (vehicle is null)
             //    throw new VehicleNotFoundException();
             //return Task.FromResult(vehicle);
-            return _vehicleRepository.GetByIdAsync(request.Id);
+            return Task.FromResult(_vehicleRepository.GetById(request.Id));
         }
     }
 }

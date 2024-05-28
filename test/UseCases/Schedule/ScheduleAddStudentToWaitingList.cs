@@ -55,7 +55,7 @@ namespace UseCases.Schedule
 
             // Act
             await _mediator.Send(new AddStudentToWaitingList_Command(lessonId, student2.Id));
-            Lesson lesson = await _lessonRepository.GetByIdAsync(lessonId)!;
+            Lesson lesson = _lessonRepository.GetById(lessonId)!;
 
             // Assert
             Assert.NotNull(lesson.Student);

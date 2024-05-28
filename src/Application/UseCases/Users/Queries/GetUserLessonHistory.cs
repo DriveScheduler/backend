@@ -15,7 +15,7 @@ namespace Application.UseCases.Users.Queries
         private readonly ILessonRepository _lessonRepository = lessonRepository;
         private readonly ISystemClock _clock = clock;
 
-        public async Task<UserLessonHistory> Handle(GetUserLessonHistory_Query request, CancellationToken cancellationToken)
+        public Task<UserLessonHistory> Handle(GetUserLessonHistory_Query request, CancellationToken cancellationToken)
         {
             //User? student = _database.Users.Find(request.UserId);
             //if(student is null)
@@ -27,14 +27,14 @@ namespace Application.UseCases.Users.Queries
             //    .OrderByDescending(lesson => lesson.Start)
             //    .ToListAsync();
 
-            List<Lesson> lessons = await _lessonRepository.GetUserHistory(request.UserId, _clock.Now);
+            List<Lesson> lessons = _lessonRepository.GetUserHistory(request.UserId, _clock.Now);
 
             UserLessonHistory history = new UserLessonHistory()
             {
                 Lessons = lessons,                
                 LessonTotalTime = lessons.Sum(lesson => lesson.Duration.Value)
             };
-            return history;
+            return Task.FromResult(history);
         }
     }
 }

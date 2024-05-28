@@ -11,25 +11,11 @@ namespace Application.UseCases.DrivingSchools.Commands
     {
         private readonly IDrivingSchoolRepository _drivingSchoolRepository = drivingSchoolRepository;
 
-        public async Task<int> Handle(CreateDrivingSchool_Command request, CancellationToken cancellationToken)
-        {
-
-            //DrivingSchool drivingSchool = new DrivingSchool()
-            //{
-            //    Name = request.Name,
-            //    Address = request.Address
-            //};
-
-            //new DrivingSchoolValidator(_database).ThrowIfInvalid(drivingSchool);
-
-            //_database.DrivingSchools.Add(drivingSchool);
-            //if (await _database.SaveChangesAsync() != 1)
-            //    throw new DrivingSchoolSaveException();
-
-            //return drivingSchool.Id;
-
+        public Task<int> Handle(CreateDrivingSchool_Command request, CancellationToken cancellationToken)
+        {         
             DrivingSchool drivingSchool = new DrivingSchool(request.Name, request.Address);
-            return await _drivingSchoolRepository.InsertAsync(drivingSchool);
+            _drivingSchoolRepository.Insert(drivingSchool);
+            return Task.FromResult(drivingSchool.Id);
         }
     }
 }

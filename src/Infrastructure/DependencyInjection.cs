@@ -31,12 +31,12 @@ namespace Infrastructure
 
         public static void SetupDatabase(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<DatabaseContext>(options => options.UseSqlite(connectionString));
+            services.AddDbContext<IDataAccessor, DatabaseContext>(options => options.UseSqlite(connectionString));
         }
 
         public static void SetupInMemoryDatabase(this IServiceCollection services, string inMemoryDbName)
         {
-            services.AddDbContext<DatabaseContext>(options => options.UseInMemoryDatabase(databaseName: inMemoryDbName));
+            services.AddDbContext<IDataAccessor, DatabaseContext>(options => options.UseInMemoryDatabase(databaseName: inMemoryDbName));
         }
     }
 }

@@ -22,14 +22,14 @@ namespace Application.UseCases.Lessons.Commands
         private readonly IMediator _mediator = mediator;
         private readonly ISystemClock _systemClock = systemClock;
 
-        public async Task Handle(RemoveStudentFromLesson_Command request, CancellationToken cancellationToken)
+        public Task Handle(RemoveStudentFromLesson_Command request, CancellationToken cancellationToken)
         {
-            User user = await _userRepository.GetUserByIdAsync(request.UserId);
+            User user = _userRepository.GetUserById(request.UserId);
             //User? user = _database.Users.Find(request.UserId);
             //if (user is null)
             //    throw new UserNotFoundException();
 
-            Lesson lesson = await _lessonRepository.GetByIdAsync(request.LessonId);
+            Lesson lesson = _lessonRepository.GetById(request.LessonId);
             //Lesson? lesson = _database.Lessons
             //    .Include(Lesson => Lesson.Student)
             //    .FirstOrDefault(l => l.Id == request.LessonId);
@@ -44,11 +44,12 @@ namespace Application.UseCases.Lessons.Commands
             lesson.RemoveStudent(user);
 
             if(hadStudent)           
-                await _mediator.Publish(new StudentLeaveLesson_Notification(request.LessonId), cancellationToken);
+                _mediator.Publish(new StudentLeaveLesson_Notification(request.LessonId), cancellationToken);
 
             //lesson.Student = null;
 
-            await _lessonRepository.UpdateAsync(lesson);
+            _lessonRepository.Update(lesson);
+            return Task.CompletedTask;
             //if(await _database.SaveChangesAsync() != 1)
                 //throw new LessonSaveException();            
         }

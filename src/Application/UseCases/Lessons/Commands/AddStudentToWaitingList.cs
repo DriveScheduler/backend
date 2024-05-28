@@ -19,14 +19,14 @@ namespace Application.UseCases.Lessons.Commands
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ISystemClock _systemClock = systemClock;
 
-        public async Task Handle(AddStudentToWaitingList_Command request, CancellationToken cancellationToken)
+        public Task Handle(AddStudentToWaitingList_Command request, CancellationToken cancellationToken)
         {
-            User student = await _userRepository.GetUserByIdAsync(request.UserId);
+            User student = _userRepository.GetUserById(request.UserId);
             //User? student = _database.Users.Find(request.UserId);
             //if (student is null)
             //    throw new UserNotFoundException();
 
-            Lesson lesson = await _lessonRepository.GetByIdAsync(request.LessonId);
+            Lesson lesson = _lessonRepository.GetById(request.LessonId);
             //Lesson? lesson = _database.Lessons
             //    .Include(Lesson => Lesson.Student)
             //    .Include(Lesson => Lesson.WaitingList)
@@ -43,7 +43,8 @@ namespace Application.UseCases.Lessons.Commands
             //    .AddStudentToWaitingListRules()
             //    .ThrowIfInvalid(lesson);            
 
-            await _lessonRepository.UpdateAsync(lesson);
+            _lessonRepository.Update(lesson);
+            return Task.CompletedTask;
             //if (await _database.SaveChangesAsync() != 1)
             //    throw new LessonSaveException();
         }

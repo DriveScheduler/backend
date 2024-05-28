@@ -1,41 +1,35 @@
 ﻿using Domain.Exceptions.DrivingSchools;
+using Domain.Exceptions.Users;
 using Domain.Models;
 using Domain.Repositories;
 
-using Infrastructure.Entities;
 using Infrastructure.Persistence;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    internal sealed class DrivingSchoolRepository(DatabaseContext database) : IDrivingSchoolRepository
+    internal sealed class DrivingSchoolRepository(IDataAccessor database) : IDrivingSchoolRepository
     {
-        private readonly DatabaseContext _database = database;
+        private readonly IDataAccessor _database = database;
 
-        public Task<List<DrivingSchool>> GetAllAsync()
+        public List<DrivingSchool> GetAll()
         {
             return _database.DrivingSchools
-                .Select(d => d.ToDomainModel())
-                .ToListAsync();
+                .ToList();
         }
 
-        public async Task<DrivingSchool> GetByIdAsync(int id)
+        public DrivingSchool GetById(int id)
         {
-            DrivingSchool_Database? dbDrivingSchool = await _database.DrivingSchools.FindAsync(id);
-            if (dbDrivingSchool is null)
+            DrivingSchool? drivingSchool = _database.DrivingSchools.FirstOrDefault(d => d.Id == id);
+            if (drivingSchool is null)
                 throw new DrivingSchoolNotFoundException();
-            return dbDrivingSchool.ToDomainModel();
+            return drivingSchool;
         }
 
-        public async Task<int> InsertAsync(DrivingSchool drivingSchool)
+        public void Insert(DrivingSchool drivingSchool)
         {
-            DrivingSchool_Database dbDrivingSchool = new(drivingSchool);           
             try
             {
-                _database.DrivingSchools.Add(dbDrivingSchool);
-                await _database.SaveChangesAsync();
-                return dbDrivingSchool.Id;
+                _database.Insert(drivingSchool);
             }
             catch (Exception)
             {
@@ -43,20 +37,15 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task UpdateAsync(DrivingSchool drivingSchool)
+        public void Update(DrivingSchool drivingSchool)
         {
-            DrivingSchool_Database? dbDrivingSchool = await _database.DrivingSchools.FindAsync(drivingSchool.Id);
-            if (dbDrivingSchool is null)
-                throw new DrivingSchoolNotFoundException();
-
-            dbDrivingSchool.FromDomainModel(drivingSchool);
             try
             {
-                await _database.SaveChangesAsync();
+                _database.Update(drivingSchool);
             }
             catch (Exception)
             {
-                throw new DrivingSchoolSaveException();
+                throw new UserSaveException();
             }
         }
     }

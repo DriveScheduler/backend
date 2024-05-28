@@ -12,12 +12,12 @@ namespace Application.UseCases.Vehicles.Commands
     {
         private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
 
-        public async Task Handle(UpdateVehicle_Command request, CancellationToken cancellationToken)
+        public Task Handle(UpdateVehicle_Command request, CancellationToken cancellationToken)
         {
             //Vehicle? vehicle = _database.Vehicles.Find(request.Id);
             //if (vehicle is null)
             //    throw new VehicleNotFoundException();
-            Vehicle vehicle = await _vehicleRepository.GetByIdAsync(request.Id);
+            Vehicle vehicle = _vehicleRepository.GetById(request.Id);
 
             //vehicle.RegistrationNumber = request.RegistrationNumber;
             //vehicle.Name = request.Name;
@@ -31,7 +31,9 @@ namespace Application.UseCases.Vehicles.Commands
             //if (await _database.SaveChangesAsync() != 1)
             //    throw new VehicleSaveException();
 
-            await _vehicleRepository.UpdateAsync(vehicle);
+            _vehicleRepository.Update(vehicle);
+
+            return Task.CompletedTask;
         }
     }
 }

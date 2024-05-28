@@ -22,7 +22,7 @@ namespace Application.UseCases.Users.Queries
         private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
         private readonly ISystemClock _clock = clock;
 
-        public async Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)
+        public Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)
         {
             //User? student = _database.Users.Find(request.UserId);
             //if (student is null)
@@ -33,7 +33,7 @@ namespace Application.UseCases.Users.Queries
             //    .Where(l => l.Student == student)
             //    .ToListAsync();
 
-            List<Lesson> allStudentLessons = await _lessonRepository.GetAllStudentLesson(request.UserId);
+            List<Lesson> allStudentLessons = _lessonRepository.GetAllStudentLesson(request.UserId);
 
             List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End < _clock.Now).ToList();
             User? favouriteTeacher = FavouriteTeacher(achievedLessons, out int teacherTotalTime);
@@ -52,7 +52,7 @@ namespace Application.UseCases.Users.Queries
                 TimeSpentThisWeek = allStudentLessons.Where(lesson => lesson.Start.Date >= firstDayOfThisWeek && lesson.End < _clock.Now).Sum(lesson => lesson.Duration.Value)
             };
 
-            return dashboard;
+            return Task.FromResult(dashboard);
         }     
 
         private User? FavouriteTeacher(List<Lesson> studentLessons, out int totalTime)

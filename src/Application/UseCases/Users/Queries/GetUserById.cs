@@ -18,7 +18,7 @@ namespace Application.UseCases.Users.Queries
             //    throw new UserNotFoundException();
 
             //return Task.FromResult(user);
-            return _userRepository.GetUserByIdAsync(request.Id);
+            return Task.FromResult(_userRepository.GetUserById(request.Id));
         }
     }
 }

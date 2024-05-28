@@ -15,7 +15,7 @@ namespace Application.UseCases.Users.Queries
             //return _database.Users
             //    .Where(u => u.Type == UserType.Teacher)
             //    .ToListAsync();
-            return _userRepository.GetAllTeachers();
+            return Task.FromResult(_userRepository.GetAllTeachers());
         }
     }
 }

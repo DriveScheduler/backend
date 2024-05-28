@@ -18,7 +18,7 @@ namespace Application.UseCases.Users.Queries
             //    throw new Exception();
 
             //return Task.FromResult(user);
-            return _lessonRepository.GetByIdAsync(request.Id);
+            return Task.FromResult(_lessonRepository.GetById(request.Id));
         }
     }
 }

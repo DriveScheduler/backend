@@ -1,47 +1,40 @@
-﻿using Application.Abstractions;
-
-using Domain.Enums;
+﻿using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Models;
 using Domain.Repositories;
 
-using Infrastructure.Entities;
 using Infrastructure.Persistence;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    internal sealed class LessonRepository(DatabaseContext database) : ILessonRepository
+    internal sealed class LessonRepository(IDataAccessor database) : ILessonRepository
     {
-        private readonly DatabaseContext _database = database;
+        private readonly IDataAccessor _database = database;
 
-        public Task<List<Lesson>> GetAllAsync()
+        public List<Lesson> GetAll()
         {
-            return IncludeAllSubEntities()
-                .Select(lesson => lesson.ToDomainModel())
-                .ToListAsync();
+            return _database.Lessons
+                .ToList();
         }
 
-        public Task<List<Lesson>> GetAllStudentLesson(Guid userId)
+        public List<Lesson> GetAllStudentLesson(Guid userId)
         {
-            return IncludeAllSubEntities()
+            return _database.Lessons
                 .Where(lesson => lesson.Student != null && lesson.Student.Id == userId)
-                .Select(lesson => lesson.ToDomainModel())
-                .ToListAsync();
+                .ToList();
         }
 
-        public async Task<Lesson> GetByIdAsync(int id)
+        public Lesson GetById(int id)
         {
-            Lesson_Database? lesson = await _database.Lessons.FirstOrDefaultAsync(l => l.Id == id);
+            Lesson? lesson = _database.Lessons.FirstOrDefault(l => l.Id == id);
             if (lesson is null)
                 throw new LessonNotFoundException();
-            return lesson.ToDomainModel();
+            return lesson;
         }
 
-        public async Task<List<Lesson>> GetLessonsForUserAsync(User user, DateTime start, DateTime end, bool onlyEmptyLesson = false)
+        public List<Lesson> GetLessonsForUser(User user, DateTime start, DateTime end, bool onlyEmptyLesson = false)
         {
-            IQueryable<Lesson_Database> query = IncludeAllSubEntities();
+            IQueryable<Lesson> query = _database.Lessons;
             if (user.Type == UserType.Student)
                 query = query.Where(lesson => lesson.Type == user.LicenceType);
             else if (user.Type == UserType.Teacher)
@@ -53,35 +46,32 @@ namespace Infrastructure.Repositories
 
 
             DateTime calculatedEndDate = end.AddDays(1).Date;
-            return await query
-                .Where(lesson => lesson.Start >= start.Date && lesson.Start.AddMinutes(lesson.Duration) <= calculatedEndDate)
-                .Select(l => l.ToDomainModel())
-                .ToListAsync();
+            return query
+                .Where(lesson => lesson.Start >= start.Date && lesson.Start.AddMinutes(lesson.Duration.Value) <= calculatedEndDate)
+                .ToList();
         }
 
-        public Task<List<Lesson>> GetPassedLesson(Guid userId, DateTime now)
+        public List<Lesson> GetPassedLesson(Guid userId, DateTime now)
         {
-            return IncludeAllSubEntities()
+            return _database.Lessons
                 .Where(lesson => lesson.Student != null && lesson.Student.Id == userId && lesson.Start > now)
                 .OrderBy(lesson => lesson.Start)
-                .Select(lesson => lesson.ToDomainModel())
-                .ToListAsync();
+                .ToList();
         }
 
-        public Task<List<Lesson>> GetUserHistory(Guid userId, DateTime now)
+        public List<Lesson> GetUserHistory(Guid userId, DateTime now)
         {
-            return IncludeAllSubEntities()
-                .Where(lesson => lesson.Student != null && lesson.Student.Id == userId && (lesson.Start.AddMinutes(lesson.Duration)) <= now)
+            return _database.Lessons
+                .Where(lesson => lesson.Student != null && lesson.Student.Id == userId && (lesson.Start.AddMinutes(lesson.Duration.Value)) <= now)
                 .OrderByDescending(lesson => lesson.Start)
-                .Select(lesson => lesson.ToDomainModel())
-                .ToListAsync();
+                .ToList();
         }
 
-        public async Task<List<Lesson>> GetUserPlanning(User user, DateTime start, DateTime end)
+        public List<Lesson> GetUserPlanning(User user, DateTime start, DateTime end)
         {
             DateTime calculatedEndDate = end.Date.AddDays(1).Date;
 
-            IQueryable<Lesson_Database> query = IncludeAllSubEntities();
+            IQueryable<Lesson> query = _database.Lessons;
             if (user.Type == UserType.Student)
                 query = query
                     .Where(lesson => lesson.Student != null && lesson.Student.Id == user.Id && lesson.Start >= start && lesson.Start <= calculatedEndDate);
@@ -89,20 +79,14 @@ namespace Infrastructure.Repositories
                 query = query
                     .Where(lesson => lesson.Teacher.Id == user.Id && lesson.Start >= start && lesson.Start <= calculatedEndDate);
 
-            return await query
-                .Select(lesson => lesson.ToDomainModel())
-                .ToListAsync();
-
+            return query.ToList();
         }
 
-        public int Insert(Lesson lesson)
+        public void Insert(Lesson lesson)
         {
-            Lesson_Database dbLesson = new(lesson);
             try
             {
-                _database.Lessons.Add(dbLesson);
-                _database.SaveChanges();
-                return dbLesson.Id;
+                _database.Insert(lesson);
             }
             catch (Exception)
             {
@@ -110,14 +94,11 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<int> Insert(List<Lesson> lessons)
+        public void Insert(List<Lesson> lessons)
         {
-            List<Lesson_Database> dbLessons = lessons.Select(l => new Lesson_Database(l)).ToList();
             try
             {
-                _database.Lessons.AddRange(dbLessons);
-                _database.SaveChanges();
-                return dbLessons.Select(l => l.Id).ToList();
+                _database.Insert(lessons);
             }
             catch (Exception)
             {
@@ -125,43 +106,17 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<int> InsertAsync(Lesson lesson)
+
+        public void Update(Lesson lesson)
         {
-            Lesson_Database dbLesson = new(lesson);
             try
             {
-                _database.Lessons.Add(dbLesson);
-                await _database.SaveChangesAsync();
-                return dbLesson.Id;
+                _database.Update(lesson);
             }
             catch (Exception)
             {
                 throw new LessonSaveException();
             }
-        }
-
-        public async Task UpdateAsync(Lesson lesson)
-        {
-            Lesson_Database? dbLesson = await _database.Lessons.FindAsync(lesson.Id);
-            if (dbLesson is null) throw new LessonNotFoundException();
-            dbLesson.FromDomainModel(lesson);
-            try
-            {
-                await _database.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                throw new LessonSaveException();
-            }
-        }
-
-        private IQueryable<Lesson_Database> IncludeAllSubEntities()
-        {
-            return _database.Lessons
-                .Include(lesson => lesson.Teacher)
-                .Include(lesson => lesson.Student)
-                .Include(lesson => lesson.Vehicle)
-                .Include(lesson => lesson.WaitingList);
         }
     }
 }

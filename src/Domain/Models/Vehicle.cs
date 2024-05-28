@@ -13,6 +13,8 @@ namespace Domain.Models
         public readonly List<Lesson> _lessons;
         public IReadOnlyList<Lesson> Lessons => _lessons;
 
+        private Vehicle() { }
+
         public Vehicle(string registrationNumber, string name, LicenceType type)
         {            
             RegistrationNumber = new RegistrationNumber(registrationNumber);

@@ -18,7 +18,7 @@ namespace Application.UseCases.DrivingSchools.Queries
             //if (drivingSchool is null)
             //    throw new DrivingSchoolNotFoundException();
             //return Task.FromResult(drivingSchool);
-            return _drivingSchoolRepository.GetByIdAsync(request.Id);
+            return Task.FromResult(_drivingSchoolRepository.GetById(request.Id));
         }
     }
 }

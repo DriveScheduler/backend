@@ -1,21 +1,16 @@
-﻿using Infrastructure.Entities;
+﻿using Domain.Models;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    internal sealed class DatabaseContext : DbContext
+    internal sealed class DatabaseContext : DbContext, IDataAccessor
     {
         public DatabaseContext() { }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
         }        
-
-        //public async new Task<int> SaveChangesAsync(CancellationToken cancellationToken)
-        //{
-        //    return await base.SaveChangesAsync(cancellationToken);
-        //}
 
         public void Clear()
         {
@@ -35,32 +30,56 @@ namespace Infrastructure.Persistence
             base.OnModelCreating(modelBuilder);
         }
 
-        //public void Insert<T>(T entity) where T : class
-        //{
-        //    Set<T>().Add(entity);
-        //}
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlite("Data Source=C:\\Users\\Romain\\Documents\\UnitTests\\DriveScheduler\\backend\\src\\Infrastructure\\database.db");
+            base.OnConfiguring(optionsBuilder);
+        }
 
-        //void IDataAccess.Update<T>(T entity)
-        //{
-        //    Set<T>().Update(entity);
-        //}
+        public void Insert<T>(T entity) where T : class
+        {
+            Set<T>().Add(entity);
+            SaveChanges();
+        }
+        public void Insert<T>(List<T> entities) where T : class
+        {
+            Set<T>().AddRange(entities);
+            SaveChanges();
+        }
 
-        //public void Delete<T>(T entity) where T : class
-        //{
-            //Set<T>().Remove(entity);
-        //}
+        void IDataAccessor.Update<T>(T entity) where T : class
+        {
+            Set<T>().Update(entity);
+            SaveChanges();
+        }
 
-        internal DbSet<User_Database> Users { get; set; }        
-        internal DbSet<Lesson_Database> Lessons { get; set; }
-        internal DbSet<Vehicle_Database> Vehicles { get; set; }
-        internal DbSet<DrivingSchool_Database> DrivingSchools { get; set; }
+        public void Delete<T>(T entity) where T : class
+        {
+            Set<T>().Remove(entity);
+            SaveChanges();
+        }
 
-        //IQueryable<DrivingSchool> IDataAccess.DrivingSchools => DrivingSchools.AsQueryable().Select(d => d.ToDomainModel());
+      
 
-        //IQueryable<Lesson> IDataAccess.Lessons => Lessons.AsQueryable().Select(l => l.ToDomainModel());
+        internal DbSet<User> Users { get; set; }        
+        internal DbSet<Lesson> Lessons { get; set; }
+        internal DbSet<Vehicle> Vehicles { get; set; }
+        internal DbSet<DrivingSchool> DrivingSchools { get; set; }
 
-        //IQueryable<User> IDataAccess.Users => Users.AsQueryable().Select(u => u.ToDomainModel());
+        IQueryable<DrivingSchool> IDataAccessor.DrivingSchools => DrivingSchools;            
 
-        //IQueryable<Vehicle> IDataAccess.Vehicles => Vehicles.AsQueryable().Select(v => v.ToDomainModel());
+        IQueryable<Lesson> IDataAccessor.Lessons => Lessons
+            .Include(l => l.Teacher)
+            .Include(l => l.Student)
+            .Include(l => l.WaitingList)
+            .Include(l => l.Vehicle);            
+
+        IQueryable<User> IDataAccessor.Users => Users
+            .Include(u => u.LessonsAsTeacher)
+            .Include(u => u.LessonsAsStudent)
+            .Include(u => u.WaitingList);            
+
+        IQueryable<Vehicle> IDataAccessor.Vehicles => Vehicles
+            .Include(v => v.Lessons);       
     }
 }

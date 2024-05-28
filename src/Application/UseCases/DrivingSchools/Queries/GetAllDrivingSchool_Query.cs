@@ -13,7 +13,7 @@ namespace Application.UseCases.DrivingSchools.Queries
 
         public Task<List<DrivingSchool>> Handle(GetAllDrivingSchool_Query request, CancellationToken cancellationToken)
         {
-            return _drivingSchoolRepository.GetAllAsync();
+            return Task.FromResult(_drivingSchoolRepository.GetAll());
         }
     }
 }

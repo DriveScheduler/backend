@@ -40,7 +40,7 @@ namespace UseCases.Users
 
             // Assert
             Assert.NotEqual(Guid.Empty, userId);
-            Assert.NotNull(await _userRepository.GetUserByIdAsync(userId));
+            Assert.NotNull(_userRepository.GetUserById(userId));
         }
 
         [Fact]

@@ -1,19 +1,24 @@
-﻿using Infrastructure.Entities;
+﻿using Domain.Models;
+
+using Infrastructure.Configurations.ValueObjectsConverter;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal class VehicleConfiguration : IEntityTypeConfiguration<Vehicle_Database>
+    internal class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
     {
-        public void Configure(EntityTypeBuilder<Vehicle_Database> builder)
+        public void Configure(EntityTypeBuilder<Vehicle> builder)
         {
+            builder.ToTable("Vehicles");
+
             builder.Property(v => v.Id)
                 .IsRequired()
                 .ValueGeneratedOnAdd();
 
             builder.Property(v => v.RegistrationNumber)
+                .HasConversion<RegistrationNumberConverter>()
                 .IsRequired();
 
             builder.Property(v => v.Name)

@@ -15,10 +15,10 @@ namespace Application.UseCases.Users.Queries
         private readonly ILessonRepository _lessonRepository = lessonRepository;
         private readonly IUserRepository _userRepository = userRepository;
 
-        public async Task<List<Lesson>> Handle(GetUserPlanning_Query request, CancellationToken cancellationToken)
+        public Task<List<Lesson>> Handle(GetUserPlanning_Query request, CancellationToken cancellationToken)
         {
-            User user = await _userRepository.GetUserByIdAsync(request.UserId);
-            return await _lessonRepository.GetUserPlanning(user, request.Start, request.End);
+            User user = _userRepository.GetUserById(request.UserId);
+            return Task.FromResult(_lessonRepository.GetUserPlanning(user, request.Start, request.End));
             //User? user = await _database.Users.FindAsync(request.UserId);
             //if (user is null)
             //    throw new UserNotFoundException();

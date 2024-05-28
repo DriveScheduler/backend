@@ -65,7 +65,7 @@ namespace UseCases.Schedule
             // Act
             var command = new UpdateLesson_Command(lessonId, updatedLessonName, updatedStartTime, updatedDuration, carTeacherId2);
             await _mediator.Send(command);
-            Lesson? updatedLesson = await _lessonRepository.GetByIdAsync(lessonId);
+            Lesson? updatedLesson = _lessonRepository.GetById(lessonId);
 
             // Assert            
             Assert.NotNull(updatedLesson);

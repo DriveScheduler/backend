@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Domain.Exceptions.Users;
 using Domain.ValueObjects;
 
 namespace Domain.Models
@@ -22,6 +23,8 @@ namespace Domain.Models
 
         private readonly List<Lesson> _waitingList;
         public IReadOnlyList<Lesson> WaitingList => _waitingList;
+
+        private User() { }
 
         public User(string name, string firstName, string email, string password, LicenceType licenceType, UserType type)
         {
@@ -67,17 +70,20 @@ namespace Domain.Models
 
         private void ValidatePasswordOrThrow(string password)
         {
-            throw new NotImplementedException();
+            if(string.IsNullOrWhiteSpace(password))
+                throw new UserValidationException("Le mot de passe n'est pas valide");
         }       
 
         private void ValidateFirstNameOrThrow(string firstName)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(firstName))
+                throw new UserValidationException("Le prénom est obligatoire");
         }
 
         private void ValidateNameOrThrow(string name)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(name))
+                throw new UserValidationException("Le nom est obligatoire");
         }
     }
 }

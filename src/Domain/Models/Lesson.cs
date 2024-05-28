@@ -9,7 +9,8 @@ namespace Domain.Models
         public string Name { get; private set; }
         public DateTime Start { get; private set; }
         public DateTime End => Start.AddMinutes(Duration.Value);
-        public LessonDuration Duration { get; private set; }        
+        public LessonDuration Duration { get; private set; }  
+        public Guid TeacherId { get; private set; }
         public User Teacher { get; private set; }
         public LicenceType Type { get; set; }
         public Vehicle Vehicle { get; private set; }
@@ -17,6 +18,8 @@ namespace Domain.Models
         
         private readonly List<User> _waitingList;
         public IReadOnlyList<User> WaitingList { get; }
+
+        private Lesson() { }
 
         public Lesson(string name, DateTime start, int duration, User teacher, LicenceType type, Vehicle vehicle)
         {            

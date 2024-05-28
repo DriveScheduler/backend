@@ -40,7 +40,7 @@ namespace UseCases.Users
             // Act
             var updateCommand = new UpdateUser_Command(userId, updatedName, updatedFirstname, updatedEmail, updatedLicenceType);
             await _mediator.Send(updateCommand);
-            User? user = await _userRepository.GetUserByIdAsync(userId);
+            User? user = _userRepository.GetUserById(userId);
 
             // Assert
             Assert.NotNull(user);

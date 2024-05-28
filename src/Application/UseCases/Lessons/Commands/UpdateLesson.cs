@@ -23,14 +23,14 @@ namespace Application.UseCases.Lessons.Commands
         private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
         private readonly ISystemClock _clock = clock;
 
-        public async Task Handle(UpdateLesson_Command request, CancellationToken cancellationToken)
+        public Task Handle(UpdateLesson_Command request, CancellationToken cancellationToken)
         {
-            User teacher = await _userRepository.GetUserByIdAsync(request.TeacherId);
-            Vehicle vehicle = await _vehicleRepository.FindAvailable(request.Date, request.Duration, teacher.LicenceType);
+            User teacher = _userRepository.GetUserById(request.TeacherId);
+            Vehicle vehicle = _vehicleRepository.FindAvailable(request.Date, request.Duration, teacher.LicenceType);
             //User teacher = GetTeacher(request.TeacherId);
             //Vehicle vehicle = GetVehicle(request.VehicleId);
 
-            Lesson lesson = await _lessonRepository.GetByIdAsync(request.Id);
+            Lesson lesson = _lessonRepository.GetById(request.Id);
             //Lesson? lesson = _database.Lessons.Find(request.Id);
             //if (lesson is null)
             //    throw new LessonNotFoundException();
@@ -53,7 +53,8 @@ namespace Application.UseCases.Lessons.Commands
 
             //validator.ThrowIfInvalid(lesson);
 
-            await _lessonRepository.UpdateAsync(lesson);
+            _lessonRepository.Update(lesson);
+            return Task.CompletedTask;
             //if (await _database.SaveChangesAsync(cancellationToken) != 1)
             //    throw new LessonSaveException();
         }

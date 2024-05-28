@@ -4,9 +4,9 @@ namespace Domain.Repositories
 {
     public interface IDrivingSchoolRepository
     {
-        public Task<int> InsertAsync(DrivingSchool drivingSchool);
-        public Task UpdateAsync(DrivingSchool drivingSchool);
-        public Task<DrivingSchool> GetByIdAsync(int id);
-        public Task<List<DrivingSchool>> GetAllAsync();
+        public void Insert(DrivingSchool drivingSchool);
+        public void Update(DrivingSchool drivingSchool);
+        public DrivingSchool GetById(int id);
+        public List<DrivingSchool> GetAll();
     }
 }

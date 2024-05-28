@@ -1,14 +1,18 @@
-﻿using Infrastructure.Entities;
+﻿using Domain.Models;
+
+using Infrastructure.Configurations.ValueObjectsConverter;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal sealed class UserConfiguration : IEntityTypeConfiguration<User_Database>
+    internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<User_Database> builder)
+        public void Configure(EntityTypeBuilder<User> builder)
         {
+            builder.ToTable("Users");
+
             builder.Property(u => u.Id)
                .IsRequired()
                .ValueGeneratedOnAdd();
@@ -23,6 +27,7 @@ namespace Infrastructure.Configurations
 
             builder.Property(u => u.Email)
                 .IsRequired()
+                .HasConversion<EmailConverter>()
                 .HasMaxLength(50);
 
             builder.Property(u => u.LicenceType)

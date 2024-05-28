@@ -35,7 +35,7 @@ namespace UseCases.Vehicles
             // Act
             var command = new CreateVehicle_Command(registrationNumber, name, type);
             int vehicleId = await _mediator.Send(command);
-            Vehicle? vehicle = await _vehicleRepository.GetByIdAsync(vehicleId);
+            Vehicle? vehicle = _vehicleRepository.GetById(vehicleId);
 
             // Assert            
             Assert.NotNull(vehicle);

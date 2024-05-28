@@ -57,7 +57,7 @@ namespace UseCases.Schedule
             await _mediator.Send(command);
 
             // Assert
-            Lesson? lesson = await _lessonRepository.GetByIdAsync(lessonId);
+            Lesson? lesson = _lessonRepository.GetById(lessonId);
             Assert.NotNull(lesson);
             Assert.Equal(student, lesson.Student);
         }

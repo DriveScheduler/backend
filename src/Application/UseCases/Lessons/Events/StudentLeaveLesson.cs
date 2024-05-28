@@ -14,14 +14,16 @@ namespace Application.UseCases.Lessons.Events
         private readonly ILessonRepository _lessonRepository = lessonRepository;
         private readonly IEmailSender _email = email;
 
-        public async Task Handle(StudentLeaveLesson_Notification notification, CancellationToken cancellationToken)
+        public Task Handle(StudentLeaveLesson_Notification notification, CancellationToken cancellationToken)
         {
-            Lesson lesson = await _lessonRepository.GetByIdAsync(notification.LessonId);
+            Lesson lesson = _lessonRepository.GetById(notification.LessonId);
             //Lesson? lesson = _database.Lessons.Include(l => l.WaitingList).FirstOrDefault(l => l.Id == notification.LessonId);
             //if (lesson is null)
             //    return;
 
-            await _email.SendAsync("Une place vient de se libérer", $"Un élève vient de se désister du cours {lesson.Name}", lesson.WaitingList.Select(u => u.Email.Value).ToList());
+            _email.SendAsync("Une place vient de se libérer", $"Un élève vient de se désister du cours {lesson.Name}", lesson.WaitingList.Select(u => u.Email.Value).ToList());
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -33,8 +33,8 @@ namespace Application.UseCases.Users.Commands
             //};
 
             //new UserValidator(_database).ThrowIfInvalid(user);
-
-            return _userRepository.InsertAsync(user);
+            _userRepository.Insert(user);
+            return Task.FromResult(user.Id);
             //_database.Users.Add(user);
 
             //if (await _database.SaveChangesAsync() != 1)

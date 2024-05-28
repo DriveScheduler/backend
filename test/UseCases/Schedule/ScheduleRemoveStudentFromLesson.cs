@@ -53,7 +53,7 @@ namespace UseCases.Schedule
 
             // Act
             await _mediator.Send(new RemoveStudentFromLesson_Command(lessonId, student1.Id));
-            Lesson lesson = await _lessonRepository.GetByIdAsync(lessonId);
+            Lesson lesson = _lessonRepository.GetById(lessonId);
 
             // Assert
             Assert.Null(lesson.Student);

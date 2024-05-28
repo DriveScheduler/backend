@@ -24,10 +24,10 @@ namespace Application.UseCases.Lessons.Commands
         private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
         private readonly ISystemClock _systemClock = systemClock;
 
-        public async Task<int> Handle(CreateLesson_Command request, CancellationToken cancellationToken)
+        public Task<int> Handle(CreateLesson_Command request, CancellationToken cancellationToken)
         {
-            User teacher = await _userRepository.GetUserByIdAsync(request.TeacherId);
-            Vehicle vehicle = await _vehicleRepository.FindAvailable(request.Date, request.Duration, request.Type);
+            User teacher = _userRepository.GetUserById(request.TeacherId);
+            Vehicle vehicle = _vehicleRepository.FindAvailable(request.Date, request.Duration, request.Type);
             //User user = GetTeacher(request.TeacherId);
             //Vehicle vehicle = FindAvailableVehicle(request.Type, request.Date, request.Date.AddMinutes(request.Duration));
 
@@ -56,7 +56,8 @@ namespace Application.UseCases.Lessons.Commands
             //if (await _database.SaveChangesAsync() != 1)
             //    throw new LessonSaveException();
 
-            return await _lessonRepository.InsertAsync(lesson);
+            _lessonRepository.Insert(lesson);
+            return Task.FromResult(lesson.Id);
             //return lesson.Id;
         }
 

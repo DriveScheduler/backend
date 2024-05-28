@@ -105,7 +105,7 @@ namespace UseCases.Schedule
 
             // Act
             await _mediator.Send(new RemoveStudentFromWaitingList_Command(lessonId, student3.Id));
-            lesson = await _lessonRepository.GetByIdAsync(lessonId);
+            lesson = _lessonRepository.GetById(lessonId);
 
             // Assert
             Assert.Single(lesson.WaitingList);

@@ -52,7 +52,7 @@ namespace UseCases.Schedule
             // Act
             var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
             int lessonId = await _mediator.Send(command);
-            Lesson? lesson = await _lessonRepository.GetByIdAsync(lessonId);
+            Lesson? lesson = _lessonRepository.GetById(lessonId);
 
             // Assert
             Assert.NotEqual(default, lessonId);
@@ -266,7 +266,7 @@ namespace UseCases.Schedule
             // Act
             var command = new CreateLesson_Command("Cours 3", _clock.Now.AddMinutes(20), 30, teacher3.Id, LicenceType.Car);
             int lessonId = await _mediator.Send(command);
-            Lesson? lesson = await _lessonRepository.GetByIdAsync(lessonId);
+            Lesson? lesson = _lessonRepository.GetById(lessonId);
 
             // Assert
             Assert.NotNull(lesson);

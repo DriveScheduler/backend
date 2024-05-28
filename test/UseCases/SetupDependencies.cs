@@ -2,6 +2,7 @@
 using Application.Abstractions;
 
 using Infrastructure;
+using Infrastructure.Persistence;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,10 +23,11 @@ namespace UseCases
             _serviceCollection.ApplicationMediator();
             _serviceCollection.AddRepositories();
 
-            _serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
+            //_serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
             
             AddFakeSystemClock();  
             AddFakeEmailSender();
+            AddFakeDataAccessor();
 
             ServiceProvider = _serviceCollection.BuildServiceProvider();
         }        
@@ -38,6 +40,11 @@ namespace UseCases
         private void AddFakeEmailSender()
         {
             _serviceCollection.AddScoped<IEmailSender, FakeEmailSender>();
+        }
+
+        private void AddFakeDataAccessor()
+        {
+            _serviceCollection.AddScoped<IDataAccessor, IFakeDataAccessor>();
         }
     }
 }

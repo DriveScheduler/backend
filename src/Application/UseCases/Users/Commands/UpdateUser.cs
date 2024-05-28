@@ -12,9 +12,9 @@ namespace Application.UseCases.Users.Commands
     {
         private readonly IUserRepository _userRepository = userRepository;
 
-        public async Task Handle(UpdateUser_Command request, CancellationToken cancellationToken)
+        public Task Handle(UpdateUser_Command request, CancellationToken cancellationToken)
         {
-            User user = await _userRepository.GetUserByIdAsync(request.UserId);
+            User user = _userRepository.GetUserById(request.UserId);
             //User? user = _database.Users.Find(request.UserId);
             //if (user is null)
             //    throw new UserNotFoundException();          
@@ -27,7 +27,8 @@ namespace Application.UseCases.Users.Commands
 
             //new UserValidator(_database).ThrowIfInvalid(user);
 
-            await _userRepository.UpdateAsync(user);
+            _userRepository.Update(user);
+            return Task.CompletedTask;
             //if (await _database.SaveChangesAsync(cancellationToken) != 1)
             //    throw new UserSaveException();
         }

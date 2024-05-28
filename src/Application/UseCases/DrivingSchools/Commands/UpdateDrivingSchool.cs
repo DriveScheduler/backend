@@ -11,9 +11,9 @@ namespace Application.UseCases.DrivingSchools.Commands
     {
         private readonly IDrivingSchoolRepository _drivingSchoolRepository = drivingSchoolRepository;
 
-        public async Task Handle(UpdateDrivingSchool_Command request, CancellationToken cancellationToken)
+        public Task Handle(UpdateDrivingSchool_Command request, CancellationToken cancellationToken)
         {
-            DrivingSchool drivingSchool = await _drivingSchoolRepository.GetByIdAsync(request.Id);
+            DrivingSchool drivingSchool = _drivingSchoolRepository.GetById(request.Id);
 
             //DrivingSchool? drivingSchool = _database.DrivingSchools.Find(request.Id);
             //if (drivingSchool is null)
@@ -29,7 +29,9 @@ namespace Application.UseCases.DrivingSchools.Commands
 
             //if (await _database.SaveChangesAsync() != 1)
             //    throw new DrivingSchoolSaveException();
-            await _drivingSchoolRepository.UpdateAsync(drivingSchool);
+            _drivingSchoolRepository.Update(drivingSchool);
+
+            return Task.CompletedTask;
         }
     }
 }

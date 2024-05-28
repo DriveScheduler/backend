@@ -20,11 +20,11 @@ namespace Application.UseCases.Lessons.Commands
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ISystemClock _systemClock = systemClock;
 
-        public async Task Handle(AddStudentToLesson_Command request, CancellationToken cancellationToken)
+        public Task Handle(AddStudentToLesson_Command request, CancellationToken cancellationToken)
         {
-            User student = await _userRepository.GetUserByIdAsync(request.UserId);
+            User student = _userRepository.GetUserById(request.UserId);
 
-            Lesson lesson = await _lessonRepository.GetByIdAsync(request.LessonId);
+            Lesson lesson = _lessonRepository.GetById(request.LessonId);
             //Lesson? lesson = _database.Lessons
             //    .Include(Lesson => Lesson.Student)
             //    .FirstOrDefault(l => l.Id == request.LessonId);
@@ -44,7 +44,9 @@ namespace Application.UseCases.Lessons.Commands
 
             //if (await _database.SaveChangesAsync() != 1)
             //    throw new LessonSaveException();
-            await _lessonRepository.UpdateAsync(lesson);
+            _lessonRepository.Update(lesson);
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Application.UseCases.Users.Queries
         private readonly ILessonRepository _lessonRepository = lessonRepository;
         private readonly ISystemClock _clock = clock;
 
-        public async Task<UserLessonPlanning> Handle(GetUserLessonPlanning_Query request, CancellationToken cancellationToken)
+        public Task<UserLessonPlanning> Handle(GetUserLessonPlanning_Query request, CancellationToken cancellationToken)
         {
             //User? user = _database.Users.Find(request.UserId);
             //if(user is null)
@@ -33,7 +33,7 @@ namespace Application.UseCases.Users.Queries
             DateTime firstDayOfNextWeek = DateUtil.GetFirstDayOfWeek(_clock.Now.AddDays(7));
             DateTime lastDayOfThisMonth = DateUtil.GetLastDayOfMonth(_clock.Now);
 
-            List<Lesson> lessons = await _lessonRepository.GetPassedLesson(request.UserId, _clock.Now);
+            List<Lesson> lessons = _lessonRepository.GetPassedLesson(request.UserId, _clock.Now);
 
             UserLessonPlanning planning = new UserLessonPlanning()
             {
@@ -46,7 +46,7 @@ namespace Application.UseCases.Users.Queries
                 TotalTime = lessons.Sum(lesson => lesson.Duration.Value)
             };
 
-            return planning;
+            return Task.FromResult(planning);
 
 
         }

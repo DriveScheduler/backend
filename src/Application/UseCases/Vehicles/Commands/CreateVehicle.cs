@@ -12,7 +12,7 @@ namespace Application.UseCases.Vehicles.Commands
     {
         private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
 
-        public async Task<int> Handle(CreateVehicle_Command request, CancellationToken cancellationToken)
+        public Task<int> Handle(CreateVehicle_Command request, CancellationToken cancellationToken)
         {
             //Vehicle vehicle = new Vehicle()
             //{
@@ -28,7 +28,8 @@ namespace Application.UseCases.Vehicles.Commands
             //if (await _database.SaveChangesAsync() != 1)
             //    throw new VehicleSaveException();            
 
-            return await _vehicleRepository.InsertAsync(vehicle);
+            _vehicleRepository.Insert(vehicle);
+            return Task.FromResult(vehicle.Id);
         }
     }
 }

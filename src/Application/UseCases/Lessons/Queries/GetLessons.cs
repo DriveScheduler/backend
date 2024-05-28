@@ -17,10 +17,10 @@ namespace Application.UseCases.Lessons.Queries
         private readonly ILessonRepository _lessonRepository = lessonRepository;
         private readonly IUserRepository _userRepository = userRepository;
 
-        public async Task<List<Lesson>> Handle(GetLessons_Query request, CancellationToken cancellationToken)
+        public Task<List<Lesson>> Handle(GetLessons_Query request, CancellationToken cancellationToken)
         {
-            User user = await _userRepository.GetUserByIdAsync(request.UserId);
-            return await _lessonRepository.GetLessonsForUserAsync(user, request.Start, request.End, request.OnlyEmptyLesson);
+            User user = _userRepository.GetUserById(request.UserId);
+            return Task.FromResult(_lessonRepository.GetLessonsForUser(user, request.Start, request.End, request.OnlyEmptyLesson));
 
             //IQueryable<Lesson> query = _database.Lessons
             //    .Include(l => l.Student)
