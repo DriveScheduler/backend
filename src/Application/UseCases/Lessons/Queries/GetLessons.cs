@@ -9,13 +9,18 @@ namespace Application.UseCases.Lessons.Queries
 {
     public sealed record GetLessons_Query(Guid UserId, DateTime Start, DateTime End, bool OnlyEmptyLesson=false) : IRequest<List<Lesson>>;
 
-    internal sealed class GetLessons_QueryHandler(ILessonRepository lessonRepository) : IRequestHandler<GetLessons_Query, List<Lesson>>
+    internal sealed class GetLessons_QueryHandler(
+        ILessonRepository lessonRepository,
+        IUserRepository userRepository
+        ) : IRequestHandler<GetLessons_Query, List<Lesson>>
     {
         private readonly ILessonRepository _lessonRepository = lessonRepository;
+        private readonly IUserRepository _userRepository = userRepository;
 
-        public Task<List<Lesson>> Handle(GetLessons_Query request, CancellationToken cancellationToken)
+        public async Task<List<Lesson>> Handle(GetLessons_Query request, CancellationToken cancellationToken)
         {
-            return _lessonRepository.GetLessonsForUserAsync(request.UserId, request.Start, request.End, request.OnlyEmptyLesson);
+            User user = await _userRepository.GetUserByIdAsync(request.UserId);
+            return await _lessonRepository.GetLessonsForUserAsync(user, request.Start, request.End, request.OnlyEmptyLesson);
 
             //IQueryable<Lesson> query = _database.Lessons
             //    .Include(l => l.Student)

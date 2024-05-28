@@ -21,7 +21,7 @@ namespace Application.UseCases.Lessons.Commands
 
         public async Task Handle(AddStudentToWaitingList_Command request, CancellationToken cancellationToken)
         {
-            User student = await _userRepository.GetStudentById(request.UserId);
+            User student = await _userRepository.GetUserByIdAsync(request.UserId);
             //User? student = _database.Users.Find(request.UserId);
             //if (student is null)
             //    throw new UserNotFoundException();

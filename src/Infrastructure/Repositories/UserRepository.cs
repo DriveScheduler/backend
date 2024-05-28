@@ -1,78 +1,112 @@
-﻿using Domain.Models;
+﻿using Domain.Enums;
+using Domain.Exceptions.Users;
+using Domain.Models;
 using Domain.Repositories;
+using Domain.ValueObjects;
 
+using Infrastructure.Entities;
 using Infrastructure.Persistence;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Infrastructure.Repositories
-{
-    // FULL LOAD
+{    
     internal sealed class UserRepository(DatabaseContext database) : IUserRepository
     {
         private readonly DatabaseContext _database = database;
 
         public Task<List<User>> GetAllTeachers()
         {
-            throw new NotImplementedException();
+            return IncludeAllSubEntities()
+                .Select(user => user.ToDomainModel())
+                .ToListAsync();
+        }      
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            User_Database? user = await IncludeAllSubEntities().FirstOrDefaultAsync(user => user.Email == email);
+            if (user is null)
+                throw new UserNotFoundException();
+            return user.ToDomainModel();
         }
 
-        public Task<User> GetStudentById(Guid id)
+        public async Task<User> GetUserByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<User> GetTeacherById(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<User> GetUserByEmailAsync(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<User> GetUserByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
+            User_Database? user = await IncludeAllSubEntities().FirstOrDefaultAsync(user => user.Id == id);
+            if (user is null)
+                throw new UserNotFoundException();
+            return user.ToDomainModel();
         }
 
         public Guid Insert(User user)
         {
-            throw new NotImplementedException();
+            User_Database dbUser = new(user);
+            try
+            {
+                _database.Users.Add(dbUser);
+                _database.SaveChanges();
+                return dbUser.Id;
+            }
+            catch (Exception)
+            {
+                throw new UserSaveException();
+            }
         }
 
-        public List<Guid> Insert(List<User> user)
+        public List<Guid> Insert(List<User> users)
         {
-            throw new NotImplementedException();
+            List<User_Database> dbUsers = users.Select(u => new User_Database(u)).ToList();
+            try
+            {
+                _database.Users.AddRange(dbUsers);
+                _database.SaveChanges();
+                return dbUsers.Select(u => u.Id).ToList();
+            }
+            catch(Exception)
+            {
+                throw new UserSaveException();
+            }
         }     
 
-        public Task UpdateAsync(User user)
+        public async Task UpdateAsync(User user)
         {
-            throw new NotImplementedException();
+            User_Database? dbUuser = await IncludeAllSubEntities().FirstOrDefaultAsync(user => user.Id == user.Id);
+            if (dbUuser is null)
+                throw new UserNotFoundException();
+
+            dbUuser.FromDomainModel(user);
+
+            try
+            {
+                await _database.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw new UserSaveException();
+            }
         }    
 
-        public Task<Guid> InsertAsync(User user)
+        public async Task<Guid> InsertAsync(User user)
         {
-            throw new NotImplementedException();
+            User_Database dbUser = new(user);
+            try
+            {
+                _database.Users.Add(dbUser);
+                await _database.SaveChangesAsync();
+                return dbUser.Id;
+            }
+            catch (Exception)
+            {
+                throw new UserSaveException();
+            }
         }
 
-        //public Task<int> Delete(int id)
-        //{
-        //    _database.Users.Remove(_database.Users.Find(id));
-        //    return _database.SaveChangesAsync();
-        //}
-
-        //public Task<int> InsertAsync(User entity)
-        //{
-        //    _database.Users.Add(new User_Database(entity));
-        //    return _database.SaveChangesAsync();
-        //}
-
-        //public Task<int> Update(User entity)
-        //{
-        //    User_Database? dbUser = _database.Users.Find(entity.Id);
-        //    if (dbUser is null) return Task.FromResult(1);
-        //    dbUser.FromDomainModel(entity);
-        //    return _database.SaveChangesAsync();
-        //}
+        private IQueryable<User_Database> IncludeAllSubEntities()
+        {
+            return _database.Users
+                .Include(u => u.WaitingList)
+                .Include(u => u.LessonsAsTeacher)
+                .Include(u => u.LessonsAsStudent);         
+        }      
     }
 }

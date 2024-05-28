@@ -22,7 +22,7 @@ namespace Application.UseCases.Lessons.Commands
 
         public async Task Handle(AddStudentToLesson_Command request, CancellationToken cancellationToken)
         {
-            User student = await _userRepository.GetStudentById(request.UserId);
+            User student = await _userRepository.GetUserByIdAsync(request.UserId);
 
             Lesson lesson = await _lessonRepository.GetByIdAsync(request.LessonId);
             //Lesson? lesson = _database.Lessons

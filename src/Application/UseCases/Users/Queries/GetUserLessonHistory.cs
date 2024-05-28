@@ -27,7 +27,7 @@ namespace Application.UseCases.Users.Queries
             //    .OrderByDescending(lesson => lesson.Start)
             //    .ToListAsync();
 
-            List<Lesson> lessons = await _lessonRepository.GetUserHistory(request.UserId);
+            List<Lesson> lessons = await _lessonRepository.GetUserHistory(request.UserId, _clock.Now);
 
             UserLessonHistory history = new UserLessonHistory()
             {

@@ -26,7 +26,7 @@ namespace Application.UseCases.Lessons.Commands
 
         public async Task<int> Handle(CreateLesson_Command request, CancellationToken cancellationToken)
         {
-            User teacher = await _userRepository.GetTeacherById(request.TeacherId);
+            User teacher = await _userRepository.GetUserByIdAsync(request.TeacherId);
             Vehicle vehicle = await _vehicleRepository.FindAvailable(request.Date, request.Duration, request.Type);
             //User user = GetTeacher(request.TeacherId);
             //Vehicle vehicle = FindAvailableVehicle(request.Type, request.Date, request.Date.AddMinutes(request.Duration));

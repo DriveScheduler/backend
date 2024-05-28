@@ -33,7 +33,7 @@ namespace Application.UseCases.Users.Queries
             DateTime firstDayOfNextWeek = DateUtil.GetFirstDayOfWeek(_clock.Now.AddDays(7));
             DateTime lastDayOfThisMonth = DateUtil.GetLastDayOfMonth(_clock.Now);
 
-            List<Lesson> lessons = await _lessonRepository.GetPassedLesson(request.UserId);
+            List<Lesson> lessons = await _lessonRepository.GetPassedLesson(request.UserId, _clock.Now);
 
             UserLessonPlanning planning = new UserLessonPlanning()
             {

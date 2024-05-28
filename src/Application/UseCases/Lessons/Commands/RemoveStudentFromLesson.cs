@@ -24,7 +24,7 @@ namespace Application.UseCases.Lessons.Commands
 
         public async Task Handle(RemoveStudentFromLesson_Command request, CancellationToken cancellationToken)
         {
-            User user = await _userRepository.GetStudentById(request.UserId);
+            User user = await _userRepository.GetUserByIdAsync(request.UserId);
             //User? user = _database.Users.Find(request.UserId);
             //if (user is null)
             //    throw new UserNotFoundException();
