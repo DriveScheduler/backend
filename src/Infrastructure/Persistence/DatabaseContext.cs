@@ -28,13 +28,7 @@ namespace Infrastructure.Persistence
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
             base.OnModelCreating(modelBuilder);
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite("Data Source=C:\\Users\\Romain\\Documents\\UnitTests\\DriveScheduler\\backend\\src\\Infrastructure\\database.db");
-            base.OnConfiguring(optionsBuilder);
-        }
+        }      
 
         public void Insert<T>(T entity) where T : class
         {
