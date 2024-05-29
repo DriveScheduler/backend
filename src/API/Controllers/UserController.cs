@@ -1,3 +1,4 @@
+using API.Authentication;
 using API.Inputs.Users;
 using API.Outputs.Users;
 
@@ -15,10 +16,11 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController(IMediator mediator) : ControllerBase
+    public class UserController(IMediator mediator, JwtTokenProvider tokenProvider) : ControllerBase
     {
 
-        private readonly IMediator _mediator = mediator;        
+        private readonly IMediator _mediator = mediator;   
+        private readonly JwtTokenProvider _tokenProvider = tokenProvider;
 
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CreateUserModel input)
@@ -123,6 +125,22 @@ namespace API.Controllers
             {
                 return BadRequest(e.Message);
             }
-        }    
+        }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(LogInUserModel model)
+        {
+            var query = new LogIn_Query(model.Email, model.Password);
+            try
+            {
+                User user = await _mediator.Send(query);
+                string token = _tokenProvider.GenerateToken(user);
+                return Ok(new UserAuthenticated() { Id = user.Id, Token = token });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

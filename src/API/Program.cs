@@ -1,3 +1,5 @@
+using API.Authentication;
+
 using Application;
 
 using Infrastructure;
@@ -20,6 +22,9 @@ internal class Program
         builder.Services.ApplicationMediator();
         builder.Services.InfrastructureDependencyInjection();
 
+        builder.Services.AddJwtTokenService(builder.Configuration);
+        builder.Services.AddSwaggerJwtTokenService();
+        
 
         var app = builder.Build();
 
@@ -36,8 +41,9 @@ internal class Program
            .AllowAnyMethod()
            .AllowAnyHeader());
 
+        app.UseMiddleware<JwtMiddleware>();
+        app.UseAuthentication();        
         app.UseAuthorization();
-
         app.MapControllers();
 
         app.Run();
