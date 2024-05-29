@@ -13,11 +13,6 @@ namespace Application.UseCases.Users.Queries
 
         public Task<User> Handle(GetUserById_Query request, CancellationToken cancellationToken)
         {
-            //User? user = _database.Users.Find(request.Id);
-            //if (user is null)
-            //    throw new UserNotFoundException();
-
-            //return Task.FromResult(user);
             return Task.FromResult(_userRepository.GetUserById(request.Id));
         }
     }

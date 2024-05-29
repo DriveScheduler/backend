@@ -10,18 +10,26 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Infrastructure.Persistence;
 
 namespace UseCases.Users
 {
-    public class UserCreateAccount : IClassFixture<SetupDependencies>
+    public class UserCreateAccount : IClassFixture<SetupDependencies>, IDisposable
     {
         private readonly IUserRepository _userRepository;
+        private readonly IDataAccessor _database;
         private readonly IMediator _mediator;
 
         public UserCreateAccount(SetupDependencies fixture)
         {
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
+        }
+
+        public void Dispose()
+        {
+            _database.Clear();
         }
 
         [Fact]
@@ -93,8 +101,7 @@ namespace UseCases.Users
             var command = new CreateUser_Command(name, firstname, email, password, licenceType, UserType.Student);
 
             // Assert
-            UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
-            Assert.Equal("L'adresse email est obligatoire", exc.Message);
+            await Assert.ThrowsAsync<InvalidEmailException>(() => _mediator.Send(command));            
         }
 
         [Theory]
@@ -114,8 +121,7 @@ namespace UseCases.Users
             var command = new CreateUser_Command(name, firstname, invalidEmail, password, licenceType, UserType.Student);
 
             // Assert
-            UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
-            Assert.Equal("L'adresse email n'est pas valide", exc.Message);
+            await Assert.ThrowsAsync<InvalidEmailException>(() => _mediator.Send(command));            
         }
 
         [Fact]

@@ -10,5 +10,6 @@ namespace Domain.Repositories
         public void Update(Vehicle vehicle);
         public Vehicle GetById(int id);        
         public Vehicle FindAvailable(DateTime start, int duration, LicenceType vehicleType);
+        public bool IsRegistrationNumberUnique(string registrationNumber);
     }
 }

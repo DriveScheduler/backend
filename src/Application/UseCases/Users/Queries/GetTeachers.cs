@@ -12,9 +12,6 @@ namespace Application.UseCases.Users.Queries
 
         public Task<List<User>> Handle(GetTeachers_Query request, CancellationToken cancellationToken)
         {
-            //return _database.Users
-            //    .Where(u => u.Type == UserType.Teacher)
-            //    .ToListAsync();
             return Task.FromResult(_userRepository.GetAllTeachers());
         }
     }

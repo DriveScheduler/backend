@@ -71,7 +71,7 @@ namespace Domain.Models
         private void ValidatePasswordOrThrow(string password)
         {
             if(string.IsNullOrWhiteSpace(password))
-                throw new UserValidationException("Le mot de passe n'est pas valide");
+                throw new UserValidationException("Le mot de passe est obligatoire");
         }       
 
         private void ValidateFirstNameOrThrow(string firstName)

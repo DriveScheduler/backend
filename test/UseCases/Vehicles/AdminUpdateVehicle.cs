@@ -10,18 +10,26 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Infrastructure.Persistence;
 
 namespace UseCases.Vehicles
 {
-    public class AdminUpdateVehicle : IClassFixture<SetupDependencies>
+    public class AdminUpdateVehicle : IClassFixture<SetupDependencies>, IDisposable
     {
         private readonly IVehicleRepository _vehicleRepository;
+        private readonly IDataAccessor _database;
         private readonly IMediator _mediator;
 
         public AdminUpdateVehicle(SetupDependencies fixture)
         {
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
+        }
+
+        public void Dispose()
+        {
+            _database.Clear();
         }
 
         [Fact]
@@ -30,20 +38,18 @@ namespace UseCases.Vehicles
             // Arrange
             const int vehicleId = 1;
             const string registrationNumber = "AA123BB";
-            const string updatedName = "Renault Clio";
-            const LicenceType updatedType = LicenceType.Car;
+            const string updatedName = "Renault Clio";            
 
             _vehicleRepository.Insert(DataSet.GetTruck(vehicleId));
 
             // Act
-            var command = new UpdateVehicle_Command(vehicleId, registrationNumber, updatedName, updatedType);
+            var command = new UpdateVehicle_Command(vehicleId, registrationNumber, updatedName);
             await _mediator.Send(command);
             Vehicle? vehicle = _vehicleRepository.GetById(vehicleId);
 
             // Assert            
             Assert.NotNull(vehicle);
-            Assert.Equal(updatedName, vehicle.Name);
-            Assert.Equal(updatedType, vehicle.Type);
+            Assert.Equal(updatedName, vehicle.Name);            
         }
 
         [Theory]
@@ -60,11 +66,10 @@ namespace UseCases.Vehicles
             _vehicleRepository.Insert(DataSet.GetCar(vehicleId));
 
             // Act
-            var command = new UpdateVehicle_Command(vehicleId, invalidRegistrationNumber, "Car", LicenceType.Car);
+            var command = new UpdateVehicle_Command(vehicleId, invalidRegistrationNumber, "Car");
 
             // Assert                        
-            VehicleValidationException exc = await Assert.ThrowsAsync<VehicleValidationException>(() => _mediator.Send(command));
-            Assert.Equal("L'immatriculation ne respecte pas le format XX123XX", exc.Message);
+            await Assert.ThrowsAsync<RegistrationNumberException>(() => _mediator.Send(command));           
         }
 
         [Fact]
@@ -73,13 +78,12 @@ namespace UseCases.Vehicles
             // Arrange
             const int vehicleId = 1;
             const string registrationNumber = "AA123BB";
-            const string name = "";
-            const LicenceType type = LicenceType.Car;
+            const string name = "";            
 
             _vehicleRepository.Insert(DataSet.GetCar(vehicleId));
 
             // Act
-            var command = new UpdateVehicle_Command(vehicleId, registrationNumber, name, type);
+            var command = new UpdateVehicle_Command(vehicleId, registrationNumber, name);
 
             // Assert                        
             VehicleValidationException exc = await Assert.ThrowsAsync<VehicleValidationException>(() => _mediator.Send(command));
@@ -100,7 +104,7 @@ namespace UseCases.Vehicles
             _vehicleRepository.Insert(DataSet.GetMotorcycle(vehicleId));
 
             // Act
-            var command = new UpdateVehicle_Command(vehicleId, existingRegistrationNumber, "moto", LicenceType.Motorcycle);
+            var command = new UpdateVehicle_Command(vehicleId, existingRegistrationNumber, "moto");
 
             // Assert                        
             VehicleValidationException exc = await Assert.ThrowsAsync<VehicleValidationException>(() => _mediator.Send(command));

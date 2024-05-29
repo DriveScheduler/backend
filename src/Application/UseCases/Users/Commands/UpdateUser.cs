@@ -1,12 +1,12 @@
-﻿using Domain.Models;
-using Domain.Enums;
+﻿using Domain.Exceptions.Users;
+using Domain.Models;
 using Domain.Repositories;
 
 using MediatR;
 
 namespace Application.UseCases.Users.Commands
 {
-    public sealed record UpdateUser_Command(Guid UserId, string Name, string Firstname, string Email, LicenceType LicenceType) : IRequest;
+    public sealed record UpdateUser_Command(Guid UserId, string Name, string Firstname, string Email) : IRequest;
 
     internal sealed class UpdateUser_CommandHandler(IUserRepository userRepository) : IRequestHandler<UpdateUser_Command>
     {
@@ -15,22 +15,14 @@ namespace Application.UseCases.Users.Commands
         public Task Handle(UpdateUser_Command request, CancellationToken cancellationToken)
         {
             User user = _userRepository.GetUserById(request.UserId);
-            //User? user = _database.Users.Find(request.UserId);
-            //if (user is null)
-            //    throw new UserNotFoundException();          
+
+            if (user.Email.Value != request.Email && _userRepository.IsEmailUnique(request.Email) == false)
+                throw new UserValidationException("L'adresse email est déjà utilisée");
 
             user.Update(request.Name, request.Firstname, request.Email);
-            //user.Name = request.Name;
-            //user.FirstName = request.Firstname;
-            //user.Email = request.Email;
-            //user.LicenceType = request.LicenceType;
-
-            //new UserValidator(_database).ThrowIfInvalid(user);
 
             _userRepository.Update(user);
             return Task.CompletedTask;
-            //if (await _database.SaveChangesAsync(cancellationToken) != 1)
-            //    throw new UserSaveException();
         }
     }
 }

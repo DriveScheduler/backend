@@ -1,6 +1,6 @@
-﻿using Domain.Models;
-using Domain.Enums;
+﻿using Domain.Enums;
 using Domain.Exceptions.Users;
+using Domain.Models;
 using Domain.Repositories;
 
 using MediatR;
@@ -15,6 +15,9 @@ namespace Application.UseCases.Users.Commands
 
         public Task<Guid> Handle(CreateUser_Command request, CancellationToken cancellationToken)
         {
+            if (_userRepository.IsEmailUnique(request.Email) == false)
+                throw new UserValidationException("L'adresse email est déjà utilisée");
+
             User user = new User(
                 request.Name,
                 request.Firstname,
@@ -22,27 +25,9 @@ namespace Application.UseCases.Users.Commands
                 request.Password,
                 request.LicenceType,
                 request.Type);
-            //User user = new User()
-            //{
-            //    Name = request.Name,
-            //    FirstName = request.Firstname,
-            //    Email = request.Email,
-            //    LicenceType = request.LicenceType,
-            //    Type = request.Type,
-            //    Password = request.Password
-            //};
 
-            //new UserValidator(_database).ThrowIfInvalid(user);
             _userRepository.Insert(user);
             return Task.FromResult(user.Id);
-            //_database.Users.Add(user);
-
-            //if (await _database.SaveChangesAsync() != 1)
-            //{
-            //    throw new UserSaveException();
-            //}
-
-            //return user.Id;
         }
     }
 }

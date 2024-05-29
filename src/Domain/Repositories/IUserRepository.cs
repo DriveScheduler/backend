@@ -10,5 +10,6 @@ namespace Domain.Repositories
         public User GetUserById(Guid id);        
         public User GetUserByEmail(string email);        
         public List<User> GetAllTeachers();
+        public bool IsEmailUnique(string email);
     }
 }

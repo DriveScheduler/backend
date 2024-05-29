@@ -12,27 +12,15 @@ namespace Application.UseCases.Users.Queries
     public sealed record GetUserDashboard_Query(Guid UserId) : IRequest<UserDashboard>;
 
     internal sealed class GetUserDashboard_QueryHandler(
-        ILessonRepository lessonRepository, 
-        IUserRepository userRepository,
-        IVehicleRepository vehicleRepository,
-        ISystemClock clock) : IRequestHandler<GetUserDashboard_Query, UserDashboard>
+        ILessonRepository lessonRepository,        
+        ISystemClock clock
+        ) : IRequestHandler<GetUserDashboard_Query, UserDashboard>
     {
-        private readonly ILessonRepository _lessonRepository = lessonRepository;
-        private readonly IUserRepository _userRepository = userRepository;
-        private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
+        private readonly ILessonRepository _lessonRepository = lessonRepository;        
         private readonly ISystemClock _clock = clock;
 
         public Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)
         {
-            //User? student = _database.Users.Find(request.UserId);
-            //if (student is null)
-            //    throw new UserNotFoundException();
-
-            //List<Lesson> allStudentLessons = await _database.Lessons
-            //    .Include(l => l.Student)
-            //    .Where(l => l.Student == student)
-            //    .ToListAsync();
-
             List<Lesson> allStudentLessons = _lessonRepository.GetAllStudentLesson(request.UserId);
 
             List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End < _clock.Now).ToList();
@@ -53,7 +41,7 @@ namespace Application.UseCases.Users.Queries
             };
 
             return Task.FromResult(dashboard);
-        }     
+        }
 
         private User? FavouriteTeacher(List<Lesson> studentLessons, out int totalTime)
         {

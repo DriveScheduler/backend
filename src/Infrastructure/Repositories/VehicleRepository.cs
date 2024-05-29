@@ -31,6 +31,12 @@ namespace Infrastructure.Repositories
             return vehicle;
         }
 
+        public bool IsRegistrationNumberUnique(string registrationNumber)
+        {
+            return _database.Vehicles.FirstOrDefault(v => v.RegistrationNumber.Value == registrationNumber) is null;
+        }
+
+
         public void Insert(Vehicle vehicle)
         {
             try
@@ -54,7 +60,7 @@ namespace Infrastructure.Repositories
                 throw new VehicleSaveException();
             }
         }
-
+      
         public void Update(Vehicle vehicle)
         {
             try

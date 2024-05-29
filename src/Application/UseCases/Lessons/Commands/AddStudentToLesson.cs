@@ -23,27 +23,12 @@ namespace Application.UseCases.Lessons.Commands
         public Task Handle(AddStudentToLesson_Command request, CancellationToken cancellationToken)
         {
             User student = _userRepository.GetUserById(request.UserId);
-
             Lesson lesson = _lessonRepository.GetById(request.LessonId);
-            //Lesson? lesson = _database.Lessons
-            //    .Include(Lesson => Lesson.Student)
-            //    .FirstOrDefault(l => l.Id == request.LessonId);
-            //if (lesson is null)
-            //    throw new LessonNotFoundException();
-
-            //LessonValidator validator = new LessonValidator(lesson, _systemClock)
-            //    .AddStudentRules();
-
-            //lesson.Student = student;
-            //validator.ThrowIfInvalid(lesson);
-
+         
             if(lesson.Start < _systemClock.Now)
                 throw new LessonValidationException("Le cours est déjà passé");
 
-            lesson.AddStudent(student);
-
-            //if (await _database.SaveChangesAsync() != 1)
-            //    throw new LessonSaveException();
+            lesson.AddStudent(student);          
             _lessonRepository.Update(lesson);
 
             return Task.CompletedTask;

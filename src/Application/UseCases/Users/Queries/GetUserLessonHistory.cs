@@ -17,21 +17,11 @@ namespace Application.UseCases.Users.Queries
 
         public Task<UserLessonHistory> Handle(GetUserLessonHistory_Query request, CancellationToken cancellationToken)
         {
-            //User? student = _database.Users.Find(request.UserId);
-            //if(student is null)
-            //    throw new UserNotFoundException();
-
-            //List<Lesson> lessons = await _database.Lessons
-            //    .Include(lesson => lesson.Student)                
-            //    .Where(lesson => lesson.Student == student && (lesson.Start.AddMinutes(lesson.Duration)) <= _clock.Now)
-            //    .OrderByDescending(lesson => lesson.Start)
-            //    .ToListAsync();
-
             List<Lesson> lessons = _lessonRepository.GetUserHistory(request.UserId, _clock.Now);
 
             UserLessonHistory history = new UserLessonHistory()
             {
-                Lessons = lessons,                
+                Lessons = lessons,
                 LessonTotalTime = lessons.Sum(lesson => lesson.Duration.Value)
             };
             return Task.FromResult(history);

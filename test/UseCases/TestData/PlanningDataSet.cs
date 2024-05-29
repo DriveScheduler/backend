@@ -9,9 +9,9 @@ namespace UseCases.TestData
 
         public static readonly User Student = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
 
-        private static readonly User Teacher1 = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000010"));
-        private static readonly User Teacher2 = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000020"));
-        private static readonly User Teacher3 = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000030"));
+        private static readonly User Teacher1 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000010"));
+        private static readonly User Teacher2 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000020"));
+        private static readonly User Teacher3 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000030"));
 
         public static List<User> GetAllTeachers() => new List<User>() { Teacher1, Teacher2, Teacher3 };
 

@@ -12,15 +12,17 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Infrastructure.Persistence;
 
 namespace UseCases.Schedule
 {
-    public class ScheduleCreateLesson : IClassFixture<SetupDependencies>
+    public class ScheduleCreateLesson : IClassFixture<SetupDependencies>, IDisposable
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
 
+        private readonly IDataAccessor _database;
         private readonly IMediator _mediator;
         private readonly ISystemClock _clock;
 
@@ -30,8 +32,14 @@ namespace UseCases.Schedule
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
 
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
+        }
+
+        public void Dispose()
+        {
+            _database.Clear();
         }
 
         [Fact]
@@ -219,8 +227,7 @@ namespace UseCases.Schedule
             var command = new CreateLesson_Command(LessonName, dateTime, invalidDuration, teacherId, licenceType);
 
             // Assert
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("La durée du cours n'est pas valide (elle doit être comprise entre 30min et 2h)", exc.Message);
+            await Assert.ThrowsAsync<LessonDurationException>(() => _mediator.Send(command));            
         }
 
         [Fact]

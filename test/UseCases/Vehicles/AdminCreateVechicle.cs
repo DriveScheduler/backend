@@ -10,18 +10,26 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Infrastructure.Persistence;
 
 namespace UseCases.Vehicles
 {
-    public class AdminCreateVechicle : IClassFixture<SetupDependencies>
+    public class AdminCreateVechicle : IClassFixture<SetupDependencies>, IDisposable
     {
         private readonly IVehicleRepository _vehicleRepository;
+        private readonly IDataAccessor _database;
         private readonly IMediator _mediator;
 
         public AdminCreateVechicle(SetupDependencies fixture)
         {
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
+        }
+
+        public void Dispose()
+        {
+            _database.Clear();
         }
 
         [Fact]
@@ -60,8 +68,7 @@ namespace UseCases.Vehicles
             var command = new CreateVehicle_Command(invalidRegistrationNumber, name, type);
 
             // Assert                        
-            VehicleValidationException exc = await Assert.ThrowsAsync<VehicleValidationException>(() => _mediator.Send(command));
-            Assert.Equal("L'immatriculation ne respecte pas le format XX123XX", exc.Message);
+            await Assert.ThrowsAsync<RegistrationNumberException>(() => _mediator.Send(command));          
         }
 
         [Fact]

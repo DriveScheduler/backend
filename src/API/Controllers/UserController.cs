@@ -38,7 +38,7 @@ namespace API.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateUserModel input)
         {
-            var command = new UpdateUser_Command(input.Id, input.Name, input.FirstName, input.Email, input.LicenceType);
+            var command = new UpdateUser_Command(input.Id, input.Name, input.FirstName, input.Email);
             try
             {
                 await _mediator.Send(command);

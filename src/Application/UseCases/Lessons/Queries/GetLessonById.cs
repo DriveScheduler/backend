@@ -13,11 +13,6 @@ namespace Application.UseCases.Users.Queries
 
         public Task<Lesson> Handle(GetLessonById_Query request, CancellationToken cancellationToken)
         {
-            //Lesson? user = _database.Lessons.FirstOrDefault(x => x.Id == request.Id);
-            //if (user is null)
-            //    throw new Exception();
-
-            //return Task.FromResult(user);
             return Task.FromResult(_lessonRepository.GetById(request.Id));
         }
     }

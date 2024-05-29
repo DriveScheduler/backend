@@ -34,6 +34,11 @@ namespace Infrastructure.Repositories
             return user;
         }
 
+        public bool IsEmailUnique(string email)
+        {
+            return _database.Users.FirstOrDefault(user => user.Email.Value == email) is null;
+        }
+
         public void Insert(User user)
         {
             try
@@ -56,7 +61,7 @@ namespace Infrastructure.Repositories
             {
                 throw new UserSaveException();
             }
-        }
+        }        
 
         public void Update(User user)
         {

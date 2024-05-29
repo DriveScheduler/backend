@@ -1,9 +1,8 @@
 ﻿using Application.Abstractions;
 
-using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
-using Domain.Exceptions.Users;
+using Domain.Models;
 using Domain.Repositories;
 
 using MediatR;
@@ -14,7 +13,7 @@ namespace Application.UseCases.Lessons.Commands
 
     internal sealed class CreateLesson_CommandHandler(
         ILessonRepository lessonRepository,
-        IUserRepository userRepository, 
+        IUserRepository userRepository,
         IVehicleRepository vehicleRepository,
         ISystemClock systemClock
         ) : IRequestHandler<CreateLesson_Command, int>
@@ -28,8 +27,6 @@ namespace Application.UseCases.Lessons.Commands
         {
             User teacher = _userRepository.GetUserById(request.TeacherId);
             Vehicle vehicle = _vehicleRepository.FindAvailable(request.Date, request.Duration, request.Type);
-            //User user = GetTeacher(request.TeacherId);
-            //Vehicle vehicle = FindAvailableVehicle(request.Type, request.Date, request.Date.AddMinutes(request.Duration));
 
             Lesson lesson = new Lesson(
                 request.Name,
@@ -38,53 +35,16 @@ namespace Application.UseCases.Lessons.Commands
                 teacher,
                 request.Type,
                 vehicle);
-            //Lesson lesson = new Lesson()
-            //{
-            //Name = request.Name,
-            //Start = request.Date,
-            //Duration = request.Duration,
-            //Type = request.Type,
-            //Teacher = user,
-            //Vehicle = vehicle,
-            //};
 
-            //new LessonValidator(_systemClock)
-            //    .CreateRules()
-            //    .ThrowIfInvalid(lesson);
+            if (lesson.Start < _systemClock.Now)
+                throw new LessonValidationException("Le date et l'heure du cours ne peuvent pas être inférieur à maintenant");
 
-            //_database.Lessons.Add(lesson);
-            //if (await _database.SaveChangesAsync() != 1)
-            //    throw new LessonSaveException();
+            if (teacher.LessonsAsTeacher.Any(teacherLesson => teacherLesson.Start < lesson.End && teacherLesson.End > lesson.Start))
+                throw new LessonValidationException("Le moniteur n'est pas disponible pour cette plage horaire");
+
 
             _lessonRepository.Insert(lesson);
             return Task.FromResult(lesson.Id);
-            //return lesson.Id;
         }
-
-        //private async Task<User> GetTeacher(Guid id)
-        //{
-        //    //User? user = _database.Users
-        //    //    .Include(u => u.LessonsAsTeacher)
-        //    //    .FirstOrDefault(u => u.Id == id);
-        //    User teacher = await _userRepository.GetTeacherById(id);
-        //    if (teacher is null)
-        //        throw new UserNotFoundException();
-
-        //    return teacher;
-        //}
-
-        //private async Task<Vehicle> FindAvailableVehicle(LicenceType vehicleType, DateTime lessonStart, DateTime lessonEnd)
-        //{
-        //    //List<Vehicle> vehicles = [.. _database.Vehicles
-        //    //    .Include(v => v.Lessons)
-        //    //    .Where(v => v.Type == vehicleType)];
-        //    List<Vehicle> vehicles = await _vehicleRepository.GetVehiclesByTypeAsync(vehicleType);
-
-        //    Vehicle? vehicle = vehicles.FirstOrDefault(v => !v.Lessons.Any(lesson => (lesson.End >= lessonStart && lessonStart >= lesson.Start) || (lesson.Start <= lessonEnd && lessonEnd <= lesson.End)));
-        //    if (vehicle is null)
-        //        throw new LessonValidationException("Aucun vehicule disponibe pour valider ce cours");
-
-        //    return vehicle;
-        //}
     }
 }

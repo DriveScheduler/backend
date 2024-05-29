@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Domain.Exceptions.Vehicles;
 using Domain.ValueObjects;
 
 namespace Domain.Models
@@ -17,6 +18,8 @@ namespace Domain.Models
 
         public Vehicle(string registrationNumber, string name, LicenceType type)
         {            
+            ThrowIfInvalidName(name);
+
             RegistrationNumber = new RegistrationNumber(registrationNumber);
             Name = name;
             Type = type;
@@ -25,6 +28,8 @@ namespace Domain.Models
 
         public Vehicle(int id, string registrationNumber, string name, LicenceType type)
         {
+            ThrowIfInvalidName(name);
+
             Id = id;
             RegistrationNumber = new RegistrationNumber(registrationNumber);
             Name = name;
@@ -34,9 +39,16 @@ namespace Domain.Models
 
         public void Update(string registrationNumber, string name)
         {
-            //RegistrationNumber = new RegistrationNumber(registrationNumber);
-            //Name = name;
-            throw new NotImplementedException();
+            ThrowIfInvalidName(name);
+
+            RegistrationNumber = new RegistrationNumber(registrationNumber);
+            Name = name;            
+        }
+
+        private void ThrowIfInvalidName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new VehicleValidationException("Le nom est obligatoire");
         }
     }
 }

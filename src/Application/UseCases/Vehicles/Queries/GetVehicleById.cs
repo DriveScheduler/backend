@@ -13,10 +13,6 @@ namespace Application.UseCases.Vehicles.Queries
 
         public Task<Vehicle> Handle(GetVehicleById_Query request, CancellationToken cancellationToken)
         {
-            //Vehicle? vehicle = _database.Vehicles.Find(request.Id);
-            //if (vehicle is null)
-            //    throw new VehicleNotFoundException();
-            //return Task.FromResult(vehicle);
             return Task.FromResult(_vehicleRepository.GetById(request.Id));
         }
     }

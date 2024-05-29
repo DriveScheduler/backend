@@ -96,7 +96,7 @@ namespace UseCases.Schedule
             var command = new AddStudentToLesson_Command(lessonId, studentId3);
 
             // Assert            
-            LessonFullException exc = await Assert.ThrowsAsync<LessonFullException>(() => _mediator.Send(command));
+            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
             Assert.Equal("Le cours est complet", exc.Message);
         }
 

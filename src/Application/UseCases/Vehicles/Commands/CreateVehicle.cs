@@ -3,6 +3,7 @@ using Domain.Enums;
 using Domain.Repositories;
 
 using MediatR;
+using Domain.Exceptions.Vehicles;
 
 namespace Application.UseCases.Vehicles.Commands
 {
@@ -13,22 +14,14 @@ namespace Application.UseCases.Vehicles.Commands
         private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
 
         public Task<int> Handle(CreateVehicle_Command request, CancellationToken cancellationToken)
-        {
-            //Vehicle vehicle = new Vehicle()
-            //{
-            //    RegistrationNumber = request.RegistrationNumber,
-            //    Name = request.Name,
-            //    Type = request.Type
-            //};
-            Vehicle vehicle = new Vehicle(request.RegistrationNumber, request.Name, request.Type);
+        {          
+            if(_vehicleRepository.IsRegistrationNumberUnique(request.RegistrationNumber) == false) 
+                throw new VehicleValidationException("Un véhicule avec cette immatriculation existe déjà");
 
-            //new VehicleValidator(_database).ThrowIfInvalid(vehicle);
-
-            //_database.Vehicles.Add(vehicle);
-            //if (await _database.SaveChangesAsync() != 1)
-            //    throw new VehicleSaveException();            
+            Vehicle vehicle = new Vehicle(request.RegistrationNumber, request.Name, request.Type);         
 
             _vehicleRepository.Insert(vehicle);
+
             return Task.FromResult(vehicle.Id);
         }
     }

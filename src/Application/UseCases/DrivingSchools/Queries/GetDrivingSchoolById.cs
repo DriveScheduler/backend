@@ -1,5 +1,4 @@
 ﻿using Domain.Models;
-using Domain.Exceptions.DrivingSchools;
 using Domain.Repositories;
 
 using MediatR;
@@ -14,10 +13,6 @@ namespace Application.UseCases.DrivingSchools.Queries
 
         public Task<DrivingSchool> Handle(GetDrivingSchoolById_Query request, CancellationToken cancellationToken)
         {
-            //DrivingSchool? drivingSchool = _database.DrivingSchools.Find(request.Id);
-            //if (drivingSchool is null)
-            //    throw new DrivingSchoolNotFoundException();
-            //return Task.FromResult(drivingSchool);
             return Task.FromResult(_drivingSchoolRepository.GetById(request.Id));
         }
     }

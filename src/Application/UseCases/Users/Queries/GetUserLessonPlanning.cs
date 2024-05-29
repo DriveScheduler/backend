@@ -18,16 +18,6 @@ namespace Application.UseCases.Users.Queries
 
         public Task<UserLessonPlanning> Handle(GetUserLessonPlanning_Query request, CancellationToken cancellationToken)
         {
-            //User? user = _database.Users.Find(request.UserId);
-            //if(user is null)
-            //    throw new UserNotFoundException();
-
-            //List<Lesson> lessons = await _database.Lessons
-            //    .Include(lesson => lesson.Student)
-            //    .Where(lesson => lesson.Student == user && lesson.Start > _clock.Now)
-            //    .OrderBy(lesson => lesson.Start)
-            //    .ToListAsync();
-
             DateTime tomorrow = _clock.Now.Date.AddDays(1).Date;
             DateTime lastDayOfThisWeek = DateUtil.GetLastDayOfWeek(_clock.Now);
             DateTime firstDayOfNextWeek = DateUtil.GetFirstDayOfWeek(_clock.Now.AddDays(7));

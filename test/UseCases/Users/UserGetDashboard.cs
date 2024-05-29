@@ -12,15 +12,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.Fakes;
 using UseCases.TestData;
+using Infrastructure.Persistence;
 
 namespace UseCases.Users
 {
-    public class UserGetDashboard : IClassFixture<SetupDependencies>
+    public class UserGetDashboard : IClassFixture<SetupDependencies>, IDisposable
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
 
+        private readonly IDataAccessor _database;
         private readonly IMediator _mediator;
         private readonly FakeSystemClock _clock;
 
@@ -30,8 +32,14 @@ namespace UseCases.Users
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
 
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = (FakeSystemClock)fixture.ServiceProvider.GetRequiredService<ISystemClock>();
+        }
+
+        public void Dispose()
+        {
+            _database.Clear();
         }
 
 
