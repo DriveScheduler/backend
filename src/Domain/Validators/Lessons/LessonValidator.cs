@@ -1,6 +1,7 @@
 ﻿//using Domain.Entities;
 //using Domain.Enums;
 //using Domain.Exceptions.Lessons;
+//using Domain.Models;
 
 //using FluentValidation;
 
@@ -13,23 +14,23 @@
 
 
 //        public LessonValidator(ISystemClock systemClock)
-//        {            
-//            _systemClock = systemClock;            
+//        {
+//            _systemClock = systemClock;
 //        }
 
 //        public LessonValidator(Lesson initialState, ISystemClock systemClock) : base(initialState)
 //        {
 //            _systemClock = systemClock;
 //        }
-    
+
 //        public LessonValidator CreateRules()
-//        {            
-//            DefaultRules();            
+//        {
+//            DefaultRules();
 //            return this;
 //        }
 
 //        public LessonValidator UpdateRules()
-//        {            
+//        {
 //            RuleFor(lesson => InitialState!.Start)
 //                .GreaterThanOrEqualTo(_systemClock.Now)
 //                .WithMessage("Le cours est déjà passé");
@@ -40,7 +41,7 @@
 //        }
 
 //        public LessonValidator AddStudentRules()
-//        {          
+//        {
 //            RuleFor(lesson => lesson.Start)
 //                .GreaterThanOrEqualTo(_systemClock.Now)
 //                .WithMessage("Le cours est déjà passé");
@@ -63,7 +64,7 @@
 
 //                    if (student.Type != UserType.Student)
 //                    {
-//                          context.AddFailure("L'utilisateur doit être un élève pour s'incrire au cours");
+//                        context.AddFailure("L'utilisateur doit être un élève pour s'incrire au cours");
 //                    }
 //                });
 
@@ -73,14 +74,14 @@
 //                   if (lesson.Student is not null && lesson.Student.LicenceType != lesson.Type)
 //                   {
 //                       context.AddFailure("Le permis de l'utilisateur ne correspond pas au type de cours");
-//                   }                  
+//                   }
 //               });
 
 //            return this;
 //        }
 
 //        public LessonValidator AddStudentToWaitingListRules()
-//        {            
+//        {
 //            RuleFor(lesson => lesson.Start)
 //                .GreaterThanOrEqualTo(_systemClock.Now)
 //                .WithMessage("Le cours est déjà passé");
@@ -121,7 +122,7 @@
 
 //            RuleFor(lesson => lesson)
 //                .Custom((lesson, context) =>
-//                {                   
+//                {
 //                    if (lesson.WaitingList is not null)
 //                    {
 //                        foreach (var student in lesson.WaitingList)
@@ -195,6 +196,6 @@
 //                  }
 //              });
 //        }
-    
+
 //    }
 //}

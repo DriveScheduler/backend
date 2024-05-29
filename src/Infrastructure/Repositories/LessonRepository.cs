@@ -15,14 +15,7 @@ namespace Infrastructure.Repositories
         {
             return _database.Lessons
                 .ToList();
-        }
-
-        public List<Lesson> GetAllStudentLesson(Guid userId)
-        {
-            return _database.Lessons
-                .Where(lesson => lesson.Student != null && lesson.Student.Id == userId)
-                .ToList();
-        }
+        }       
 
         public Lesson GetById(int id)
         {
@@ -51,18 +44,18 @@ namespace Infrastructure.Repositories
                 .ToList();
         }
 
-        public List<Lesson> GetPassedLesson(Guid userId, DateTime now)
+        public List<Lesson> GetPassedLesson(User user, DateTime now)
         {
             return _database.Lessons
-                .Where(lesson => lesson.Student != null && lesson.Student.Id == userId && lesson.Start > now)
+                .Where(lesson => lesson.Student == user && lesson.Start > now)
                 .OrderBy(lesson => lesson.Start)
                 .ToList();
         }
 
-        public List<Lesson> GetUserHistory(Guid userId, DateTime now)
+        public List<Lesson> GetUserHistory(User user, DateTime now)
         {
             return _database.Lessons
-                .Where(lesson => lesson.Student != null && lesson.Student.Id == userId && (lesson.Start.AddMinutes(lesson.Duration.Value)) <= now)
+                .Where(lesson => lesson.Student == user && (lesson.Start.AddMinutes(lesson.Duration.Value)) <= now)
                 .OrderByDescending(lesson => lesson.Start)
                 .ToList();
         }

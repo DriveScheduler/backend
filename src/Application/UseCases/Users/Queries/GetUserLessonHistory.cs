@@ -10,14 +10,20 @@ namespace Application.UseCases.Users.Queries
 {
     public sealed record GetUserLessonHistory_Query(Guid UserId) : IRequest<UserLessonHistory>;
 
-    internal sealed class GetUserLessonHistory_QueryHandler(ILessonRepository lessonRepository, ISystemClock clock) : IRequestHandler<GetUserLessonHistory_Query, UserLessonHistory>
+    internal sealed class GetUserLessonHistory_QueryHandler(
+        ILessonRepository lessonRepository, 
+        IUserRepository userRepository,
+        ISystemClock clock
+        ) : IRequestHandler<GetUserLessonHistory_Query, UserLessonHistory>
     {
         private readonly ILessonRepository _lessonRepository = lessonRepository;
+        private readonly IUserRepository _userRepository = userRepository;
         private readonly ISystemClock _clock = clock;
 
         public Task<UserLessonHistory> Handle(GetUserLessonHistory_Query request, CancellationToken cancellationToken)
         {
-            List<Lesson> lessons = _lessonRepository.GetUserHistory(request.UserId, _clock.Now);
+            User user = _userRepository.GetUserById(request.UserId);
+            List<Lesson> lessons = _lessonRepository.GetUserHistory(user, _clock.Now);
 
             UserLessonHistory history = new UserLessonHistory()
             {

@@ -46,23 +46,24 @@ namespace UseCases.Users
         [Fact]
         public async void UserShould_GetHisLessonHistory()
         {
-            _clock.Set(PlanningDataSet.Date);
+            PlanningDataSet dataset = new PlanningDataSet();
+            _clock.Set(dataset.Date);
 
             // Arrange
-            User user = PlanningDataSet.Student;
+            User user = dataset.Student;
 
             _userRepository.Insert(user);
-            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
-            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
-            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
+            _userRepository.Insert(dataset.GetAllTeachers());
+            _vehicleRepository.Insert(dataset.GetAllVehicles());
+            _lessonRepository.Insert(dataset.GetAllLessons());
 
             // Act
             var command = new GetUserLessonHistory_Query(user.Id);
             UserLessonHistory history = await _mediator.Send(command);
 
             // Assert
-            List<Lesson> expected = PlanningDataSet.AchievedLessons();
-            int expectedTotalTime = PlanningDataSet.AchievedLessonsTotalTime();
+            List<Lesson> expected = dataset.AchievedLessons();
+            int expectedTotalTime = dataset.AchievedLessonsTotalTime();
             Assert.NotNull(history);
             Assert.Equal(expected.Count, history.Lessons.Count);
             Assert.Equal(expectedTotalTime, history.LessonTotalTime);
@@ -71,15 +72,16 @@ namespace UseCases.Users
         [Fact]
         public async void SystemShould_NotGetLessonHistory_ForInvalidUser()
         {
-            _clock.Set(PlanningDataSet.Date);
+            PlanningDataSet dataset = new PlanningDataSet();
+            _clock.Set(dataset.Date);
 
             // Arrange
             User user = DataSet.GetCarStudent(Guid.NewGuid());
 
-            _userRepository.Insert(PlanningDataSet.Student);
-            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
-            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
-            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
+            _userRepository.Insert(dataset.Student);
+            _userRepository.Insert(dataset.GetAllTeachers());
+            _vehicleRepository.Insert(dataset.GetAllVehicles());
+            _lessonRepository.Insert(dataset.GetAllLessons());
 
             // Act
             var command = new GetUserLessonHistory_Query(user.Id);
@@ -91,28 +93,29 @@ namespace UseCases.Users
         [Fact]
         public async void UserShould_GetHisLessonPlanning()
         {
-            _clock.Set(PlanningDataSet.Date);
+            PlanningDataSet dataset = new PlanningDataSet();
+            _clock.Set(dataset.Date);
 
             // Arrange
-            User user = PlanningDataSet.Student;
+            User user = dataset.Student;
 
             _userRepository.Insert(user);
-            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
-            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
-            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
+            _userRepository.Insert(dataset.GetAllTeachers());
+            _vehicleRepository.Insert(dataset.GetAllVehicles());
+            _lessonRepository.Insert(dataset.GetAllLessons());
 
             // Act
             var command = new GetUserLessonPlanning_Query(user.Id);
             UserLessonPlanning planning = await _mediator.Send(command);
 
             // Assert
-            List<Lesson> expectedTodayLessons = PlanningDataSet.TodayLessons();
-            List<Lesson> expectedTomorrowLessons = PlanningDataSet.TomorrowLessons();
-            List<Lesson> expectedWeekLessons = PlanningDataSet.ThisWeekLessons();
-            List<Lesson> expectedMonthLessons = PlanningDataSet.ThisMonthLessons();
-            List<Lesson> expectedNextMonthsLessons = PlanningDataSet.NextMonthsLessons();
-            int expectedTotalLessons = PlanningDataSet.NextLessonsTotal();
-            int expectedTotalTime = PlanningDataSet.NextLessonsTotalTime();
+            List<Lesson> expectedTodayLessons = dataset.TodayLessons();
+            List<Lesson> expectedTomorrowLessons = dataset.TomorrowLessons();
+            List<Lesson> expectedWeekLessons = dataset.ThisWeekLessons();
+            List<Lesson> expectedMonthLessons = dataset.ThisMonthLessons();
+            List<Lesson> expectedNextMonthsLessons = dataset.NextMonthsLessons();
+            int expectedTotalLessons = dataset.NextLessonsTotal();
+            int expectedTotalTime = dataset.NextLessonsTotalTime();
             Assert.NotNull(planning);
             Assert.Equal(expectedTotalLessons, planning.TotalLessons);
             Assert.Equal(expectedTotalTime, planning.TotalTime);
@@ -127,15 +130,16 @@ namespace UseCases.Users
         [Fact]
         public async void SystemShould_NotGetLessonPlanning_ForInvalidUser()
         {
-            _clock.Set(PlanningDataSet.Date);
+            PlanningDataSet dataset = new PlanningDataSet();
+            _clock.Set(dataset.Date);
 
             // Arrange
             User user = DataSet.GetCarStudent(Guid.NewGuid());
 
-            _userRepository.Insert(PlanningDataSet.Student);
-            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
-            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
-            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
+            _userRepository.Insert(dataset.Student);
+            _userRepository.Insert(dataset.GetAllTeachers());
+            _vehicleRepository.Insert(dataset.GetAllVehicles());
+            _lessonRepository.Insert(dataset.GetAllLessons());
 
             // Act
             var command = new GetUserLessonPlanning_Query(user.Id);
@@ -147,28 +151,29 @@ namespace UseCases.Users
         [Fact]
         public async void UserShould_GetHisDashboard()
         {
-            _clock.Set(PlanningDataSet.Date);
+            PlanningDataSet dataset = new PlanningDataSet();
+            _clock.Set(dataset.Date);
 
             // Arrange
-            User user = PlanningDataSet.Student;
+            User user = dataset.Student;
 
             _userRepository.Insert(user);
-            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
-            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
-            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
+            _userRepository.Insert(dataset.GetAllTeachers());
+            _vehicleRepository.Insert(dataset.GetAllVehicles());
+            _lessonRepository.Insert(dataset.GetAllLessons());
 
             // Act
             var command = new GetUserDashboard_Query(user.Id);
             UserDashboard dashboard = await _mediator.Send(command);
 
             // Assert
-            Lesson expectedNextLesson = PlanningDataSet.NextLesson();
-            Lesson expectedLastLessons = PlanningDataSet.LastLesson();
-            User expectedFavoriteTeacher = PlanningDataSet.FavoriteTeacher();
-            int expectedFavoriteTeacherTime = PlanningDataSet.FavoriteTeacherTotalTime();
-            Vehicle expectedFavoriteVehicle = PlanningDataSet.FavoriteVehicle();
-            int expectedFavoriteVehicleTime = PlanningDataSet.FavoriteVehicleTotalTime();
-            int expectedTotalLessonTimeThisWeek = PlanningDataSet.LessonTotalTimeThisWeek();
+            Lesson expectedNextLesson = dataset.NextLesson();
+            Lesson expectedLastLessons = dataset.LastLesson();
+            User expectedFavoriteTeacher = dataset.FavoriteTeacher();
+            int expectedFavoriteTeacherTime = dataset.FavoriteTeacherTotalTime();
+            Vehicle expectedFavoriteVehicle = dataset.FavoriteVehicle();
+            int expectedFavoriteVehicleTime = dataset.FavoriteVehicleTotalTime();
+            int expectedTotalLessonTimeThisWeek = dataset.LessonTotalTimeThisWeek();
 
             Assert.NotNull(dashboard);
             Assert.Equal(expectedNextLesson, dashboard.NextLesson);
@@ -186,15 +191,16 @@ namespace UseCases.Users
         [Fact]
         public async void SystemShould_NotGetDashboard_ForInvalidUser()
         {
-            _clock.Set(PlanningDataSet.Date);
+            PlanningDataSet dataset = new PlanningDataSet();
+            _clock.Set(dataset.Date);
 
             // Arrange
             User user = DataSet.GetCarStudent(Guid.NewGuid());
 
-            _userRepository.Insert(PlanningDataSet.Student);
-            _userRepository.Insert(PlanningDataSet.GetAllTeachers());
-            _vehicleRepository.Insert(PlanningDataSet.GetAllVehicles());
-            _lessonRepository.Insert(PlanningDataSet.GetAllLessons());
+            _userRepository.Insert(dataset.Student);
+            _userRepository.Insert(dataset.GetAllTeachers());
+            _vehicleRepository.Insert(dataset.GetAllVehicles());
+            _lessonRepository.Insert(dataset.GetAllLessons());
 
             // Act
             var command = new GetUserDashboard_Query(user.Id);

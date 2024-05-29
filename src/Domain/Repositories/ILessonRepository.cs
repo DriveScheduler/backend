@@ -11,8 +11,7 @@ namespace Domain.Repositories
         public List<Lesson> GetAll();
         public List<Lesson> GetLessonsForUser(User user, DateTime start, DateTime end, bool onlyEmptyLesson=false);
         public List<Lesson> GetUserPlanning(User user, DateTime start, DateTime end);                
-        public List<Lesson> GetUserHistory(Guid userId, DateTime now);
-        public List<Lesson> GetPassedLesson(Guid userId, DateTime now);
-        public List<Lesson> GetAllStudentLesson(Guid userId);
+        public List<Lesson> GetUserHistory(User user, DateTime now);
+        public List<Lesson> GetPassedLesson(User user, DateTime now);        
     }
 }

@@ -27,6 +27,13 @@ namespace Application.UseCases.Lessons.Commands
         {
             User teacher = _userRepository.GetUserById(request.TeacherId);
             Vehicle vehicle = _vehicleRepository.FindAvailable(request.Date, request.Duration, request.Type);
+            
+            if (request.Date < _systemClock.Now)
+                throw new LessonValidationException("Le date et l'heure du cours ne peuvent pas être inférieur à maintenant");
+
+            DateTime end = request.Date.AddMinutes(request.Duration);
+            if (teacher.LessonsAsTeacher.Any(teacherLesson => teacherLesson.Start < end && teacherLesson.End > request.Date))
+                throw new LessonValidationException("Le moniteur n'est pas disponible pour cette plage horaire");
 
             Lesson lesson = new Lesson(
                 request.Name,
@@ -35,14 +42,7 @@ namespace Application.UseCases.Lessons.Commands
                 teacher,
                 request.Type,
                 vehicle);
-
-            if (lesson.Start < _systemClock.Now)
-                throw new LessonValidationException("Le date et l'heure du cours ne peuvent pas être inférieur à maintenant");
-
-            if (teacher.LessonsAsTeacher.Any(teacherLesson => teacherLesson.Start < lesson.End && teacherLesson.End > lesson.Start))
-                throw new LessonValidationException("Le moniteur n'est pas disponible pour cette plage horaire");
-
-
+       
             _lessonRepository.Insert(lesson);
             return Task.FromResult(lesson.Id);
         }

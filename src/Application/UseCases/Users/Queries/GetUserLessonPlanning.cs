@@ -11,19 +11,26 @@ namespace Application.UseCases.Users.Queries
 {
     public sealed record GetUserLessonPlanning_Query(Guid UserId) : IRequest<UserLessonPlanning>;
 
-    internal sealed class GetUserLessonPlanning_QueryHandler(ILessonRepository lessonRepository, ISystemClock clock) : IRequestHandler<GetUserLessonPlanning_Query, UserLessonPlanning>
+    internal sealed class GetUserLessonPlanning_QueryHandler(
+        ILessonRepository lessonRepository, 
+        IUserRepository userRepository,
+        ISystemClock clock
+        ) : IRequestHandler<GetUserLessonPlanning_Query, UserLessonPlanning>
     {
         private readonly ILessonRepository _lessonRepository = lessonRepository;
+        private readonly IUserRepository _userRepository = userRepository;
         private readonly ISystemClock _clock = clock;
 
         public Task<UserLessonPlanning> Handle(GetUserLessonPlanning_Query request, CancellationToken cancellationToken)
         {
+            User user = _userRepository.GetUserById(request.UserId);
+
             DateTime tomorrow = _clock.Now.Date.AddDays(1).Date;
             DateTime lastDayOfThisWeek = DateUtil.GetLastDayOfWeek(_clock.Now);
             DateTime firstDayOfNextWeek = DateUtil.GetFirstDayOfWeek(_clock.Now.AddDays(7));
             DateTime lastDayOfThisMonth = DateUtil.GetLastDayOfMonth(_clock.Now);
 
-            List<Lesson> lessons = _lessonRepository.GetPassedLesson(request.UserId, _clock.Now);
+            List<Lesson> lessons = _lessonRepository.GetPassedLesson(user, _clock.Now);
 
             UserLessonPlanning planning = new UserLessonPlanning()
             {

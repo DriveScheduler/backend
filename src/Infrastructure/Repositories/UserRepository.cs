@@ -20,7 +20,9 @@ namespace Infrastructure.Repositories
 
         public User GetUserByEmail(string email)
         {
-            User? user = _database.Users.FirstOrDefault(user => user.Email.Value == email);
+            User? user = _database.Users
+                .AsEnumerable()
+                .FirstOrDefault(user => user.Email.Value == email);
             if (user is null)
                 throw new UserNotFoundException();
             return user;
@@ -36,7 +38,9 @@ namespace Infrastructure.Repositories
 
         public bool IsEmailUnique(string email)
         {
-            return _database.Users.FirstOrDefault(user => user.Email.Value == email) is null;
+            return _database.Users
+                .AsEnumerable()
+                .FirstOrDefault(user => user.Email.Value == email) is null;
         }
 
         public void Insert(User user)

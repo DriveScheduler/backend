@@ -17,7 +17,6 @@ namespace Domain.Models
         private readonly List<Lesson> _lessonsAsTeacher;
         public IReadOnlyList<Lesson> LessonsAsTeacher => _lessonsAsTeacher;
 
-
         private readonly List<Lesson> _lessonsAsStudent;
         public IReadOnlyList<Lesson> LessonsAsStudent => _lessonsAsStudent;
 
