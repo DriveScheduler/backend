@@ -12,15 +12,17 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Infrastructure.Persistence;
 
 namespace UseCases.Schedule
 {
-    public class ScheduleRemoveStudentFromLesson : IClassFixture<SetupDependencies>
+    public class ScheduleRemoveStudentFromLesson : IClassFixture<SetupDependencies>, IDisposable
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
 
+        private readonly IDataAccessor _database;
         private readonly IMediator _mediator;
         private readonly ISystemClock _clock;
 
@@ -30,8 +32,14 @@ namespace UseCases.Schedule
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
 
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
+        }
+
+        public void Dispose()
+        {
+            _database.Clear();
         }
 
         [Fact]

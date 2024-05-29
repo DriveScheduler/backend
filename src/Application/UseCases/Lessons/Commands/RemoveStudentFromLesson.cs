@@ -24,17 +24,9 @@ namespace Application.UseCases.Lessons.Commands
 
         public Task Handle(RemoveStudentFromLesson_Command request, CancellationToken cancellationToken)
         {
-            User user = _userRepository.GetUserById(request.UserId);
-            //User? user = _database.Users.Find(request.UserId);
-            //if (user is null)
-            //    throw new UserNotFoundException();
+            User user = _userRepository.GetUserById(request.UserId);          
 
-            Lesson lesson = _lessonRepository.GetById(request.LessonId);
-            //Lesson? lesson = _database.Lessons
-            //    .Include(Lesson => Lesson.Student)
-            //    .FirstOrDefault(l => l.Id == request.LessonId);
-            //if (lesson is null)
-            //    throw new LessonNotFoundException();
+            Lesson lesson = _lessonRepository.GetById(request.LessonId);            
 
             if(lesson.Start.AddHours(-24) < _systemClock.Now)
                 throw new LessonValidationException("Il n'est pas possible de se désincrire moins de 24h avant le début du cours");

@@ -4,7 +4,7 @@ using Infrastructure.Persistence;
 
 namespace UseCases.Fakes
 {
-    internal sealed class IFakeDataAccessor : IDataAccessor
+    internal sealed class FakeDataAccessor : IDataAccessor
     {
         public IQueryable<DrivingSchool> DrivingSchools => _drivingSchools.AsQueryable();
 
@@ -72,10 +72,17 @@ namespace UseCases.Fakes
             throw new NotImplementedException();
         }
 
+        public void Clear()
+        {
+            _drivingSchools.Clear();
+            _lessons.Clear();
+            _users.Clear();
+            _vehicles.Clear();
+        }
 
-        private readonly List<DrivingSchool> _drivingSchools = new List<DrivingSchool>();
-        private readonly List<Lesson> _lessons = new List<Lesson>();
-        private readonly List<User> _users = new List<User>();
-        private readonly List<Vehicle> _vehicles = new List<Vehicle>();
+        private readonly List<DrivingSchool> _drivingSchools = [];
+        private readonly List<Lesson> _lessons = [];
+        private readonly List<User> _users = [];
+        private readonly List<Vehicle> _vehicles = [];
     }
 }

@@ -12,16 +12,18 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Infrastructure.Persistence;
 
 
 namespace UseCases.Schedule
 {
-    public class ScheduleAddStudentToLesson : IClassFixture<SetupDependencies>
+    public class ScheduleAddStudentToLesson : IClassFixture<SetupDependencies>, IDisposable
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
 
+        private readonly IDataAccessor _database;
         private readonly IMediator _mediator;
         private readonly ISystemClock _clock;
 
@@ -32,8 +34,14 @@ namespace UseCases.Schedule
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
 
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
+        }
+
+        public void Dispose()
+        {
+            _database.Clear();
         }
 
         [Fact]
@@ -88,7 +96,7 @@ namespace UseCases.Schedule
             var command = new AddStudentToLesson_Command(lessonId, studentId3);
 
             // Assert            
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
+            LessonFullException exc = await Assert.ThrowsAsync<LessonFullException>(() => _mediator.Send(command));
             Assert.Equal("Le cours est complet", exc.Message);
         }
 
@@ -210,6 +218,6 @@ namespace UseCases.Schedule
             // Assert            
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
             Assert.Equal("Le cours est déjà passé", exc.Message);
-        }
+        }        
     }
 }

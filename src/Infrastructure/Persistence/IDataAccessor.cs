@@ -13,5 +13,7 @@ namespace Infrastructure.Persistence
         public void Insert<T>(List<T> entities) where T : class;
         public void Update<T>(T entity) where T : class;
         public void Delete<T>(T entity) where T : class;
+
+        public void Clear();
     }
 }

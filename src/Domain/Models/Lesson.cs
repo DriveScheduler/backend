@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Domain.Exceptions.Lessons;
 using Domain.ValueObjects;
 
 namespace Domain.Models
@@ -17,7 +18,7 @@ namespace Domain.Models
         public User? Student { get; private set; }
         
         private readonly List<User> _waitingList;
-        public IReadOnlyList<User> WaitingList { get; }
+        public IReadOnlyList<User> WaitingList => _waitingList;
 
         private Lesson() { }
 
@@ -30,7 +31,7 @@ namespace Domain.Models
             Type = type;
             Vehicle = vehicle;
             Student = null;
-            WaitingList = [];
+            _waitingList = [];
         }
         public Lesson(int id, string name, DateTime start, int duration, User teacher, LicenceType type, Vehicle vehicle, User? student=null)
         {
@@ -42,7 +43,7 @@ namespace Domain.Models
             Type = type;
             Vehicle = vehicle;
             Student = student;
-            WaitingList = [];
+            _waitingList = [];
         }
 
         public void Update(string name, DateTime start, int duration, User teacher, Vehicle vehicle)
@@ -56,11 +57,12 @@ namespace Domain.Models
 
         public void AddStudent(User student)
         {
-            //if (student is null) throw new ArgumentNullException(nameof(student));
-            //if (Student is not null) throw new LessonValidationException("Student is already set");
+            if (student is null) throw new ArgumentNullException(nameof(student));
+            if (Student is not null) throw new LessonFullException();
+            ThrowIfLicenceTypeNotMatch(student);
+            ThrowIfUserIsNotStudent(student);
 
-            //Student = student;
-            throw new NotImplementedException();
+            Student = student;            
         }
         public void RemoveStudent(User student)
         {
@@ -75,15 +77,19 @@ namespace Domain.Models
 
         public void AddStudentToWaitingList(User student)
         {
-            //if (student is null) throw new ArgumentNullException(nameof(student));
-            //if (Student is null) throw new LessonValidationException("Student is not already set");
+            if (student is null) throw new ArgumentNullException(nameof(student));
+            if (Student is null) throw new LessonValidationException("Le cours n'est pas complet");
+            ThrowIfLicenceTypeNotMatch(student);
+            ThrowIfUserIsNotStudent(student, "L'utilisateur doit être un élève pour s'incrire à la file d'attente du cours");
+
+            if (_waitingList.Any(user => user.Id == student.Id))
+                throw new LessonValidationException("L'utilisateur est déjà dans la liste d'attente");
 
             //if (Student.Id != student.Id) throw new LessonValidationException("Student is not the same");
 
             //if(_waitingList.Contains(student)) throw new LessonValidationException("Student is already in the waiting list");
             
-            //_waitingList.Add(student);
-            throw new NotImplementedException();
+            _waitingList.Add(student);
         }
 
         public void RemoveStudentFromWaitingList(User student)
@@ -108,6 +114,19 @@ namespace Domain.Models
 
             if (Student.Id == user.Id) return UserLessonState.BookedByUser;
             else return UserLessonState.BookedByOther;
+        }
+
+        private void ThrowIfLicenceTypeNotMatch(User user)
+        {
+            if (user.LicenceType != Type)
+                throw new LessonValidationException("Le permis de l'utilisateur ne correspond pas au type de cours");
+        }
+
+        private void ThrowIfUserIsNotStudent(User user, string? message=null)
+        {
+            if (user.Type != UserType.Student)
+                throw new LessonValidationException(
+                    message is null ? "L'utilisateur doit être un élève pour s'incrire au cours" : message);
         }
 
     }

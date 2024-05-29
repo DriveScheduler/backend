@@ -37,7 +37,7 @@ namespace Application.UseCases.Lessons.Commands
             //lesson.Student = student;
             //validator.ThrowIfInvalid(lesson);
 
-            if(lesson.Start >= _systemClock.Now)
+            if(lesson.Start < _systemClock.Now)
                 throw new LessonValidationException("Le cours est déjà passé");
 
             lesson.AddStudent(student);
