@@ -1,6 +1,4 @@
-﻿using Domain.Enums;
-
-namespace Domain.Abstractions
+﻿namespace Application.Abstractions
 {
     public interface IEmailSender
     {

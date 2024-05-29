@@ -1,11 +1,11 @@
 using API.Inputs.Users;
 using API.Outputs.Users;
 
+using Application.Models;
 using Application.UseCases.Users.Commands;
 using Application.UseCases.Users.Queries;
 
-using Domain.Entities.Business;
-using Domain.Entities.Database;
+using Domain.Models;
 
 using MediatR;
 
@@ -38,7 +38,7 @@ namespace API.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateUserModel input)
         {
-            var command = new UpdateUser_Command(input.Id, input.Name, input.FirstName, input.Email, input.LicenceType);
+            var command = new UpdateUser_Command(input.Id, input.Name, input.FirstName, input.Email);
             try
             {
                 await _mediator.Send(command);

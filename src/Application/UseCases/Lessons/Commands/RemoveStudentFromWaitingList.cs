@@ -1,34 +1,28 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
-using Domain.Exceptions.Lessons;
-using Domain.Exceptions.Users;
+﻿using Domain.Models;
+using Domain.Repositories;
 
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Lessons.Commands
 {
     public sealed record RemoveStudentFromWaitingList_Command(int LessonId, Guid UserId) : IRequest;
-    internal sealed class RemoveStudentFromWaitingList_CommandHandler(IDatabase database) : IRequestHandler<RemoveStudentFromWaitingList_Command>
+    internal sealed class RemoveStudentFromWaitingList_CommandHandler(
+        ILessonRepository lessonRepository,
+        IUserRepository userRepository
+        ) : IRequestHandler<RemoveStudentFromWaitingList_Command>
     {
-        private readonly IDatabase _database = database;
+        private readonly ILessonRepository _lessonRepository = lessonRepository;
+        private readonly IUserRepository _userRepository = userRepository;
 
-        public async Task Handle(RemoveStudentFromWaitingList_Command request, CancellationToken cancellationToken)
+        public Task Handle(RemoveStudentFromWaitingList_Command request, CancellationToken cancellationToken)
         {
-            User? user = _database.Users.Find(request.UserId);
-            if (user is null)
-                throw new UserNotFoundException();
+            User user = _userRepository.GetUserById(request.UserId);
+            Lesson lesson = _lessonRepository.GetById(request.LessonId);
 
-            Lesson? lesson = _database.Lessons
-                .Include(Lesson => Lesson.WaitingList)
-                .FirstOrDefault(l => l.Id == request.LessonId);
-            if (lesson is null)
-                throw new LessonNotFoundException();
+            lesson.RemoveStudentFromWaitingList(user);
 
-            lesson.WaitingList.Remove(user);
-            if (await _database.SaveChangesAsync() != 1)
-                throw new LessonSaveException();
+            _lessonRepository.Update(lesson);
+            return Task.CompletedTask;
         }
     }
 }

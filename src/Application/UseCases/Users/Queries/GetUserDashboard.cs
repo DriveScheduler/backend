@@ -1,32 +1,30 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Business;
-using Domain.Entities.Database;
-using Domain.Exceptions.Users;
-using Domain.ValueObjects;
+﻿using Application.Abstractions;
+using Application.Models;
+
+using Domain.Models;
+using Domain.Repositories;
+using Domain.Utils;
 
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Users.Queries
 {
     public sealed record GetUserDashboard_Query(Guid UserId) : IRequest<UserDashboard>;
 
-    internal sealed class GetUserDashboard_QueryHandler(IDatabase database, ISystemClock clock) : IRequestHandler<GetUserDashboard_Query, UserDashboard>
+    internal sealed class GetUserDashboard_QueryHandler(
+        ILessonRepository lessonRepository,  
+        IUserRepository userRepository,
+        ISystemClock clock
+        ) : IRequestHandler<GetUserDashboard_Query, UserDashboard>
     {
-        private readonly IDatabase _database = database;
+        private readonly ILessonRepository _lessonRepository = lessonRepository;  
+        private readonly IUserRepository _userRepository = userRepository;
         private readonly ISystemClock _clock = clock;
 
-        public async Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)
+        public Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)
         {
-            User? student = _database.Users.Find(request.UserId);
-            if (student is null)
-                throw new UserNotFoundException();
-
-            List<Lesson> allStudentLessons = await _database.Lessons
-                .Include(l => l.Student)
-                .Where(l => l.Student == student)
-                .ToListAsync();
+            User user = _userRepository.GetUserById(request.UserId);
+            IReadOnlyList<Lesson> allStudentLessons = user.LessonsAsStudent;
 
             List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End < _clock.Now).ToList();
             User? favouriteTeacher = FavouriteTeacher(achievedLessons, out int teacherTotalTime);
@@ -42,11 +40,11 @@ namespace Application.UseCases.Users.Queries
                 FavoriteTeacherTimeSpent = teacherTotalTime,
                 FavoriteVehicle = favouriteVehicle,
                 FavoriteVehicleTimeSpent = vehicleTotalTime,
-                TimeSpentThisWeek = allStudentLessons.Where(lesson => lesson.Start.Date >= firstDayOfThisWeek && lesson.End < _clock.Now).Sum(lesson => lesson.Duration)
+                TimeSpentThisWeek = allStudentLessons.Where(lesson => lesson.Start.Date >= firstDayOfThisWeek && lesson.End < _clock.Now).Sum(lesson => lesson.Duration.Value)
             };
 
-            return dashboard;
-        }     
+            return Task.FromResult(dashboard);
+        }
 
         private User? FavouriteTeacher(List<Lesson> studentLessons, out int totalTime)
         {
@@ -56,14 +54,14 @@ namespace Application.UseCases.Users.Queries
             Dictionary<User, List<Lesson>> teacherLessons = studentLessons.GroupBy(l => l.Teacher).ToDictionary(row => row.Key, row => row.ToList());
             if (teacherLessons.Count == 1)
             {
-                totalTime = teacherLessons.First().Value.Sum(l => l.Duration);
+                totalTime = teacherLessons.First().Value.Sum(l => l.Duration.Value);
                 return teacherLessons.First().Key;
             }
 
             int maxDuration = 0;
             foreach (KeyValuePair<User, List<Lesson>> row in teacherLessons)
             {
-                int total = row.Value.Sum(l => l.Duration);
+                int total = row.Value.Sum(l => l.Duration.Value);
                 if (total > maxDuration)
                 {
                     maxDuration = total;
@@ -82,14 +80,14 @@ namespace Application.UseCases.Users.Queries
             Dictionary<Vehicle, List<Lesson>> vehicleLessons = studentLessons.GroupBy(l => l.Vehicle).ToDictionary(row => row.Key, row => row.ToList());
             if (vehicleLessons.Count == 1)
             {
-                totalTime = vehicleLessons.First().Value.Sum(l => l.Duration);
+                totalTime = vehicleLessons.First().Value.Sum(l => l.Duration.Value);
                 return vehicleLessons.First().Key;
             }
 
             int maxDuration = 0;
             foreach (KeyValuePair<Vehicle, List<Lesson>> row in vehicleLessons)
             {
-                int total = row.Value.Sum(l => l.Duration);
+                int total = row.Value.Sum(l => l.Duration.Value);
                 if (total > maxDuration)
                 {
                     maxDuration = total;

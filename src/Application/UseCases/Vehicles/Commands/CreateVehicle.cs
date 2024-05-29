@@ -1,35 +1,28 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
+﻿using Domain.Models;
 using Domain.Enums;
-using Domain.Exceptions.Vehicles;
-using Domain.Validators.Vehicles;
+using Domain.Repositories;
 
 using MediatR;
+using Domain.Exceptions.Vehicles;
 
 namespace Application.UseCases.Vehicles.Commands
 {
     public sealed record CreateVehicle_Command(string RegistrationNumber, string Name, LicenceType Type) : IRequest<int>;
 
-    internal sealed class CreateVehicle_CommandHandler(IDatabase database) : IRequestHandler<CreateVehicle_Command, int>
+    internal sealed class CreateVehicle_CommandHandler(IVehicleRepository vehicleRepository) : IRequestHandler<CreateVehicle_Command, int>
     {
-        private readonly IDatabase _database = database;
+        private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
 
-        public async Task<int> Handle(CreateVehicle_Command request, CancellationToken cancellationToken)
-        {
-            Vehicle vehicle = new Vehicle()
-            {
-                RegistrationNumber = request.RegistrationNumber,
-                Name = request.Name,
-                Type = request.Type
-            };
+        public Task<int> Handle(CreateVehicle_Command request, CancellationToken cancellationToken)
+        {          
+            if(_vehicleRepository.IsRegistrationNumberUnique(request.RegistrationNumber) == false) 
+                throw new VehicleValidationException("Un véhicule avec cette immatriculation existe déjà");
 
-            new VehicleValidator(_database).ThrowIfInvalid(vehicle);
+            Vehicle vehicle = new Vehicle(request.RegistrationNumber, request.Name, request.Type);         
 
-            _database.Vehicles.Add(vehicle);
-            if (await _database.SaveChangesAsync() != 1)
-                throw new VehicleSaveException();
+            _vehicleRepository.Insert(vehicle);
 
-            return vehicle.Id;
+            return Task.FromResult(vehicle.Id);
         }
     }
 }

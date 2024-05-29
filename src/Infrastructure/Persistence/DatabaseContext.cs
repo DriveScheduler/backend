@@ -1,26 +1,16 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
+﻿using Domain.Models;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    internal sealed class DatabaseContext : DbContext, IDatabase
+    internal sealed class DatabaseContext : DbContext, IDataAccessor
     {
         public DatabaseContext() { }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
-        }
-
-        DbSet<User> IDatabase.Users => Users;        
-        DbSet<Lesson> IDatabase.Lessons => Lessons;
-        DbSet<Vehicle> IDatabase.Vehicles => Vehicles;
-        DbSet<DrivingSchool> IDatabase.DrivingSchools => DrivingSchools;
-
-        public async new Task<int> SaveChangesAsync(CancellationToken cancellationToken)
-        {
-            return await base.SaveChangesAsync(cancellationToken);
-        }
+        }        
 
         public void Clear()
         {
@@ -38,11 +28,52 @@ namespace Infrastructure.Persistence
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
             base.OnModelCreating(modelBuilder);
+        }      
+
+        public void Insert<T>(T entity) where T : class
+        {
+            Set<T>().Add(entity);
+            SaveChanges();
         }
-        
+        public void Insert<T>(List<T> entities) where T : class
+        {
+            Set<T>().AddRange(entities);
+            SaveChanges();
+        }
+
+        void IDataAccessor.Update<T>(T entity) where T : class
+        {
+            Set<T>().Update(entity);
+            SaveChanges();
+        }
+
+        public void Delete<T>(T entity) where T : class
+        {
+            Set<T>().Remove(entity);
+            SaveChanges();
+        }
+
+      
+
         internal DbSet<User> Users { get; set; }        
         internal DbSet<Lesson> Lessons { get; set; }
         internal DbSet<Vehicle> Vehicles { get; set; }
         internal DbSet<DrivingSchool> DrivingSchools { get; set; }
+
+        IQueryable<DrivingSchool> IDataAccessor.DrivingSchools => DrivingSchools;            
+
+        IQueryable<Lesson> IDataAccessor.Lessons => Lessons
+            .Include(l => l.Teacher)
+            .Include(l => l.Student)
+            .Include(l => l.WaitingList)
+            .Include(l => l.Vehicle);            
+
+        IQueryable<User> IDataAccessor.Users => Users
+            .Include(u => u.LessonsAsTeacher)
+            .Include(u => u.LessonsAsStudent)
+            .Include(u => u.WaitingList);            
+
+        IQueryable<Vehicle> IDataAccessor.Vehicles => Vehicles
+            .Include(v => v.Lessons);       
     }
 }

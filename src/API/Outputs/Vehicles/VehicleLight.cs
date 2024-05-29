@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Database;
+﻿using Domain.Models;
 
 namespace API.Outputs.Vehicles
 {
@@ -12,7 +12,7 @@ namespace API.Outputs.Vehicles
         public VehicleLight(Vehicle vehicle)
         {
             Id = vehicle.Id;
-            RegistrationNumber = vehicle.RegistrationNumber;
+            RegistrationNumber = vehicle.RegistrationNumber.Value;
             Name = vehicle.Name;
             Type = new LicenceTypeOutput(vehicle.Type);
         }

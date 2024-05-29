@@ -1,5 +1,4 @@
-﻿using Domain.Abstractions;
-using Domain.Enums;
+﻿using Application.Abstractions;
 
 namespace UseCases.Fakes
 {

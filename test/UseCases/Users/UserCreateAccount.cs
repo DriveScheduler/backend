@@ -1,27 +1,30 @@
 using Application.UseCases.Users.Commands;
 
-using Domain.Abstractions;
-using Domain.Entities.Database;
+using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Users;
+using Domain.Repositories;
 
 using MediatR;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Infrastructure.Persistence;
 
 namespace UseCases.Users
 {
     public class UserCreateAccount : IClassFixture<SetupDependencies>, IDisposable
     {
-        private IMediator _mediator;
-        private IDatabase _database;
+        private readonly IUserRepository _userRepository;
+        private readonly IDataAccessor _database;
+        private readonly IMediator _mediator;
 
         public UserCreateAccount(SetupDependencies fixture)
         {
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDatabase>();
         }
 
         public void Dispose()
@@ -45,7 +48,7 @@ namespace UseCases.Users
 
             // Assert
             Assert.NotEqual(Guid.Empty, userId);
-            Assert.NotNull(_database.Users.Find(userId));
+            Assert.NotNull(_userRepository.GetUserById(userId));
         }
 
         [Fact]
@@ -98,8 +101,7 @@ namespace UseCases.Users
             var command = new CreateUser_Command(name, firstname, email, password, licenceType, UserType.Student);
 
             // Assert
-            UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
-            Assert.Equal("L'adresse email est obligatoire", exc.Message);
+            await Assert.ThrowsAsync<InvalidEmailException>(() => _mediator.Send(command));            
         }
 
         [Theory]
@@ -119,8 +121,7 @@ namespace UseCases.Users
             var command = new CreateUser_Command(name, firstname, invalidEmail, password, licenceType, UserType.Student);
 
             // Assert
-            UserValidationException exc = await Assert.ThrowsAsync<UserValidationException>(() => _mediator.Send(command));
-            Assert.Equal("L'adresse email n'est pas valide", exc.Message);
+            await Assert.ThrowsAsync<InvalidEmailException>(() => _mediator.Send(command));            
         }
 
         [Fact]
@@ -133,9 +134,8 @@ namespace UseCases.Users
             const LicenceType licenceType = LicenceType.Car;
 
             User user = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
-            string existingEmail = user.Email;
-            _database.Users.Add(user);
-            await _database.SaveChangesAsync();
+            string existingEmail = user.Email.Value;
+            _userRepository.Insert(user);
 
             // Act
             var command = new CreateUser_Command(name, firstname, existingEmail, password, licenceType, UserType.Student);

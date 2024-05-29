@@ -1,27 +1,30 @@
 ﻿using Application.UseCases.Vehicles.Commands;
 
-using Domain.Abstractions;
-using Domain.Entities.Database;
+using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Vehicles;
+using Domain.Repositories;
 
 using MediatR;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Infrastructure.Persistence;
 
 namespace UseCases.Vehicles
 {
     public class AdminUpdateVehicle : IClassFixture<SetupDependencies>, IDisposable
     {
-        private IMediator _mediator;
-        private IDatabase _database;
+        private readonly IVehicleRepository _vehicleRepository;
+        private readonly IDataAccessor _database;
+        private readonly IMediator _mediator;
 
         public AdminUpdateVehicle(SetupDependencies fixture)
         {
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDatabase>();
         }
 
         public void Dispose()
@@ -35,21 +38,18 @@ namespace UseCases.Vehicles
             // Arrange
             const int vehicleId = 1;
             const string registrationNumber = "AA123BB";
-            const string updatedName = "Renault Clio";
-            const LicenceType updatedType = LicenceType.Car;
+            const string updatedName = "Renault Clio";            
 
-            _database.Vehicles.Add(DataSet.GetTruck(vehicleId));
-            await _database.SaveChangesAsync();
+            _vehicleRepository.Insert(DataSet.GetTruck(vehicleId));
 
             // Act
-            var command = new UpdateVehicle_Command(vehicleId, registrationNumber, updatedName, updatedType);
+            var command = new UpdateVehicle_Command(vehicleId, registrationNumber, updatedName);
             await _mediator.Send(command);
-            Vehicle? vehicle = _database.Vehicles.Find(vehicleId);
+            Vehicle? vehicle = _vehicleRepository.GetById(vehicleId);
 
             // Assert            
-            Assert.NotNull(vehicle);            
-            Assert.Equal(updatedName, vehicle.Name);
-            Assert.Equal(updatedType, vehicle.Type);
+            Assert.NotNull(vehicle);
+            Assert.Equal(updatedName, vehicle.Name);            
         }
 
         [Theory]
@@ -61,17 +61,15 @@ namespace UseCases.Vehicles
         public async void AdminShould_UpdateAVehicle_WithValidRegistrationNumber(string invalidRegistrationNumber)
         {
             // Arrange
-            const int vehicleId = 1;            
+            const int vehicleId = 1;
 
-            _database.Vehicles.Add(DataSet.GetCar(vehicleId));
-            await _database.SaveChangesAsync();
+            _vehicleRepository.Insert(DataSet.GetCar(vehicleId));
 
             // Act
-            var command = new UpdateVehicle_Command(vehicleId, invalidRegistrationNumber, "Car", LicenceType.Car);
+            var command = new UpdateVehicle_Command(vehicleId, invalidRegistrationNumber, "Car");
 
             // Assert                        
-            VehicleValidationException exc = await Assert.ThrowsAsync<VehicleValidationException>(() => _mediator.Send(command));
-            Assert.Equal("L'immatriculation ne respecte pas le format XX123XX", exc.Message);
+            await Assert.ThrowsAsync<RegistrationNumberException>(() => _mediator.Send(command));           
         }
 
         [Fact]
@@ -80,14 +78,12 @@ namespace UseCases.Vehicles
             // Arrange
             const int vehicleId = 1;
             const string registrationNumber = "AA123BB";
-            const string name = "";
-            const LicenceType type = LicenceType.Car;
+            const string name = "";            
 
-            _database.Vehicles.Add(DataSet.GetCar(vehicleId));
-            await _database.SaveChangesAsync();
+            _vehicleRepository.Insert(DataSet.GetCar(vehicleId));
 
             // Act
-            var command = new UpdateVehicle_Command(vehicleId, registrationNumber, name, type);
+            var command = new UpdateVehicle_Command(vehicleId, registrationNumber, name);
 
             // Assert                        
             VehicleValidationException exc = await Assert.ThrowsAsync<VehicleValidationException>(() => _mediator.Send(command));
@@ -102,14 +98,13 @@ namespace UseCases.Vehicles
             const int vehicleId = 1;
 
             Vehicle car = DataSet.GetCar(2);
-            string existingRegistrationNumber = car.RegistrationNumber;
+            string existingRegistrationNumber = car.RegistrationNumber.Value;
 
-            _database.Vehicles.Add(car);
-            _database.Vehicles.Add(DataSet.GetMotorcycle(vehicleId));
-            await _database.SaveChangesAsync();
+            _vehicleRepository.Insert(car);
+            _vehicleRepository.Insert(DataSet.GetMotorcycle(vehicleId));
 
             // Act
-            var command = new UpdateVehicle_Command(vehicleId, existingRegistrationNumber, "moto", LicenceType.Motorcycle);
+            var command = new UpdateVehicle_Command(vehicleId, existingRegistrationNumber, "moto");
 
             // Assert                        
             VehicleValidationException exc = await Assert.ThrowsAsync<VehicleValidationException>(() => _mediator.Send(command));

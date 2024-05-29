@@ -3,7 +3,7 @@ using API.Outputs.Vehicles;
 
 using Application.UseCases.Vehicles.Commands;
 using Application.UseCases.Vehicles.Queries;
-using Domain.Entities.Database;
+using Domain.Models;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +34,7 @@ namespace API.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateVehicleModel input)
         {
-            var command = new UpdateVehicle_Command(input.Id, input.RegistrationNumber, input.Name, input.Type);
+            var command = new UpdateVehicle_Command(input.Id, input.RegistrationNumber, input.Name);
             try
             {
                 await _mediator.Send(command);

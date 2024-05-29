@@ -1,4 +1,7 @@
-﻿using Domain.Entities.Database;
+﻿using Domain.Models;
+
+using Infrastructure.Configurations.ValueObjectsConverter;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +11,8 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Lesson> builder)
         {
+            builder.ToTable("Lessons");
+
             builder.Property(c => c.Id)
                 .IsRequired()
                 .ValueGeneratedOnAdd();
@@ -20,6 +25,7 @@ namespace Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(c => c.Duration)
+                .HasConversion<LessonDurationConverter>()
                 .IsRequired();               
 
             builder.Property(c => c.Type)
@@ -43,8 +49,7 @@ namespace Infrastructure.Configurations
                 .WithMany(u => u.WaitingList)
                 .UsingEntity(j => j.ToTable("LessonUsersPending"));
 
-
-            builder.Ignore(c => c.End);
+            builder.Ignore(l => l.End);
         }
     }
 }
