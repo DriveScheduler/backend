@@ -42,8 +42,7 @@ internal class Program
            .AllowAnyHeader());
 
 
-        app.UseAuthentication();
-        app.UseMiddleware<JwtMiddleware>();
+        app.UseAuthentication();        
         app.UseAuthorization();
         app.MapControllers();
 

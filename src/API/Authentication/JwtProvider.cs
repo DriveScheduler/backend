@@ -11,14 +11,18 @@ namespace API.Authentication
 {
     public class JwtProvider(IConfiguration configuration)
     {
+        public static string CLAIM_ID = "ID";
+        public static string CLAIM_FIRSTNAME = "FirstName";
+        public static string CLAIM_ROLE = "Role";
+
         private readonly IConfiguration _configuration = configuration;
 
         public string GenerateToken(User user)
         {
             var claims = new List<Claim> {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, user.Type.ToText()),
+                new Claim(CLAIM_ID, user.Id.ToString()),
+                new Claim(CLAIM_FIRSTNAME, user.FirstName),
+                new Claim(CLAIM_ROLE, ((int)user.Type).ToString()),
             };
             var jwtToken = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],

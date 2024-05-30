@@ -10,7 +10,7 @@ namespace API.Authentication
     {
         protected Guid GetUserId()
         {
-            string? value = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string? value = User.FindFirstValue(JwtProvider.CLAIM_ID);
             if (string.IsNullOrEmpty(value)) return Guid.Empty;
             return Guid.Parse(value);
         }

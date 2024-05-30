@@ -34,8 +34,7 @@ namespace API.Authentication
                         .Build();
             });
 
-            services.AddScoped<JwtProvider>();
-            services.AddScoped<JwtMiddleware>();            
+            services.AddScoped<JwtProvider>();                     
         }
 
         public static void AddSwaggerJwtTokenService(this IServiceCollection services)
