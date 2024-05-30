@@ -10,18 +10,20 @@ using Domain.Models;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController(IMediator mediator, JwtProvider tokenProvider) : ControllerBase
+    public class UserController(IMediator mediator, JwtProvider tokenProvider) : JwtControllerBase
     {
 
         private readonly IMediator _mediator = mediator;        
         private readonly JwtProvider _tokenProvider = tokenProvider;
 
+        [AllowAnonymous]
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CreateUserModel input)
         {
@@ -40,7 +42,7 @@ namespace API.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateUserModel input)
         {
-            var command = new UpdateUser_Command(input.Id, input.Name, input.FirstName, input.Email);
+            var command = new UpdateUser_Command(GetUserId(), input.Name, input.FirstName, input.Email);
             try
             {
                 await _mediator.Send(command);
@@ -52,10 +54,10 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
-            var query = new GetUserById_Query(id);
+            var query = new GetUserById_Query(GetUserId());
             try
             {
                 User user = await _mediator.Send(query);
@@ -82,10 +84,10 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("{id}/Dashboard")]
-        public async Task<IActionResult> GetUserDashboard(Guid id)
+        [HttpGet("Dashboard")]
+        public async Task<IActionResult> GetUserDashboard()
         {
-            var query = new GetUserDashboard_Query(id);
+            var query = new GetUserDashboard_Query(GetUserId());
             try
             {
                 UserDashboard dashboard = await _mediator.Send(query);
@@ -97,10 +99,10 @@ namespace API.Controllers
             }            
         }
 
-        [HttpGet("{id}/Planning")]
-        public async Task<IActionResult> GetUserPlanning(Guid id)
+        [HttpGet("Planning")]
+        public async Task<IActionResult> GetUserPlanning()
         {
-            var query = new GetUserLessonPlanning_Query(id);
+            var query = new GetUserLessonPlanning_Query(GetUserId());
             try
             {
                 UserLessonPlanning planning = await _mediator.Send(query);
@@ -112,10 +114,10 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("{id}/History")]
-        public async Task<IActionResult> GetUserHistory(Guid id)
+        [HttpGet("History")]
+        public async Task<IActionResult> GetUserHistory()
         {
-            var query = new GetUserLessonHistory_Query(id);
+            var query = new GetUserLessonHistory_Query(GetUserId());
             try
             {
                 UserLessonHistory history = await _mediator.Send(query);
@@ -127,6 +129,7 @@ namespace API.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LogInUserModel model)
         {

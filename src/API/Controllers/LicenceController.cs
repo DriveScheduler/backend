@@ -2,10 +2,12 @@ using API.Outputs;
 
 using Domain.Enums;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class LicenceController : ControllerBase

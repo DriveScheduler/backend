@@ -33,9 +33,7 @@ namespace Infrastructure.Repositories
 
         public bool IsRegistrationNumberUnique(string registrationNumber)
         {
-            return _database.Vehicles
-                .AsEnumerable()
-                .FirstOrDefault(v => v.RegistrationNumber.Value == registrationNumber) is null;
+            return _database.Vehicles.FirstOrDefault(v => v.RegistrationNumber.Value == registrationNumber) is null;
         }
 
 

@@ -1,4 +1,5 @@
-﻿using API.Inputs.Vehicles;
+﻿using API.Authentication;
+using API.Inputs.Vehicles;
 using API.Outputs.Vehicles;
 
 using Application.UseCases.Vehicles.Commands;
@@ -12,7 +13,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class VehicleController(IMediator mediator) : ControllerBase
+    public class VehicleController(IMediator mediator) : JwtControllerBase
     {
         private readonly IMediator _mediator = mediator;
 

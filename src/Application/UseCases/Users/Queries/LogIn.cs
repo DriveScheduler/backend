@@ -1,6 +1,4 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
-using Domain.Exceptions.Users;
+﻿using Domain.Exceptions.Users;
 using Domain.Models;
 using Domain.Repositories;
 

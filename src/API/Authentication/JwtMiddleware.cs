@@ -11,30 +11,19 @@ namespace API.Authentication
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
             if (!token.IsNullOrEmpty())
             {
                 try
-                {
-                    // Verify the token using the JwtSecurityTokenHandlerWrapper
-                    var claimsPrincipal = _tokenProvider.ConvertToken(token);
-
-                    // Extract the user ID from the token
-                    var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                    // Store the user ID in the HttpContext items for later use
-                    context.Items["UserId"] = userId;
-
-                    // You can also do the for same other key which you have in JWT token.
+                {                    
+                    var claimsPrincipal = _tokenProvider.ConvertToken(token);                    
+                    var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;                    
+                    context.Items["UserId"] = userId;                 
                 }
                 catch (Exception)
                 {
                     throw new UnauthorizedAccessException();
                 }
-
-
-            }
-            // Continue processing the request
+            }            
             await next(context);
         }
     }

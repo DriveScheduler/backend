@@ -1,20 +1,21 @@
-﻿using API.Inputs.DrivingSchools;
+﻿using API.Authentication;
+using API.Inputs.DrivingSchools;
 using API.Outputs.DrivingSchools;
 
 using Application.UseCases.DrivingSchools.Commands;
 using Application.UseCases.DrivingSchools.Queries;
+
 using Domain.Models;
+
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class DrivingSchoolController(IMediator mediator) : ControllerBase
+    public class DrivingSchoolController(IMediator mediator) : JwtControllerBase
     {
         private readonly IMediator _mediator = mediator;
 

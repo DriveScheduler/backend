@@ -1,4 +1,5 @@
-﻿using API.Inputs.Lessons;
+﻿using API.Authentication;
+using API.Inputs.Lessons;
 using API.Outputs.Lessons;
 
 using Application.UseCases.Lessons.Commands;
@@ -11,10 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
-    public class LessonController(IMediator mediator) : ControllerBase
+    public class LessonController(IMediator mediator) : JwtControllerBase
     {
         private readonly IMediator _mediator = mediator;
 
@@ -22,7 +22,7 @@ namespace API.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CreateLessonModel input)
         {
-            var command = new CreateLesson_Command(input.Name, input.Start, input.Duration, input.TeacherId, input.Type);
+            var command = new CreateLesson_Command(input.Name, input.Start, input.Duration, GetUserId(), input.Type);
             try
             {
                 int lessonId = await _mediator.Send(command);
@@ -37,7 +37,7 @@ namespace API.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateLessonModel input)
         {
-            var command = new UpdateLesson_Command(input.Id, input.Name, input.Start, input.Duration, input.TeacherId);
+            var command = new UpdateLesson_Command(input.Id, input.Name, input.Start, input.Duration, GetUserId());
             try
             {
                 await _mediator.Send(command);
@@ -65,8 +65,9 @@ namespace API.Controllers
         }
 
         [HttpGet("Lessons")]
-        public async Task<IActionResult> GetLessons(Guid userId, DateTime startDate, DateTime endDate, bool onlyEmptyLesson)
+        public async Task<IActionResult> GetLessons(DateTime startDate, DateTime endDate, bool onlyEmptyLesson)
         {
+            Guid userId = GetUserId();
             var query = new GetLessons_Query(userId, startDate, endDate, onlyEmptyLesson);
             var userQuery = new GetUserById_Query(userId);
             try
@@ -84,7 +85,7 @@ namespace API.Controllers
         [HttpPut("AddStudentToLesson")]
         public async Task<IActionResult> AddStudentToLesson(UpdateLessonStudentModel input)
         {
-            var query = new AddStudentToLesson_Command(input.LessonId, input.StudentId);
+            var query = new AddStudentToLesson_Command(input.LessonId, GetUserId());
             try
             {
                 var t = User.Claims;
@@ -100,7 +101,7 @@ namespace API.Controllers
         [HttpPut("RemoveStudentFromLesson")]
         public async Task<IActionResult> RemoveStudentFromLesson(UpdateLessonStudentModel input)
         {
-            var query = new RemoveStudentFromLesson_Command(input.LessonId, input.StudentId);
+            var query = new RemoveStudentFromLesson_Command(input.LessonId, GetUserId());
             try
             {
                 await _mediator.Send(query);
@@ -115,7 +116,7 @@ namespace API.Controllers
         [HttpPut("AddStudentToWaitingList")]
         public async Task<IActionResult> AddStudentToWaitingList(UpdateLessonStudentModel input)
         {
-            var query = new AddStudentToWaitingList_Command(input.LessonId, input.StudentId);
+            var query = new AddStudentToWaitingList_Command(input.LessonId, GetUserId());
             try
             {
                 await _mediator.Send(query);
@@ -130,7 +131,7 @@ namespace API.Controllers
         [HttpPut("RemoveStudentFromWaitingList")]
         public async Task<IActionResult> RemoveStudentFromWaitingList(UpdateLessonStudentModel input)
         {
-            var query = new RemoveStudentFromWaitingList_Command(input.LessonId, input.StudentId);
+            var query = new RemoveStudentFromWaitingList_Command(input.LessonId, GetUserId());
             try
             {
                 await _mediator.Send(query);

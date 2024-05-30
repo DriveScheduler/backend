@@ -22,9 +22,7 @@ namespace API.Authentication
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),                    
                     ClockSkew = TimeSpan.Zero
                 };
             });
@@ -34,6 +32,7 @@ namespace API.Authentication
                         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                         .RequireAuthenticatedUser()
                         .Build();
+            });
 
             services.AddScoped<JwtProvider>();
             services.AddScoped<JwtMiddleware>();            
