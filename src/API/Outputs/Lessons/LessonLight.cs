@@ -24,7 +24,7 @@ namespace API.Outputs.Lessons
             StartTime = lesson.Start;
             EndTime = lesson.End;
             Time = $"{lesson.Start:HH:mm} à {lesson.End:HH:mm}";
-            Duration = $"{lesson.Duration} min";
+            Duration = $"{lesson.Duration.Value} min";
 
             Teacher = lesson.Teacher != null ?
                 $"{lesson.Teacher.FirstName}" : "Erreur";

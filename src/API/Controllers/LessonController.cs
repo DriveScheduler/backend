@@ -5,6 +5,8 @@ using API.Outputs.Lessons;
 using Application.UseCases.Lessons.Commands;
 using Application.UseCases.Lessons.Queries;
 using Application.UseCases.Users.Queries;
+
+using Domain.Enums;
 using Domain.Models;
 using MediatR;
 
@@ -65,10 +67,10 @@ namespace API.Controllers
         }
 
         [HttpGet("Lessons")]
-        public async Task<IActionResult> GetLessons(DateTime startDate, DateTime endDate, bool onlyEmptyLesson)
+        public async Task<IActionResult> GetLessons([FromQuery]GetLessonModel input)
         {
             Guid userId = GetUserId();
-            var query = new GetLessons_Query(userId, startDate, endDate, onlyEmptyLesson);
+            var query = new GetLessons_Query(userId, input.StartDate, input.EndDate, input.Teachers??new(), input.OnlyEmptyLesson);
             var userQuery = new GetUserById_Query(userId);
             try
             {

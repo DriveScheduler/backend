@@ -25,11 +25,15 @@ namespace Infrastructure.Repositories
             return lesson;
         }
 
-        public List<Lesson> GetLessonsForUser(User user, DateTime start, DateTime end, bool onlyEmptyLesson = false)
+        public List<Lesson> GetLessonsForUser(User user, DateTime start, DateTime end,List<Guid> teacherIds, bool onlyEmptyLesson = false)
         {
             IEnumerable<Lesson> query = _database.Lessons;
             if (user.Type == UserType.Student)
+            {
                 query = query.Where(lesson => lesson.Type == user.LicenceType);
+                if (teacherIds.Count > 0)
+                    query = query.Where(lesson => teacherIds.Contains(lesson.TeacherId));
+            }
             else if (user.Type == UserType.Teacher)
                 query = query.Where(lesson => lesson.Teacher.Id == user.Id);
 
