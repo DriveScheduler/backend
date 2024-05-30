@@ -1,39 +1,36 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Business;
-using Domain.Entities.Database;
-using Domain.Exceptions.Users;
+﻿using Application.Abstractions;
+using Application.Models;
+
+using Domain.Models;
+using Domain.Repositories;
 
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Users.Queries
 {
     public sealed record GetUserLessonHistory_Query(Guid UserId) : IRequest<UserLessonHistory>;
 
-    internal sealed class GetUserLessonHistory_QueryHandler(IDatabase database, ISystemClock clock) : IRequestHandler<GetUserLessonHistory_Query, UserLessonHistory>
+    internal sealed class GetUserLessonHistory_QueryHandler(
+        ILessonRepository lessonRepository, 
+        IUserRepository userRepository,
+        ISystemClock clock
+        ) : IRequestHandler<GetUserLessonHistory_Query, UserLessonHistory>
     {
-        private readonly IDatabase _database = database;
+        private readonly ILessonRepository _lessonRepository = lessonRepository;
+        private readonly IUserRepository _userRepository = userRepository;
         private readonly ISystemClock _clock = clock;
 
-        public async Task<UserLessonHistory> Handle(GetUserLessonHistory_Query request, CancellationToken cancellationToken)
+        public Task<UserLessonHistory> Handle(GetUserLessonHistory_Query request, CancellationToken cancellationToken)
         {
-            User? student = _database.Users.Find(request.UserId);
-            if(student is null)
-                throw new UserNotFoundException();
-
-            List<Lesson> lessons = await _database.Lessons
-                .Include(lesson => lesson.Student)                
-                .Where(lesson => lesson.Student == student && (lesson.Start.AddMinutes(lesson.Duration)) <= _clock.Now)
-                .OrderByDescending(lesson => lesson.Start)
-                .ToListAsync();
+            User user = _userRepository.GetUserById(request.UserId);
+            List<Lesson> lessons = _lessonRepository.GetUserHistory(user, _clock.Now);
 
             UserLessonHistory history = new UserLessonHistory()
             {
-                Lessons = lessons,                
-                LessonTotalTime = lessons.Sum(lesson => lesson.Duration)
+                Lessons = lessons,
+                LessonTotalTime = lessons.Sum(lesson => lesson.Duration.Value)
             };
-            return history;
+            return Task.FromResult(history);
         }
     }
 }

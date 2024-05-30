@@ -1,70 +1,54 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
-using Domain.Enums;
+﻿using Application.Abstractions;
+
 using Domain.Exceptions.Lessons;
-using Domain.Exceptions.Users;
-using Domain.Exceptions.Vehicles;
-using Domain.Validators.Lessons;
+using Domain.Models;
+using Domain.Repositories;
 
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.UseCases.Lessons.Commands
 {
 
-    public sealed record UpdateLesson_Command(int Id, string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type, int VehicleId) : IRequest;
+    public sealed record UpdateLesson_Command(int Id, string Name, DateTime Date, int Duration, Guid TeacherId) : IRequest;
 
-    internal sealed class UpdateLesson_CommandHandler(IDatabase database, ISystemClock clock) : IRequestHandler<UpdateLesson_Command>
+    internal sealed class UpdateLesson_CommandHandler(
+        ILessonRepository lessonRepository, 
+        IUserRepository userRepository,
+        IVehicleRepository vehicleRepository,
+        ISystemClock clock) : IRequestHandler<UpdateLesson_Command>
     {
-        private readonly IDatabase _database = database;
+        private readonly ILessonRepository _lessonRepository = lessonRepository;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
         private readonly ISystemClock _clock = clock;
 
-        public async Task Handle(UpdateLesson_Command request, CancellationToken cancellationToken)
+        public Task Handle(UpdateLesson_Command request, CancellationToken cancellationToken)
         {
-            User teacher = GetTeacher(request.TeacherId);
-            Vehicle vehicle = GetVehicle(request.VehicleId);
+            Lesson lesson = _lessonRepository.GetById(request.Id);
+            User teacher = _userRepository.GetUserById(request.TeacherId);
+            
+            if (lesson.Start < _clock.Now)
+                throw new LessonValidationException("Le cours est déjà passé");
+            if (request.Date < _clock.Now)
+                throw new LessonValidationException("Le date et l'heure du cours ne peuvent pas être inférieur à maintenant");
 
-            Lesson? lesson = _database.Lessons.Find(request.Id);
-            if (lesson is null)
-                throw new LessonNotFoundException();
+            DateTime end = request.Date.AddMinutes(request.Duration);
+            Vehicle vehicle = lesson.Vehicle;
+            if (vehicle.Lessons.Any(vehicleLesson => vehicleLesson.Start < end && vehicleLesson.End > request.Date && vehicleLesson.Id != lesson.Id))
+                vehicle = _vehicleRepository.FindAvailable(request.Date, request.Duration, lesson.Type);
 
-            LessonValidator validator = new LessonValidator(lesson, _clock)
-                .UpdateRules();            
+            if (teacher.LessonsAsTeacher.Any(teacherLesson => teacherLesson.Start < end && teacherLesson.End > request.Date && teacherLesson.Id != lesson.Id))
+                throw new LessonValidationException("Le moniteur n'est pas disponible pour cette plage horaire");
 
-            lesson.Name = request.Name;
-            lesson.Start = request.Date;
-            lesson.Duration = request.Duration;
-            lesson.Type = request.Type;
-            lesson.Teacher = teacher;
-            lesson.Vehicle = vehicle;
+            lesson.Update(
+                request.Name,
+                request.Date,
+                request.Duration,
+                teacher,
+                vehicle);                
 
-            validator.ThrowIfInvalid(lesson);
-
-            if (await _database.SaveChangesAsync(cancellationToken) != 1)
-                throw new LessonSaveException();
-        }
-
-        private User GetTeacher(Guid id)
-        {
-            User? user = _database.Users
-                .Include(u => u.LessonsAsTeacher)
-                .FirstOrDefault(u => u.Id == id);
-            if (user is null)
-                throw new UserNotFoundException();
-
-            return user;
-        }
-
-        private Vehicle GetVehicle(int id)
-        {
-            Vehicle? vehicle = _database.Vehicles
-                .Include(v => v.Lessons)
-                .FirstOrDefault(v => v.Id == id);
-            if (vehicle is null)
-                throw new VehicleNotFoundException();
-
-            return vehicle;
+            _lessonRepository.Update(lesson);
+            return Task.CompletedTask;           
         }
     }
 }

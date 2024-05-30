@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Database;
+﻿using Domain.Models;
 
 namespace API.Outputs.Users
 {
@@ -16,7 +16,7 @@ namespace API.Outputs.Users
             Id = user.Id;
             Name = user.Name;
             FirstName = user.FirstName;
-            Email = user.Email;
+            Email = user.Email.Value;
             LicenceType = new LicenceTypeOutput(user.LicenceType);
             UserType = new UserTypeOutput(user.Type);
         }

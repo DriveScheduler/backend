@@ -1,16 +1,16 @@
-﻿using Application.UseCases.Lessons.Commands;
-using Application.UseCases.Users.Commands;
+﻿using Application.Abstractions;
+using Application.UseCases.Lessons.Commands;
 
-using Domain.Abstractions;
-using Domain.Entities.Database;
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;
-using Domain.Exceptions.Vehicles;
+using Domain.Models;
+using Domain.Repositories;
+
+using Infrastructure.Persistence;
 
 using MediatR;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
@@ -19,15 +19,23 @@ namespace UseCases.Schedule
 {
     public class ScheduleUpdateLesson : IClassFixture<SetupDependencies>, IDisposable
     {
+        private readonly IUserRepository _userRepository;
+        private readonly ILessonRepository _lessonRepository;
+        private readonly IVehicleRepository _vehicleRepository;
+
+        private readonly IDataAccessor _database;
         private readonly IMediator _mediator;
-        private readonly IDatabase _database;
         private readonly ISystemClock _clock;
 
-        public ScheduleUpdateLesson(SetupDependencies dependencies)
+        public ScheduleUpdateLesson(SetupDependencies fixture)
         {
-            _mediator = dependencies.ServiceProvider.GetRequiredService<IMediator>();
-            _database = dependencies.ServiceProvider.GetRequiredService<IDatabase>();
-            _clock = dependencies.ServiceProvider.GetRequiredService<ISystemClock>();
+            _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
+            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
+            _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
+
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
+            _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
         }
 
         public void Dispose()
@@ -42,38 +50,33 @@ namespace UseCases.Schedule
             const string updatedLessonName = "Cours 2";
             DateTime updatedStartTime = _clock.Now.AddDays(1);
             const int updatedDuration = 30;
-            const LicenceType updatedLicenceType = LicenceType.Truck;            
 
 
             Guid carTeacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            Guid truckTeacherId = new Guid("00000000-0000-0000-0000-000000000002");
+            Guid carTeacherId2 = new Guid("00000000-0000-0000-0000-000000000002");
             const int lessonId = 1;
 
 
             User carTeacher = DataSet.GetCarTeacher(carTeacherId);
-            User truckTeacher = DataSet.GetTruckTeacher(truckTeacherId);
+            User carTeacher2 = DataSet.GetCarTeacher(carTeacherId2);
             Vehicle car = DataSet.GetCar(1);
-            Vehicle truck = DataSet.GetTruck(2);
-            _database.Users.Add(carTeacher);
-            _database.Users.Add(truckTeacher);
-            _database.Vehicles.Add(car);
-            _database.Vehicles.Add(truck);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = carTeacher, Vehicle = car, Type = LicenceType.Car });
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(carTeacher);
+            _userRepository.Insert(carTeacher2);
+            _vehicleRepository.Insert(car);
+            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, carTeacher, LicenceType.Car, car));
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, updatedLessonName, updatedStartTime, updatedDuration, truckTeacherId, updatedLicenceType, truck.Id);
+            var command = new UpdateLesson_Command(lessonId, updatedLessonName, updatedStartTime, updatedDuration, carTeacherId2);
             await _mediator.Send(command);
-            Lesson? updatedLesson = _database.Lessons.Include(l => l.Teacher).Include(l => l.Vehicle).FirstOrDefault(l => l.Id == lessonId);
+            Lesson? updatedLesson = _lessonRepository.GetById(lessonId);
 
             // Assert            
             Assert.NotNull(updatedLesson);
             Assert.Equal(updatedLessonName, updatedLesson.Name);
             Assert.Equal(updatedStartTime, updatedLesson.Start);
-            Assert.Equal(updatedDuration, updatedLesson.Duration);
-            Assert.Equal(truckTeacherId, updatedLesson.Teacher.Id);
-            Assert.Equal(updatedLicenceType, updatedLesson.Type);
-            Assert.Equal(truck.RegistrationNumber, updatedLesson.Vehicle.RegistrationNumber);            
+            Assert.Equal(updatedDuration, updatedLesson.Duration.Value);
+            Assert.Equal(carTeacherId2, updatedLesson.Teacher.Id);
+            Assert.Equal(car.RegistrationNumber, updatedLesson.Vehicle.RegistrationNumber);
         }
 
         [Fact]
@@ -85,13 +88,12 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             Vehicle car = DataSet.GetCar(1);
-            _database.Users.Add(teacher);
-            _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(teacher);
+            _vehicleRepository.Insert(car);
+            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, teacher, LicenceType.Car, car));
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "", _clock.Now, 30, teacherId, LicenceType.Car, car.Id);
+            var command = new UpdateLesson_Command(lessonId, "", _clock.Now, 30, teacherId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -108,13 +110,12 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             Vehicle car = DataSet.GetCar(1);
-            _database.Users.Add(teacher);
-            _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(teacher);
+            _vehicleRepository.Insert(car);
+            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, teacher, LicenceType.Car, car));
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now.AddMinutes(-1), 30, teacherId, LicenceType.Car, car.Id);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now.AddMinutes(-1), 30, teacherId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -132,44 +133,16 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             Vehicle car = DataSet.GetCar(1);
-            _database.Users.Add(teacher);
-            _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(teacher);
+            _vehicleRepository.Insert(car);
+            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, teacher, LicenceType.Car, car));
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, invalidTeacherId, LicenceType.Car, car.Id);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, invalidTeacherId);
 
             // Assert
             UserNotFoundException exc = await Assert.ThrowsAsync<UserNotFoundException>(() => _mediator.Send(command));
             Assert.Equal("L'utilisateur n'existe pas", exc.Message);
-        }
-
-        [Fact]
-        public async void ScheduleShould_UpdateLesson_WithValidTeacherForLessonType_WhenChangingLessonType()
-        {
-            // Arrange
-            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            const int lessonId = 1;
-
-            const LicenceType invalidLicenceType = LicenceType.Motorcycle;
-
-
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            Vehicle car = DataSet.GetCar(1);
-            Vehicle moto = DataSet.GetMotorcycle(2);
-            _database.Users.Add(teacher);
-            _database.Vehicles.Add(car);
-            _database.Vehicles.Add(moto);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
-            await _database.SaveChangesAsync();
-
-            // Act
-            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, teacherId, invalidLicenceType);
-
-            // Assert
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("Le moniteur doit pouvoir assurer ce type de cours", exc.Message);
         }
 
         [Fact]
@@ -186,12 +159,11 @@ namespace UseCases.Schedule
             User truckTeacher = DataSet.GetTruckTeacher(truckTeacherId);
             Vehicle car = DataSet.GetCar(1);
             Vehicle car2 = DataSet.GetCar(2);
-            _database.Users.Add(carTeacher);
-            _database.Users.Add(truckTeacher);
-            _database.Vehicles.Add(car);
-            _database.Vehicles.Add(car2);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = carTeacher, Vehicle = car, Type = LicenceType.Car });
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(carTeacher);
+            _userRepository.Insert(truckTeacher);
+            _vehicleRepository.Insert(car);
+            _vehicleRepository.Insert(car2);
+            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, carTeacher, LicenceType.Car, car));
 
             // Act
             var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, truckTeacherId, LicenceType.Car);
@@ -215,16 +187,15 @@ namespace UseCases.Schedule
             Vehicle car1 = DataSet.GetCar(1);
             Vehicle car2 = DataSet.GetCar(2);
 
-            _database.Users.Add(teacher1);
-            _database.Users.Add(teacher2);
-            _database.Vehicles.Add(car1);
-            _database.Vehicles.Add(car2);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Start = _clock.Now, Duration = 30, Teacher = teacher1, Type = LicenceType.Car, Vehicle = car1 });
-            _database.Lessons.Add(new Lesson() { Id = 2, Name = "Cours 2", Start = _clock.Now.AddMinutes(15), Duration = 30, Teacher = teacher2, Type = LicenceType.Car, Vehicle = car2 });
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(teacher1);
+            _userRepository.Insert(teacher2);
+            _vehicleRepository.Insert(car1);
+            _vehicleRepository.Insert(car2);
+            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, teacher1, LicenceType.Car, car1));
+            _lessonRepository.Insert(new Lesson(2, "Cours 2", _clock.Now.AddMinutes(15), 30, teacher2, LicenceType.Car, car2));
 
             // Act
-            var comamnd = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now.AddMinutes(20), 30, teacherId2, LicenceType.Car, car1.Id);
+            var comamnd = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now.AddMinutes(20), 30, teacherId2);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(comamnd));
@@ -243,15 +214,14 @@ namespace UseCases.Schedule
             User student = DataSet.GetCarStudent(studentId);
             Vehicle car = DataSet.GetCar(1);
 
-            _database.Users.Add(teacher);
-            _database.Users.Add(student);
-            _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Start = _clock.Now, Duration = 30, Teacher = teacher, Type = LicenceType.Car, Vehicle = car });
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(teacher);
+            _userRepository.Insert(student);
+            _vehicleRepository.Insert(car);
+            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, teacher, LicenceType.Car, car));
 
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, studentId, LicenceType.Car, car.Id);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, studentId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -269,95 +239,75 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             Vehicle car = DataSet.GetCar(1);
-            _database.Users.Add(teacher);
-            _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(teacher);
+            _vehicleRepository.Insert(car);
+            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, teacher, LicenceType.Car, car));
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, invalidDuration, teacherId, LicenceType.Car, car.Id);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, invalidDuration, teacherId);
 
             // Assert
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("La durée du cours n'est pas valide (elle doit être comprise entre 30min et 2h)", exc.Message);
+            await Assert.ThrowsAsync<LessonDurationException>(() => _mediator.Send(command));
         }
 
         [Fact]
-        public async void ScheduleShould_UpdateLesson_WithExistingVehicle()
+        public async void ScheduleShould_UpdateLesson_KeepVehicleIfAvailableAfterUpdate()
         {
-            // Arrange
-            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            const int lessonId = 1;
-            const int invalidCarId = 2;
-
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            Vehicle car = DataSet.GetCar(1);
-            _database.Users.Add(teacher);
-            _database.Vehicles.Add(car);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
-            await _database.SaveChangesAsync();
-
-            // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, invalidCarId);
-
-            // Assert
-            VehicleNotFoundException exc = await Assert.ThrowsAsync<VehicleNotFoundException>(() => _mediator.Send(command));
-            Assert.Equal("Le vehicule n'existe pas", exc.Message);
-        }
-
-        [Fact]
-        public async void ScheduleShould_UpdateLesson_WithAvailableVehicle()
-        {
-            // Arrange
-            Guid teacherId1 = new Guid("00000000-0000-0000-0000-000000000001");
-            Guid teacherId2 = new Guid("00000000-0000-0000-0000-000000000002");
-            const int lessonId1 = 1;
-            const int lessonId2 = 2;
-
-            User teacher1 = DataSet.GetCarTeacher(teacherId1);
-            User teacher2 = DataSet.GetCarTeacher(teacherId2);
+            User teacher = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000001"));
             Vehicle car1 = DataSet.GetCar(1);
             Vehicle car2 = DataSet.GetCar(2);
+            Lesson lesson = new Lesson(1, "Cours1", _clock.Now, 30, teacher, LicenceType.Car, car1);
+            _userRepository.Insert(teacher);
+            _vehicleRepository.Insert([car1, car2]);
+            _lessonRepository.Insert(lesson);
 
-            _database.Users.Add(teacher1);
-            _database.Users.Add(teacher2);
-            _database.Vehicles.Add(car1);
-            _database.Vehicles.Add(car2);
-            _database.Lessons.Add(new Lesson() { Id = lessonId1, Name = "Cours 1", Start = _clock.Now, Duration = 30, Teacher = teacher1, Type = LicenceType.Car, Vehicle = car1 });
-            _database.Lessons.Add(new Lesson() { Id = lessonId2, Name = "Cours 2", Start = _clock.Now, Duration = 30, Teacher = teacher2, Type = LicenceType.Car, Vehicle = car2 });
-            await _database.SaveChangesAsync();
+            var command = new UpdateLesson_Command(1, "Cours1", _clock.Now.AddMinutes(30), 30, teacher.Id);
+            await _mediator.Send(command);
 
-            // Act
-            var command = new UpdateLesson_Command(lessonId1, "Cours 1", _clock.Now, 30, teacherId1, LicenceType.Car, car2.Id);
-
-            // Assert
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("Le vehicule demandé n'est pas disponible pour cette plage horaire", exc.Message);
+            Lesson updatedLesson = _lessonRepository.GetById(lesson.Id);
+            Assert.Equal(car1.RegistrationNumber, updatedLesson.Vehicle.RegistrationNumber);
         }
 
+        [Fact]
+        public async void ScheduleShould_UpdateLesson_ChangeVehicleIfCurrentIsntAvailableAfterUpdate()
+        {
+            User teacher1 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000001"));
+            User teacher2 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000002"));
+            Vehicle car1 = DataSet.GetCar(1);
+            Vehicle car2 = DataSet.GetCar(2);
+            Lesson lesson = new Lesson(1, "Cours1", _clock.Now, 30, teacher1, LicenceType.Car, car1);
+            Lesson lessonWithVehicle1 = new Lesson(2, "Cours2", _clock.Now.AddMinutes(20), 30, teacher2, LicenceType.Car, car1);
+            _userRepository.Insert([teacher1, teacher2]);
+            _vehicleRepository.Insert([car1, car2]);
+            _lessonRepository.Insert([lesson, lessonWithVehicle1]);
+
+            var command = new UpdateLesson_Command(1, "Cours1", _clock.Now.AddMinutes(30), 30, teacher1.Id);
+            await _mediator.Send(command);
+
+            Lesson updatedLesson = _lessonRepository.GetById(lesson.Id);
+            Assert.Equal(car2.RegistrationNumber, updatedLesson.Vehicle.RegistrationNumber);
+        }
 
         [Fact]
-        public async void ScheduleShould_UpdateLesson_WithValidVehiculForLesson()
+        public async void ScheduleShould_NotUpdateLesson_IfNoVehiclesAreAvailableAfterUpdate()
         {
-            // Arrange
-            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            const int lessonId = 1;
+            User teacher1 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000001"));
+            User teacher2 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000002"));
+            User teacher3 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000003"));
+            Vehicle car1 = DataSet.GetCar(1);
+            Vehicle car2 = DataSet.GetCar(2);
+            Lesson lesson = new Lesson(1, "Cours1", _clock.Now, 30, teacher1, LicenceType.Car, car1);
+            Lesson lessonWithVehicle1 = new Lesson(2, "Cours2", _clock.Now.AddMinutes(20), 30, teacher2, LicenceType.Car, car1);
+            Lesson lessonWithVehicle2 = new Lesson(3, "Cours3", _clock.Now.AddMinutes(10), 60, teacher3, LicenceType.Car, car2);
+            _userRepository.Insert([teacher1, teacher2, teacher3]);
+            _vehicleRepository.Insert([car1, car2]);
+            _lessonRepository.Insert([lesson, lessonWithVehicle1, lessonWithVehicle2]);
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            Vehicle car = DataSet.GetCar(1);
-            Vehicle truck = DataSet.GetTruck(2);
-            _database.Users.Add(teacher);
-            _database.Vehicles.Add(car);
-            _database.Vehicles.Add(truck);
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = _clock.Now, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
-            await _database.SaveChangesAsync();
 
-            // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, truck.Id);
-
-            // Assert
+            var command = new UpdateLesson_Command(1, "Cours1", _clock.Now.AddMinutes(30), 30, teacher1.Id);
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("Le type de vehicule ne correspond pas au type de cours", exc.Message);
+
+            Assert.Equal("Aucun vehicule disponibe pour valider ce cours", exc.Message);
         }
 
         [Fact]
@@ -369,14 +319,13 @@ namespace UseCases.Schedule
             const int lessonId = 1;
 
             User teacher = DataSet.GetCarTeacher(teacherId);
-            Vehicle car = DataSet.GetCar(1);            
-            _database.Users.Add(teacher);
-            _database.Vehicles.Add(car);            
-            _database.Lessons.Add(new Lesson() { Id = lessonId, Name = "Cours 1", Duration = 30, Start = lessonStart, Teacher = teacher, Vehicle = car, Type = LicenceType.Car });
-            await _database.SaveChangesAsync();
+            Vehicle car = DataSet.GetCar(1);
+            _userRepository.Insert(teacher);
+            _vehicleRepository.Insert(car);
+            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", lessonStart, 30, teacher, LicenceType.Car, car));
 
             // Act
-            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, car.Id);
+            var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, teacherId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -392,12 +341,11 @@ namespace UseCases.Schedule
 
             User teacher = DataSet.GetCarTeacher(teacherId);
             Vehicle car = DataSet.GetCar(1);
-            _database.Users.Add(teacher);
-            _database.Vehicles.Add(car);
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(teacher);
+            _vehicleRepository.Insert(car);
 
             // Act
-            var command = new UpdateLesson_Command(invalidLessonId, "Cours 1", _clock.Now, 30, teacherId, LicenceType.Car, car.Id);
+            var command = new UpdateLesson_Command(invalidLessonId, "Cours 1", _clock.Now, 30, teacherId);
 
             // Assert
             LessonNotFoundException exc = await Assert.ThrowsAsync<LessonNotFoundException>(() => _mediator.Send(command));

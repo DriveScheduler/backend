@@ -1,27 +1,30 @@
 ﻿using Application.UseCases.Vehicles.Commands;
 
-using Domain.Abstractions;
-using Domain.Entities.Database;
+using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Vehicles;
+using Domain.Repositories;
 
 using MediatR;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Infrastructure.Persistence;
 
 namespace UseCases.Vehicles
 {
     public class AdminCreateVechicle : IClassFixture<SetupDependencies>, IDisposable
     {
-        private IMediator _mediator;
-        private IDatabase _database;
+        private readonly IVehicleRepository _vehicleRepository;
+        private readonly IDataAccessor _database;
+        private readonly IMediator _mediator;
 
         public AdminCreateVechicle(SetupDependencies fixture)
         {
+            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDatabase>();
         }
 
         public void Dispose()
@@ -40,11 +43,11 @@ namespace UseCases.Vehicles
             // Act
             var command = new CreateVehicle_Command(registrationNumber, name, type);
             int vehicleId = await _mediator.Send(command);
-            Vehicle? vehicle = _database.Vehicles.Find(vehicleId);
+            Vehicle? vehicle = _vehicleRepository.GetById(vehicleId);
 
             // Assert            
             Assert.NotNull(vehicle);
-            Assert.Equal(registrationNumber, vehicle.RegistrationNumber);
+            Assert.Equal(registrationNumber, vehicle.RegistrationNumber.Value);
             Assert.Equal(name, vehicle.Name);
             Assert.Equal(type, vehicle.Type);
         }
@@ -62,11 +65,10 @@ namespace UseCases.Vehicles
             const LicenceType type = LicenceType.Car;
 
             // Act
-            var command = new CreateVehicle_Command(invalidRegistrationNumber, name, type);                        
+            var command = new CreateVehicle_Command(invalidRegistrationNumber, name, type);
 
             // Assert                        
-            VehicleValidationException exc = await Assert.ThrowsAsync<VehicleValidationException>( () => _mediator.Send(command));
-            Assert.Equal("L'immatriculation ne respecte pas le format XX123XX", exc.Message);
+            await Assert.ThrowsAsync<RegistrationNumberException>(() => _mediator.Send(command));          
         }
 
         [Fact]
@@ -94,10 +96,9 @@ namespace UseCases.Vehicles
             const LicenceType type = LicenceType.Car;
 
             Vehicle vehicle = DataSet.GetTruck(1);
-            string existingRegistrationNumber = vehicle.RegistrationNumber;
+            string existingRegistrationNumber = vehicle.RegistrationNumber.Value;
 
-            _database.Vehicles.Add(vehicle);
-            await _database.SaveChangesAsync();
+            _vehicleRepository.Insert(vehicle);
 
             // Act
             var command = new CreateVehicle_Command(existingRegistrationNumber, name, type);

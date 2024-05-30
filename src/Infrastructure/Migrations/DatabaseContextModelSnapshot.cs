@@ -17,7 +17,7 @@ namespace Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
 
-            modelBuilder.Entity("Domain.Entities.Database.DrivingSchool", b =>
+            modelBuilder.Entity("Domain.Models.DrivingSchool", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -25,18 +25,20 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("DrivingSchool");
+                    b.ToTable("DrvingSchools", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Database.Lesson", b =>
+            modelBuilder.Entity("Domain.Models.Lesson", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -73,10 +75,10 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Lesson");
+                    b.ToTable("Lessons", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Database.User", b =>
+            modelBuilder.Entity("Domain.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -104,15 +106,12 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Database.Vehicle", b =>
+            modelBuilder.Entity("Domain.Models.Vehicle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,16 +131,16 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vehicle");
+                    b.ToTable("Vehicles", (string)null);
                 });
 
             modelBuilder.Entity("LessonUser", b =>
                 {
-                    b.Property<Guid>("WaitingListId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("WaitingListId1")
+                    b.Property<int>("WaitingListId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("WaitingListId1")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("WaitingListId", "WaitingListId1");
 
@@ -150,19 +149,19 @@ namespace Infrastructure.Migrations
                     b.ToTable("LessonUsersPending", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Database.Lesson", b =>
+            modelBuilder.Entity("Domain.Models.Lesson", b =>
                 {
-                    b.HasOne("Domain.Entities.Database.User", "Student")
+                    b.HasOne("Domain.Models.User", "Student")
                         .WithMany("LessonsAsStudent")
                         .HasForeignKey("StudentId");
 
-                    b.HasOne("Domain.Entities.Database.User", "Teacher")
+                    b.HasOne("Domain.Models.User", "Teacher")
                         .WithMany("LessonsAsTeacher")
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Database.Vehicle", "Vehicle")
+                    b.HasOne("Domain.Models.Vehicle", "Vehicle")
                         .WithMany("Lessons")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -177,27 +176,27 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("LessonUser", b =>
                 {
-                    b.HasOne("Domain.Entities.Database.User", null)
+                    b.HasOne("Domain.Models.Lesson", null)
                         .WithMany()
                         .HasForeignKey("WaitingListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Database.Lesson", null)
+                    b.HasOne("Domain.Models.User", null)
                         .WithMany()
                         .HasForeignKey("WaitingListId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.Database.User", b =>
+            modelBuilder.Entity("Domain.Models.User", b =>
                 {
                     b.Navigation("LessonsAsStudent");
 
                     b.Navigation("LessonsAsTeacher");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Database.Vehicle", b =>
+            modelBuilder.Entity("Domain.Models.Vehicle", b =>
                 {
                     b.Navigation("Lessons");
                 });

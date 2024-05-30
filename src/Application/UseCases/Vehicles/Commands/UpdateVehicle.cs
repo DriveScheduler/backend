@@ -1,34 +1,29 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
+﻿using Domain.Models;
 using Domain.Enums;
-using Domain.Exceptions.Vehicles;
-using Domain.Validators.Vehicles;
+using Domain.Repositories;
 
 using MediatR;
+using Domain.Exceptions.Vehicles;
 
 namespace Application.UseCases.Vehicles.Commands
 {
-    public sealed record UpdateVehicle_Command(int Id, string RegistrationNumber, string Name, LicenceType Type) : IRequest;
+    public sealed record UpdateVehicle_Command(int Id, string RegistrationNumber, string Name) : IRequest;
 
-    internal sealed class UpdateVehicle_CommandHandler(IDatabase database) : IRequestHandler<UpdateVehicle_Command>
+    internal sealed class UpdateVehicle_CommandHandler(IVehicleRepository vehicleRepository) : IRequestHandler<UpdateVehicle_Command>
     {
-        private readonly IDatabase _database = database;
+        private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
 
-        public async Task Handle(UpdateVehicle_Command request, CancellationToken cancellationToken)
-        {
-            Vehicle? vehicle = _database.Vehicles.Find(request.Id);
-            if (vehicle is null)
-                throw new VehicleNotFoundException();     
-
-            vehicle.RegistrationNumber = request.RegistrationNumber;
-            vehicle.Name = request.Name;
-            vehicle.Type = request.Type;
+        public Task Handle(UpdateVehicle_Command request, CancellationToken cancellationToken)
+        {           
+            Vehicle vehicle = _vehicleRepository.GetById(request.Id);
+            if (vehicle.RegistrationNumber.Value != request.RegistrationNumber && _vehicleRepository.IsRegistrationNumberUnique(request.RegistrationNumber) == false)
+                throw new VehicleValidationException("Un véhicule avec cette immatriculation existe déjà");
+         
+            vehicle.Update(request.RegistrationNumber, request.Name);
                         
-            new VehicleValidator(_database).ThrowIfInvalid(vehicle);
+            _vehicleRepository.Update(vehicle);
 
-
-            if (await _database.SaveChangesAsync() != 1)
-                throw new VehicleSaveException();
+            return Task.CompletedTask;
         }
     }
 }

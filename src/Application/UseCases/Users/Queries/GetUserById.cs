@@ -1,6 +1,5 @@
-﻿using Domain.Abstractions;
-using Domain.Entities.Database;
-using Domain.Exceptions.Users;
+﻿using Domain.Models;
+using Domain.Repositories;
 
 using MediatR;
 
@@ -8,17 +7,13 @@ namespace Application.UseCases.Users.Queries
 {
     public sealed record GetUserById_Query(Guid Id) : IRequest<User>;
 
-    internal sealed class GetUserById_QueryHandler(IDatabase database) : IRequestHandler<GetUserById_Query, User>
+    internal sealed class GetUserById_QueryHandler(IUserRepository userRepository) : IRequestHandler<GetUserById_Query, User>
     {
-        private readonly IDatabase _database = database;
+        private readonly IUserRepository _userRepository = userRepository;
 
         public Task<User> Handle(GetUserById_Query request, CancellationToken cancellationToken)
         {
-            User? user = _database.Users.Find(request.Id);
-            if (user is null)
-                throw new UserNotFoundException();
-
-            return Task.FromResult(user);
+            return Task.FromResult(_userRepository.GetUserById(request.Id));
         }
     }
 }

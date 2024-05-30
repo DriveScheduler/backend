@@ -1,6 +1,6 @@
 ﻿using API.Outputs.Lessons;
 
-using Domain.Entities.Business;
+using Application.Models;
 
 namespace API.Outputs.Users
 {

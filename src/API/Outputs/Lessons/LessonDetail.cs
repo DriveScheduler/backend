@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Database;
+﻿using Domain.Models;
 
 namespace API.Outputs.Lessons
 {

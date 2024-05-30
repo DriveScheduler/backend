@@ -1,9 +1,9 @@
 ﻿using Application.UseCases.Users.Queries;
 
-using Domain.Abstractions;
-using Domain.Entities.Database;
+using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Users;
+using Domain.Repositories;
 
 using MediatR;
 
@@ -13,21 +13,17 @@ using UseCases.TestData;
 
 namespace UseCases.Users
 {
-    public class UserGetAccount : IClassFixture<SetupDependencies>, IDisposable
+    public class UserGetAccount : IClassFixture<SetupDependencies>
     {
-        private IMediator _mediator;
-        private IDatabase _database;
+        private readonly IUserRepository _userRepository;
+        private readonly IMediator _mediator;
 
         public UserGetAccount(SetupDependencies fixture)
         {
+            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDatabase>();
         }
 
-        public void Dispose()
-        {
-            _database.Clear();
-        }
 
         [Fact]
         public async void UserShould_GetHisAccount()
@@ -37,8 +33,7 @@ namespace UseCases.Users
             const LicenceType licenceType = LicenceType.Car;
 
             User expectedUser = DataSet.GetStudent(userId, licenceType);
-            _database.Users.Add(expectedUser);
-            await _database.SaveChangesAsync();
+            _userRepository.Insert(expectedUser);
 
             // Act
             var getCommand = new GetUserById_Query(userId);

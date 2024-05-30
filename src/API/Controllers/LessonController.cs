@@ -4,7 +4,7 @@ using API.Outputs.Lessons;
 using Application.UseCases.Lessons.Commands;
 using Application.UseCases.Lessons.Queries;
 using Application.UseCases.Users.Queries;
-using Domain.Entities.Database;
+using Domain.Models;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +37,7 @@ namespace API.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(UpdateLessonModel input)
         {
-            var command = new UpdateLesson_Command(input.Id, input.Name, input.Start, input.Duration, input.TeacherId, input.Type, input.VehicleId);
+            var command = new UpdateLesson_Command(input.Id, input.Name, input.Start, input.Duration, input.TeacherId);
             try
             {
                 await _mediator.Send(command);
@@ -65,7 +65,7 @@ namespace API.Controllers
         }
 
         [HttpGet("Lessons")]
-        public async Task<IActionResult> GetLessons(Guid userId, DateTime startDate, DateTime endDate, bool? onlyEmptyLesson)
+        public async Task<IActionResult> GetLessons(Guid userId, DateTime startDate, DateTime endDate, bool onlyEmptyLesson)
         {
             var query = new GetLessons_Query(userId, startDate, endDate, onlyEmptyLesson);
             var userQuery = new GetUserById_Query(userId);

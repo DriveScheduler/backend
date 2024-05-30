@@ -15,16 +15,26 @@ namespace API.Authentication
             if (!token.IsNullOrEmpty())
             {
                 try
-                {                   
-                    var claimsPrincipal = _tokenProvider.ConvertToken(token);                 
-                    var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;                    
-                    context.Items["UserId"] = userId;                    
+                {
+                    // Verify the token using the JwtSecurityTokenHandlerWrapper
+                    var claimsPrincipal = _tokenProvider.ConvertToken(token);
+
+                    // Extract the user ID from the token
+                    var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                    // Store the user ID in the HttpContext items for later use
+                    context.Items["UserId"] = userId;
+
+                    // You can also do the for same other key which you have in JWT token.
                 }
                 catch (Exception)
-                {                                 
+                {
                     throw new UnauthorizedAccessException();
                 }
-            }            
+
+
+            }
+            // Continue processing the request
             await next(context);
         }
     }
