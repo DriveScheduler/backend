@@ -4,31 +4,30 @@ using Microsoft.OpenApi.Models;
 
 using System.Text;
 
-namespace API.Authorization
+namespace API.Authentication
 {
     public static class SetupJwtTokenService
     {
 
         public static void AddJwtTokenService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication(cfg => {
-                cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x => {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = false;
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(x => {               
                 x.TokenValidationParameters = new TokenValidationParameters
-                {
+                {                    
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero
                 };
             });
 
-            services.AddTransient<JwtTokenProvider>();
+            services.AddScoped<JwtProvider>();
+            services.AddScoped<JwtMiddleware>();
         }
 
         public static void AddSwaggerJwtTokenService(this IServiceCollection services)

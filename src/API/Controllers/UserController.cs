@@ -1,4 +1,4 @@
-using API.Authorization;
+using API.Authentication;
 using API.Inputs.Users;
 using API.Outputs.Users;
 
@@ -16,11 +16,11 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController(IMediator mediator, JwtTokenProvider tokenProvider) : ControllerBase
+    public class UserController(IMediator mediator, JwtProvider tokenProvider) : ControllerBase
     {
 
         private readonly IMediator _mediator = mediator;        
-        private readonly JwtTokenProvider _tokenProvider = tokenProvider;
+        private readonly JwtProvider _tokenProvider = tokenProvider;
 
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CreateUserModel input)

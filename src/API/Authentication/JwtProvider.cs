@@ -6,9 +6,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace API.Authorization
+namespace API.Authentication
 {
-    public class JwtTokenProvider(IConfiguration configuration)
+    public class JwtProvider(IConfiguration configuration)
     {
         private readonly IConfiguration _configuration = configuration;
 
@@ -20,8 +20,9 @@ namespace API.Authorization
                 new Claim(ClaimTypes.Role, user.Type.ToText()),
             };
             var jwtToken = new JwtSecurityToken(
-                claims: claims,
-                notBefore: DateTime.UtcNow,
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
+                claims,                
                 expires: DateTime.UtcNow.AddDays(30),
                 signingCredentials: new SigningCredentials(
                     new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
@@ -38,7 +39,9 @@ namespace API.Authorization
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var claimsPrincipal = tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,                    
+                    ValidateIssuerSigningKey = true,                        
+                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidAudience = _configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(key)
                 }, out SecurityToken validatedToken);
                 
