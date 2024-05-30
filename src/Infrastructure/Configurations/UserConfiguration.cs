@@ -32,6 +32,9 @@ namespace Infrastructure.Configurations
 
             builder.Property(u => u.LicenceType)
                 .IsRequired();
+
+            builder.Property(u => u.Type)
+                .IsRequired();
         }
     }
 }

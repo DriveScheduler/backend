@@ -9,6 +9,7 @@ using Domain.Models;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -63,7 +64,8 @@ namespace API.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
+
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
