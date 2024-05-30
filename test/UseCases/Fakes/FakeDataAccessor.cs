@@ -6,13 +6,13 @@ namespace UseCases.Fakes
 {
     internal sealed class FakeDataAccessor : IDataAccessor
     {
-        public IQueryable<DrivingSchool> DrivingSchools => _drivingSchools.AsQueryable();
+        public IEnumerable<DrivingSchool> DrivingSchools => _drivingSchools;
 
-        public IQueryable<Lesson> Lessons => _lessons.AsQueryable();
+        public IEnumerable<Lesson> Lessons => _lessons;
 
-        public IQueryable<User> Users => _users.AsQueryable();
+        public IEnumerable<User> Users => _users;
 
-        public IQueryable<Vehicle> Vehicles => _vehicles.AsQueryable();
+        public IEnumerable<Vehicle> Vehicles => _vehicles;
 
         public void Delete<T>(T entity) where T : class
         {

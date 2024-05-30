@@ -7,7 +7,6 @@ namespace API.Inputs.Lessons
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime Start { get; set; }
-        public int Duration { get; set; }
-        public Guid TeacherId { get; set; }     
+        public int Duration { get; set; }         
     }
 }

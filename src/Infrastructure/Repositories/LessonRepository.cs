@@ -27,7 +27,7 @@ namespace Infrastructure.Repositories
 
         public List<Lesson> GetLessonsForUser(User user, DateTime start, DateTime end, bool onlyEmptyLesson = false)
         {
-            IQueryable<Lesson> query = _database.Lessons;
+            IEnumerable<Lesson> query = _database.Lessons;
             if (user.Type == UserType.Student)
                 query = query.Where(lesson => lesson.Type == user.LicenceType);
             else if (user.Type == UserType.Teacher)
@@ -64,7 +64,7 @@ namespace Infrastructure.Repositories
         {
             DateTime calculatedEndDate = end.Date.AddDays(1).Date;
 
-            IQueryable<Lesson> query = _database.Lessons;
+            IEnumerable<Lesson> query = _database.Lessons;
             if (user.Type == UserType.Student)
                 query = query
                     .Where(lesson => lesson.Student != null && lesson.Student.Id == user.Id && lesson.Start >= start && lesson.Start <= calculatedEndDate);
