@@ -30,8 +30,9 @@ namespace API.Controllers
             var command = new CreateUser_Command(input.Name, input.FirstName, input.Email, input.Password, input.LicenceType, input.Type);
             try
             {
-                Guid userId = await _mediator.Send(command);
-                return Ok(userId);
+                User user = await _mediator.Send(command);
+                string token = _tokenProvider.GenerateToken(user);
+                return Ok(new UserAuthenticated() { UserId = user.Id, Token = token});
             }
             catch (Exception e)
             {

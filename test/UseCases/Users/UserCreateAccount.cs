@@ -44,11 +44,11 @@ namespace UseCases.Users
 
             // Act
             var command = new CreateUser_Command(name, firstname, email, password, licenceType, UserType.Student);
-            Guid userId = await _mediator.Send(command);
+            User user = await _mediator.Send(command);
 
             // Assert
-            Assert.NotEqual(Guid.Empty, userId);
-            Assert.NotNull(_userRepository.GetUserById(userId));
+            Assert.NotEqual(Guid.Empty, user.Id);
+            Assert.NotNull(_userRepository.GetUserById(user.Id));
         }
 
         [Fact]

@@ -7,13 +7,13 @@ using MediatR;
 
 namespace Application.UseCases.Users.Commands
 {
-    public sealed record CreateUser_Command(string Name, string Firstname, string Email, string Password, LicenceType LicenceType, UserType Type) : IRequest<Guid>;
+    public sealed record CreateUser_Command(string Name, string Firstname, string Email, string Password, LicenceType LicenceType, UserType Type) : IRequest<User>;
 
-    internal sealed class CreateUser_CommandHandler(IUserRepository userRepository) : IRequestHandler<CreateUser_Command, Guid>
+    internal sealed class CreateUser_CommandHandler(IUserRepository userRepository) : IRequestHandler<CreateUser_Command, User>
     {
         private readonly IUserRepository _userRepository = userRepository;
 
-        public Task<Guid> Handle(CreateUser_Command request, CancellationToken cancellationToken)
+        public Task<User> Handle(CreateUser_Command request, CancellationToken cancellationToken)
         {
             if (_userRepository.IsEmailUnique(request.Email) == false)
                 throw new UserValidationException("L'adresse email est déjà utilisée");
@@ -27,7 +27,7 @@ namespace Application.UseCases.Users.Commands
                 request.Type);
 
             _userRepository.Insert(user);
-            return Task.FromResult(user.Id);
+            return Task.FromResult(user);
         }
     }
 }
