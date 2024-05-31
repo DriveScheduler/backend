@@ -3,7 +3,6 @@ using Application.Models;
 
 using Domain.Models;
 using Domain.Repositories;
-using Domain.Utils;
 
 using MediatR;
 
@@ -26,9 +25,9 @@ namespace Application.UseCases.Users.Queries
             User user = _userRepository.GetUserById(request.UserId);
 
             DateTime tomorrow = _clock.Now.Date.AddDays(1).Date;
-            DateTime lastDayOfThisWeek = DateUtil.GetLastDayOfWeek(_clock.Now);
-            DateTime firstDayOfNextWeek = DateUtil.GetFirstDayOfWeek(_clock.Now.AddDays(7));
-            DateTime lastDayOfThisMonth = DateUtil.GetLastDayOfMonth(_clock.Now);
+            DateTime lastDayOfThisWeek = GetLastDayOfWeek(_clock.Now);            
+            DateTime firstDayOfNextWeek = GetFirstDayOfWeek(_clock.Now.AddDays(7));
+            DateTime lastDayOfThisMonth = GetLastDayOfMonth(_clock.Now);
 
             List<Lesson> lessons = _lessonRepository.GetPassedLesson(user, _clock.Now);
 
@@ -44,8 +43,22 @@ namespace Application.UseCases.Users.Queries
             };
 
             return Task.FromResult(planning);
+        }
 
+        private DateTime GetLastDayOfWeek(DateTime date)
+        {
+            return date.AddDays((DayOfWeek.Friday - date.DayOfWeek)).Date;
+        }
 
+        private DateTime GetFirstDayOfWeek(DateTime date)
+        {
+            return date.AddDays(-1 * (date.DayOfWeek - DayOfWeek.Monday)).Date;
+        }
+
+        public static DateTime GetLastDayOfMonth(DateTime date)
+        {
+            int daysInMonth = DateTime.DaysInMonth(date.Year, date.Month);
+            return new DateTime(date.Year, date.Month, daysInMonth);
         }
     }
 }

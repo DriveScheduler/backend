@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
 
             DateTime calculatedEndDate = end.AddDays(1).Date;
             return query
-                .Where(lesson => lesson.Start >= start.Date && lesson.Start.AddMinutes(lesson.Duration.Value) <= calculatedEndDate)
+                .Where(lesson => lesson.Start.Date >= start.Date.Date && lesson.Start.AddMinutes(lesson.Duration.Value).Date <= calculatedEndDate.Date)
                 .ToList();
         }
 

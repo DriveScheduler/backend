@@ -166,7 +166,7 @@ namespace UseCases.Schedule
             _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, carTeacher, LicenceType.Car, car));
 
             // Act
-            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, truckTeacherId, LicenceType.Car);
+            var command = new CreateLesson_Command("Cours 1", _clock.Now, 30, truckTeacherId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));

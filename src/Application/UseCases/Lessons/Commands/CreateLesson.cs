@@ -9,7 +9,7 @@ using MediatR;
 
 namespace Application.UseCases.Lessons.Commands
 {
-    public sealed record CreateLesson_Command(string Name, DateTime Date, int Duration, Guid TeacherId, LicenceType Type) : IRequest<int>;
+    public sealed record CreateLesson_Command(string Name, DateTime Date, int Duration, Guid TeacherId) : IRequest<int>;
 
     internal sealed class CreateLesson_CommandHandler(
         ILessonRepository lessonRepository,
@@ -26,7 +26,7 @@ namespace Application.UseCases.Lessons.Commands
         public Task<int> Handle(CreateLesson_Command request, CancellationToken cancellationToken)
         {
             User teacher = _userRepository.GetUserById(request.TeacherId);
-            Vehicle vehicle = _vehicleRepository.FindAvailable(request.Date, request.Duration, request.Type);
+            Vehicle vehicle = _vehicleRepository.FindAvailable(request.Date, request.Duration, teacher.LicenceType);
             
             if (request.Date < _systemClock.Now)
                 throw new LessonValidationException("Le date et l'heure du cours ne peuvent pas être inférieur à maintenant");
@@ -40,7 +40,7 @@ namespace Application.UseCases.Lessons.Commands
                 request.Date,
                 request.Duration,
                 teacher,
-                request.Type,
+                teacher.LicenceType,
                 vehicle);
        
             _lessonRepository.Insert(lesson);

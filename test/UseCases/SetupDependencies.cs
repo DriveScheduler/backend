@@ -23,11 +23,11 @@ namespace UseCases
             _serviceCollection.ApplicationMediator();
             _serviceCollection.AddRepositories();
 
-            _serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
+            //_serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
             
             AddFakeSystemClock();  
             AddFakeEmailSender();
-            //AddFakeDataAccessor();
+            AddFakeDataAccessor();
 
             ServiceProvider = _serviceCollection.BuildServiceProvider();
         }        

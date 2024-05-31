@@ -48,17 +48,17 @@ namespace UseCases.Schedule
             // Arrange
             const string lessonName = "Cours 1";
             DateTime dateTime = _clock.Now.AddDays(1);
-            const int duration = 30;
-            const LicenceType licenceType = LicenceType.Car;
+            const int duration = 30;            
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             const int vehicleId = 1;
 
-            _userRepository.Insert(DataSet.GetCarTeacher(teacherId));
+            User teacher = DataSet.GetCarTeacher(teacherId);
+            _userRepository.Insert(teacher);
             _vehicleRepository.Insert(DataSet.GetCar(1));
 
             // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
+            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId);
             int lessonId = await _mediator.Send(command);
             Lesson? lesson = _lessonRepository.GetById(lessonId);
 
@@ -68,7 +68,7 @@ namespace UseCases.Schedule
             Assert.Equal(lessonName, lesson.Name);
             Assert.Equal(dateTime, lesson.Start);
             Assert.Equal(duration, lesson.Duration.Value);
-            Assert.Equal(licenceType, lesson.Type);
+            Assert.Equal(teacher.LicenceType, lesson.Type);
             Assert.Equal(teacherId, lesson.Teacher.Id);
             Assert.Equal(vehicleId, lesson.Vehicle.Id);
         }
@@ -79,8 +79,7 @@ namespace UseCases.Schedule
             // Arrange
             const string lessonName = "";
             DateTime dateTime = _clock.Now;
-            const int duration = 30;
-            const LicenceType licenceType = LicenceType.Car;
+            const int duration = 30;            
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
 
@@ -90,7 +89,7 @@ namespace UseCases.Schedule
             _vehicleRepository.Insert(car);
 
             // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
+            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -103,8 +102,7 @@ namespace UseCases.Schedule
             // Arrange
             const string lessonName = "Cours 1";
             DateTime dateTime = _clock.Now.AddDays(-1);
-            const int duration = 30;
-            const LicenceType licenceType = LicenceType.Car;
+            const int duration = 30;            
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Vehicle car = DataSet.GetCar(1);
@@ -113,7 +111,7 @@ namespace UseCases.Schedule
             _vehicleRepository.Insert(car);
 
             // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
+            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -126,8 +124,7 @@ namespace UseCases.Schedule
             // Arrange
             const string lessonName = "Cours 1";
             DateTime dateTime = _clock.Now.AddDays(-1);
-            const int duration = 30;
-            const LicenceType licenceType = LicenceType.Car;
+            const int duration = 30;          
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Vehicle car = DataSet.GetCar(1);
@@ -135,7 +132,7 @@ namespace UseCases.Schedule
             _vehicleRepository.Insert(car);
 
             // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
+            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId);
 
             // Assert
             UserNotFoundException exc = await Assert.ThrowsAsync<UserNotFoundException>(() => _mediator.Send(command));
@@ -148,8 +145,7 @@ namespace UseCases.Schedule
             // Arrange
             const string lessonName = "Cours 1";
             DateTime dateTime = _clock.Now;
-            const int duration = 30;
-            const LicenceType licenceType = LicenceType.Car;
+            const int duration = 30;            
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Vehicle car = DataSet.GetCar(1);
@@ -158,7 +154,7 @@ namespace UseCases.Schedule
             _vehicleRepository.Insert(car);
 
             // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId, licenceType);
+            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -182,7 +178,7 @@ namespace UseCases.Schedule
             _lessonRepository.Insert(new Lesson(1, "Cours 1", _clock.Now, 30, teacher, LicenceType.Car, vehicle));
 
             // Act
-            var createLessonWithSameVehicleAtSameRangeTimeCommand = new CreateLesson_Command("Cours 2", _clock.Now.AddMinutes(20), 30, teacherId, LicenceType.Car);
+            var createLessonWithSameVehicleAtSameRangeTimeCommand = new CreateLesson_Command("Cours 2", _clock.Now.AddMinutes(20), 30, teacherId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(createLessonWithSameVehicleAtSameRangeTimeCommand));
@@ -200,7 +196,7 @@ namespace UseCases.Schedule
             _vehicleRepository.Insert(car);
 
             // Act
-            var createLessonWithSameVehicleAtSameTimeCommand = new CreateLesson_Command("Cours 1", _clock.Now, 30, studentId, LicenceType.Car);
+            var createLessonWithSameVehicleAtSameTimeCommand = new CreateLesson_Command("Cours 1", _clock.Now, 30, studentId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(createLessonWithSameVehicleAtSameTimeCommand));
@@ -214,8 +210,7 @@ namespace UseCases.Schedule
         {
             // Arrange
             const string LessonName = "Cours 1";
-            DateTime dateTime = _clock.Now;
-            const LicenceType licenceType = LicenceType.Car;
+            DateTime dateTime = _clock.Now;            
 
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
             Vehicle car = DataSet.GetCar(1);
@@ -224,7 +219,7 @@ namespace UseCases.Schedule
             _vehicleRepository.Insert(car);
 
             // Act
-            var command = new CreateLesson_Command(LessonName, dateTime, invalidDuration, teacherId, licenceType);
+            var command = new CreateLesson_Command(LessonName, dateTime, invalidDuration, teacherId);
 
             // Assert
             await Assert.ThrowsAsync<LessonDurationException>(() => _mediator.Send(command));            
@@ -239,7 +234,7 @@ namespace UseCases.Schedule
             _userRepository.Insert(DataSet.GetCarTeacher(teacherId));
 
             // Act
-            var command = new CreateLesson_Command("Cours 2", _clock.Now.AddMinutes(20), 30, teacherId, LicenceType.Car);
+            var command = new CreateLesson_Command("Cours 2", _clock.Now.AddMinutes(20), 30, teacherId);
 
             // Assert
             LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
@@ -271,7 +266,7 @@ namespace UseCases.Schedule
             _lessonRepository.Insert(new Lesson("Cours 2", _clock.Now.AddMinutes(30), 30, teacher2, LicenceType.Car, car2));
 
             // Act
-            var command = new CreateLesson_Command("Cours 3", _clock.Now.AddMinutes(20), 30, teacher3.Id, LicenceType.Car);
+            var command = new CreateLesson_Command("Cours 3", _clock.Now.AddMinutes(20), 30, teacher3.Id);
             int lessonId = await _mediator.Send(command);
             Lesson? lesson = _lessonRepository.GetById(lessonId);
 

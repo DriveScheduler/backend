@@ -3,7 +3,6 @@ using Application.Models;
 
 using Domain.Models;
 using Domain.Repositories;
-using Domain.Utils;
 
 using MediatR;
 
@@ -29,8 +28,8 @@ namespace Application.UseCases.Users.Queries
             List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End < _clock.Now).ToList();
             User? favouriteTeacher = FavouriteTeacher(achievedLessons, out int teacherTotalTime);
             Vehicle? favouriteVehicle = FavouriteVehicle(achievedLessons, out int vehicleTotalTime);
-
-            DateTime firstDayOfThisWeek = DateUtil.GetFirstDayOfWeek(_clock.Now);
+            
+            DateTime firstDayOfThisWeek = _clock.Now.AddDays(-1 * (_clock.Now.DayOfWeek - DayOfWeek.Monday)).Date;
 
             UserDashboard dashboard = new UserDashboard()
             {
