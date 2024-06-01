@@ -51,6 +51,21 @@ namespace API.Controllers
             }
         }
 
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> Delete(int lessonId)
+        {
+            var command = new DeleteLesson_Command(lessonId, GetUserId());
+            try
+            {
+                await _mediator.Send(command);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -58,7 +73,7 @@ namespace API.Controllers
             try
             {
                 Lesson lesson = await _mediator.Send(query);
-                return Ok(lesson);
+                return Ok(new LessonLight(lesson));
             }
             catch (Exception e)
             {

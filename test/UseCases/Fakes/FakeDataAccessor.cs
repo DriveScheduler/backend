@@ -5,9 +5,7 @@ using Infrastructure.Persistence;
 namespace UseCases.Fakes
 {
     internal sealed class FakeDataAccessor : IDataAccessor
-    {
-        public IEnumerable<DrivingSchool> DrivingSchools => _drivingSchools;
-
+    {        
         public IEnumerable<Lesson> Lessons => _lessons;
 
         public IEnumerable<User> Users => _users;
@@ -20,12 +18,8 @@ namespace UseCases.Fakes
         }
 
         public void Insert<T>(T entity) where T : class
-        {
-            if (entity is DrivingSchool drivingSchool)
-            {
-                _drivingSchools.Add(drivingSchool);
-            }
-            else if (entity is Lesson lesson)
+        {           
+            if (entity is Lesson lesson)
             {
                 _lessons.Add(lesson);
             }
@@ -45,11 +39,7 @@ namespace UseCases.Fakes
 
         public void Insert<T>(List<T> entities) where T : class
         {
-            if(entities is List<DrivingSchool> drivingSchools)
-            {
-                _drivingSchools.AddRange(drivingSchools);
-            }
-            else if(entities is List<Lesson> lessons)
+            if(entities is List<Lesson> lessons)
             {
                 _lessons.AddRange(lessons);
             }
@@ -73,14 +63,12 @@ namespace UseCases.Fakes
         }
 
         public void Clear()
-        {
-            _drivingSchools.Clear();
+        {            
             _lessons.Clear();
             _users.Clear();
             _vehicles.Clear();
         }
-
-        private readonly List<DrivingSchool> _drivingSchools = [];
+        
         private readonly List<Lesson> _lessons = [];
         private readonly List<User> _users = [];
         private readonly List<Vehicle> _vehicles = [];

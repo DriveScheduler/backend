@@ -21,7 +21,6 @@ namespace Infrastructure.Persistence
             Users.RemoveRange(Users.ToList());
             Lessons.RemoveRange(Lessons.ToList());
             Vehicles.RemoveRange(Vehicles.ToList());
-            DrivingSchools.RemoveRange(DrivingSchools.ToList());
             SaveChanges();
 
             ChangeTracker.Clear();
@@ -58,13 +57,9 @@ namespace Infrastructure.Persistence
         }
 
 
-
         internal DbSet<User> Users { get; set; }
         internal DbSet<Lesson> Lessons { get; set; }
         internal DbSet<Vehicle> Vehicles { get; set; }
-        internal DbSet<DrivingSchool> DrivingSchools { get; set; }
-
-        IEnumerable<DrivingSchool> IDataAccessor.DrivingSchools => DrivingSchools.AsEnumerable();
 
         IEnumerable<Lesson> IDataAccessor.Lessons => Lessons
             .Include(l => l.Teacher)

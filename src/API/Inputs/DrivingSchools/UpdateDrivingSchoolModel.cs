@@ -1,8 +1,0 @@
-﻿namespace API.Inputs.DrivingSchools;
-
-public class UpdateDrivingSchoolModel
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Address { get; set; }
-}

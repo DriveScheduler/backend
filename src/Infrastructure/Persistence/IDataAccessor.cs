@@ -4,7 +4,6 @@ namespace Infrastructure.Persistence
 {
     public interface IDataAccessor
     {
-        public IEnumerable<DrivingSchool> DrivingSchools { get; }
         public IEnumerable<Lesson> Lessons { get; }
         public IEnumerable<User> Users { get; }
         public IEnumerable<Vehicle> Vehicles { get; }

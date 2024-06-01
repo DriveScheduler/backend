@@ -22,8 +22,7 @@ namespace Infrastructure
         }
 
         public static void AddRepositories(this IServiceCollection services)
-        {
-            services.AddScoped<IDrivingSchoolRepository, DrivingSchoolRepository>();
+        {            
             services.AddScoped<ILessonRepository, LessonRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IVehicleRepository, VehicleRepository>();
