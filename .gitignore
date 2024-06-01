@@ -3,4 +3,6 @@
 bin/
 obj/
 
+src/API/appsettings.Development.json
+
 *.db*

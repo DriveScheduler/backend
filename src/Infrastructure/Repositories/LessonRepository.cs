@@ -115,5 +115,17 @@ namespace Infrastructure.Repositories
                 throw new LessonSaveException();
             }
         }
+
+        public void Delete(Lesson lesson)
+        {
+            try
+            {
+                _database.Delete(lesson);
+            }
+            catch (Exception)
+            {
+                throw new LessonSaveException();
+            }
+        }
     }
 }
