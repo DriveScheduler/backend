@@ -21,7 +21,7 @@ namespace API.Authentication
         {
             var claims = new List<Claim> {
                 new Claim(CLAIM_ID, user.Id.ToString()),
-                new Claim(CLAIM_FIRSTNAME, user.FirstName),
+                new Claim(CLAIM_FIRSTNAME, user.FirstName.Value),
                 new Claim(CLAIM_ROLE, ((int)user.Type).ToString()),
             };
             var jwtToken = new JwtSecurityToken(

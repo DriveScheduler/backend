@@ -16,7 +16,7 @@ namespace Application.UseCases.Users.Queries
         {
             User user = _userRepository.GetUserByEmail(request.Email);
 
-            if (user.Password != request.Password)
+            if (user.Password.Value != request.Password)
                 throw new UserValidationException("Mot de passe incorrect");
 
             return Task.FromResult(user);

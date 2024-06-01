@@ -1,5 +1,4 @@
 ﻿using Domain.Enums;
-using Domain.Exceptions.Users;
 using Domain.ValueObjects;
 
 namespace Domain.Models
@@ -7,10 +6,10 @@ namespace Domain.Models
     public sealed class User
     {
         public Guid Id { get; }
-        public string Name { get; private set; }
-        public string FirstName { get; private set; }
+        public Surname Name { get; private set; }
+        public Firstname FirstName { get; private set; }
         public Email Email { get; private set; }
-        public string Password { get; private set; }
+        public Password Password { get; private set; }
         public LicenceType LicenceType { get; }
         public UserType Type { get; }
 
@@ -27,13 +26,10 @@ namespace Domain.Models
 
         public User(string name, string firstName, string email, string password, LicenceType licenceType, UserType type)
         {
-            ValidateNameOrThrow(name);
-            ValidateFirstNameOrThrow(firstName);
-            ValidatePasswordOrThrow(password);            
-            Name = name;
-            FirstName = firstName;
+            Name = new Surname(name);
+            FirstName = new Firstname(firstName);
             Email = new Email(email);
-            Password = password;
+            Password = new Password(password);
             LicenceType = licenceType;
             Type = type;
             _lessonsAsTeacher = [];
@@ -42,15 +38,12 @@ namespace Domain.Models
         }
 
         public User(Guid id, string name, string firstName, string email, string password, LicenceType licenceType, UserType type)
-        {
-            ValidateNameOrThrow(name);
-            ValidateFirstNameOrThrow(firstName);            
-            ValidatePasswordOrThrow(password);
+        {         
             Id = id;
-            Name = name;
-            FirstName = firstName;
+            Name = new Surname(name);
+            FirstName = new Firstname(firstName);
             Email = new Email(email);
-            Password = password;
+            Password = new Password(password);
             LicenceType = licenceType;
             Type = type;
             _lessonsAsTeacher = [];
@@ -59,30 +52,10 @@ namespace Domain.Models
         }
 
         public void Update(string name, string firstName, string email)
-        {
-            ValidateNameOrThrow(name);
-            ValidateFirstNameOrThrow(firstName);                        
-            Name = name;
-            FirstName = firstName;
+        {                        
+            Name = new Surname(name);
+            FirstName = new Firstname(firstName);
             Email = new Email(email);            
-        }
-
-        private void ValidatePasswordOrThrow(string password)
-        {
-            if(string.IsNullOrWhiteSpace(password))
-                throw new UserValidationException("Le mot de passe est obligatoire");
-        }       
-
-        private void ValidateFirstNameOrThrow(string firstName)
-        {
-            if (string.IsNullOrWhiteSpace(firstName))
-                throw new UserValidationException("Le prénom est obligatoire");
-        }
-
-        private void ValidateNameOrThrow(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new UserValidationException("Le nom est obligatoire");
-        }
+        }         
     }
 }

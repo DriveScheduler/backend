@@ -52,8 +52,8 @@ namespace UseCases.Users
             // Assert
             Assert.NotNull(user);
             Assert.Equal(userId, user.Id);
-            Assert.Equal(updatedName, user.Name);
-            Assert.Equal(updatedFirstname, user.FirstName);
+            Assert.Equal(updatedName, user.Name.Value);
+            Assert.Equal(updatedFirstname, user.FirstName.Value);
             Assert.Equal(updatedEmail, user.Email.Value);            
         }
 

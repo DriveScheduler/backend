@@ -14,8 +14,8 @@ namespace API.Outputs.Users
         public UserLight(User user)
         {
             Id = user.Id;
-            Name = user.Name;
-            FirstName = user.FirstName;
+            Name = user.Name.Value;
+            FirstName = user.FirstName.Value;
             Email = user.Email.Value;
             LicenceType = new LicenceTypeOutput(user.LicenceType);
             UserType = new UserTypeOutput(user.Type);

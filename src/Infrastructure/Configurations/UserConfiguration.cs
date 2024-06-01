@@ -19,16 +19,23 @@ namespace Infrastructure.Configurations
 
             builder.Property(u => u.Name)
                 .IsRequired()
+                .HasConversion<SurnameConverter>()
                 .HasMaxLength(50);
 
             builder.Property(u => u.FirstName)
                 .IsRequired()
+                .HasConversion<FirstnameConverter>()
                 .HasMaxLength(50);
 
             builder.Property(u => u.Email)
                 .IsRequired()
                 .HasConversion<EmailConverter>()
                 .HasMaxLength(50);
+
+            builder.Property(u => u.Password)
+               .IsRequired()
+               .HasConversion<PasswordConverter>()
+               .HasMaxLength(100);
 
             builder.Property(u => u.LicenceType)
                 .IsRequired();
