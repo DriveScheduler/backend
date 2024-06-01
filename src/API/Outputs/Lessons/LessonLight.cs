@@ -27,7 +27,7 @@ namespace API.Outputs.Lessons
             Duration = $"{lesson.Duration.Value} min";
 
             Teacher = lesson.Teacher != null ?
-                $"{lesson.Teacher.FirstName}" : "Erreur";
+                $"{lesson.Teacher.FirstName.Value}" : "Erreur";
 
             Vehicle = lesson.Vehicle != null ?
                 $"{lesson.Vehicle.Name}" : "Erreur";            
