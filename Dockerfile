@@ -9,6 +9,7 @@ COPY src/Application/*.csproj ./src/Application/
 COPY src/Domain/*.csproj ./src/Domain/
 COPY src/Infrastructure/*.csproj ./src/Infrastructure/ 
 COPY test/UseCases/*.csproj ./test/UseCases/ 
+COPY test/Integration/*.csproj ./test/Integration/ 
 RUN dotnet restore
 
 # Copy the rest of the application code
@@ -17,6 +18,7 @@ COPY src/Application/. ./src/Application/
 COPY src/Domain/. ./src/Domain/
 COPY src/Infrastructure/. ./src/Infrastructure/
 COPY test/UseCases/. ./test/UseCases/ 
+COPY test/Integration/. ./test/Integration/ 
 
 # Publish the application
 RUN dotnet publish -c Release -o out
