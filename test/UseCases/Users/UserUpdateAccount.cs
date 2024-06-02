@@ -38,7 +38,7 @@ namespace UseCases.Users
         {
             // Arrange
             Guid userId = new Guid("00000000-0000-0000-0000-000000000001");
-            const string updatedName = "Doe";
+            const string updatedName = "DOE";
             const string updatedFirstname = "John";
             const string updatedEmail = "john.doe@gmail.com";            
 

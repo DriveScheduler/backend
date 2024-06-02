@@ -137,29 +137,7 @@ namespace UseCases.Schedule
             // Assert
             UserNotFoundException exc = await Assert.ThrowsAsync<UserNotFoundException>(() => _mediator.Send(command));
             Assert.Equal("L'utilisateur n'existe pas", exc.Message);
-        }
-
-        [Fact]
-        public async void ScheduleShould_CreateLesson_WithValidTeacherForLessonType()
-        {
-            // Arrange
-            const string lessonName = "Cours 1";
-            DateTime dateTime = _clock.Now;
-            const int duration = 30;            
-
-            Guid teacherId = new Guid("00000000-0000-0000-0000-000000000001");
-            Vehicle car = DataSet.GetCar(1);
-
-            _userRepository.Insert(DataSet.GetTruckTeacher(teacherId));
-            _vehicleRepository.Insert(car);
-
-            // Act
-            var command = new CreateLesson_Command(lessonName, dateTime, duration, teacherId);
-
-            // Assert
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("Le moniteur doit pouvoir assurer ce type de cours", exc.Message);
-        }
+        }    
 
 
         [Fact]

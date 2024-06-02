@@ -7,13 +7,11 @@ namespace Infrastructure.Persistence
     internal sealed class DatabaseContext : DbContext, IDataAccessor
     {
         public DatabaseContext()
-        {
-            Database.Migrate();
+        {            
         }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
-        {
-            Database.Migrate();
+        {            
         }
 
         public void Clear()
