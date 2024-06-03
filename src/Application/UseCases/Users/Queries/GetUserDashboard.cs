@@ -23,7 +23,7 @@ namespace Application.UseCases.Users.Queries
         public Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)
         {
             User user = _userRepository.GetUserById(request.UserId);
-            IReadOnlyList<Lesson> allStudentLessons = user.LessonsAsStudent;
+            IReadOnlyList<Lesson> allStudentLessons = _lessonRepository.GetStudentLessons(user);
 
             List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End < _clock.Now).ToList();
             User? favouriteTeacher = FavouriteTeacher(achievedLessons, out int teacherTotalTime);

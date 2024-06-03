@@ -24,7 +24,10 @@ namespace Infrastructure.Repositories
                 throw new LessonNotFoundException();
             return lesson;
         }
-
+        public List<Lesson> GetStudentLessons(User user)
+        {
+            return _database.Lessons.Where(lesson => lesson.Student == user || lesson.WaitingList.Contains(user)).ToList();
+        }
         public List<Lesson> GetLessonsForUser(User user, DateTime start, DateTime end,List<Guid> teacherIds, bool onlyEmptyLesson = false)
         {
             IEnumerable<Lesson> query = _database.Lessons;
