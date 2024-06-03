@@ -31,7 +31,17 @@ internal class Program
         Car vehicle = new Car("AA123BB", "voiture");
         Lesson lesson = new Lesson("lesson", DateTime.Now, 60, teacher, Domain.Enums.LicenceType.Car, vehicle);
 
-        userRepository.Insert(teacher);
+        userRepository.Insert([teacher, student, student1, student2]);
+        lesson.AddStudent(student);
+        vehicleRepository.Insert(vehicle);
+        lessonRepository.Insert(lesson);
+        
+
+        Lesson lessonV2 = lessonRepository.GetById(lesson.Id);
+        lessonV2.AddStudent(student);        
+        lessonV2.AddStudentToWaitingList(student1);
+        lessonV2.AddStudentToWaitingList(student2);
+        lessonRepository.Update(lessonV2);
 
 
         var builder = WebApplication.CreateBuilder(args);

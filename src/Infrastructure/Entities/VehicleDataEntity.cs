@@ -13,7 +13,7 @@ namespace Infrastructure.Entities
         public List<LessonDataEntity> Lessons { get; set; }
 
 
-        public VehicleDataEntity() { }
+        private VehicleDataEntity() { }
         public VehicleDataEntity(Vehicle domainModel) : base(domainModel) { }
 
         public override void FromDomainModel(Vehicle domainModel)
@@ -22,20 +22,25 @@ namespace Infrastructure.Entities
             RegistrationNumber = domainModel.RegistrationNumber.Value;
             Name = domainModel.Name;
             Type = domainModel.GetType();
-            LessonsId = domainModel.Lessons.Select(l => l.Id).ToList();
-            //Lessons = domainModel.Lessons.Select(l => new LessonDataEntity(l)).ToList();
+            LessonsId = domainModel.Lessons.Select(l => l.Id).ToList();            
         }
 
-        public override Vehicle ToDomainModel()
+        public override Vehicle ToDomainModel(int level)
         {
+            if (level >= 2) return null;
+            level++;
+
+            Vehicle vehicle;
             if (Type == LicenceType.Car)
-                return new Car(Id, RegistrationNumber, Name);
+                vehicle = new Car(Id, RegistrationNumber, Name);
             else if (Type == LicenceType.Bus)
-                return new Bus(Id, RegistrationNumber, Name);
+                vehicle = new Bus(Id, RegistrationNumber, Name);
             else if (Type == LicenceType.Truck)
-                return new Truck(Id, RegistrationNumber, Name);
+                vehicle = new Truck(Id, RegistrationNumber, Name);
             else
-                return new Motorcycle(Id, RegistrationNumber, Name);
+                vehicle = new Motorcycle(Id, RegistrationNumber, Name);
+            SetPrivateField(vehicle, "_lessons", Lessons.Select(l => l.ToDomainModel(level)).ToList());
+            return vehicle;
         }
     }
 }

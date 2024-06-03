@@ -21,10 +21,10 @@ namespace Infrastructure.Entities
         public Guid? StudentId { get; set; }
         public UserDataEntity? Student { get; set; }
 
-        public List<Guid> WaitingListId { get; set; } = [];
-        public List<UserDataEntity> WaitingList { get; set; }
+        public List<Guid> UserWaitingListId { get; set; } = [];
+        public List<UserDataEntity> UserWaitingList { get; set; }
 
-        public LessonDataEntity() { }
+        private LessonDataEntity() { }
 
         public LessonDataEntity(Lesson domainModel) : base(domainModel) { }
 
@@ -34,22 +34,22 @@ namespace Infrastructure.Entities
             Name = domainModel.Name;
             Start = domainModel.Start;
             Duration = domainModel.Duration.Value;
-            TeacherId = domainModel.Teacher.Id;
-            //Teacher = new UserDataEntity(domainModel.Teacher);
+            TeacherId = domainModel.Teacher.Id;            
             Type = domainModel.Type;
-            VehicleId = domainModel.Vehicle.Id;
-            //Vehicle = new VehicleDataEntity(domainModel.Vehicle);
-            StudentId = domainModel.Student == null ? null : domainModel.Student.Id;
-            //Student = domainModel.Student == null ? null : new UserDataEntity(domainModel.Student);
-            WaitingListId = domainModel.WaitingList.Select(u => u.Id).ToList();
-            //WaitingList = domainModel.WaitingList.Select(u => new UserDataEntity(u)).ToList();
+            VehicleId = domainModel.Vehicle.Id;            
+            StudentId = domainModel.Student == null ? null : domainModel.Student.Id;            
+            UserWaitingListId = domainModel.WaitingList.Select(u => u.Id).ToList();            
         }
 
-        public override Lesson ToDomainModel()
+        public override Lesson ToDomainModel(int level)
         {
-            Student? student = Student == null ? null : (Student)Student.ToDomainModel();
-            Lesson lesson = new Lesson(Id, Name, Start, Duration, (Teacher)Teacher.ToDomainModel(), Type, Vehicle.ToDomainModel(), student);
-            SetPrivateField(lesson, "_waitingList", WaitingList.Select(u => (Student)u.ToDomainModel()).ToList());
+            if(level >= 2) return null;
+            level++;
+
+            Student? student = Student == null ? null : (Student)Student.ToDomainModel(level);            
+            Lesson lesson = new Lesson(Id, Name, Start, Duration, (Teacher)Teacher.ToDomainModel(level), Type, Vehicle.ToDomainModel(level), student);
+            SetPrivateField(lesson, "_waitingList", UserWaitingList.Select(u => (Student)u.ToDomainModel(level)).ToList());
+
             return lesson;
         }
     }

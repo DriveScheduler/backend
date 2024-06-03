@@ -11,7 +11,7 @@ namespace Infrastructure.Entities
             FromDomainModel(domainModel);
         }
 
-        public abstract TDomainModel ToDomainModel();
+        public abstract TDomainModel ToDomainModel(int level);
         public abstract void FromDomainModel(TDomainModel domainModel);
 
         protected static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class

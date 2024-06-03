@@ -24,6 +24,8 @@ namespace Infrastructure.Configurations
 
             builder.Property(v => v.Type)
                 .IsRequired();
+
+            builder.Ignore(v => v.LessonsId);
         }
     }
 }

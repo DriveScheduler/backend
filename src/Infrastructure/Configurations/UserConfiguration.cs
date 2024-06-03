@@ -39,7 +39,7 @@ namespace Infrastructure.Configurations
 
             builder.Ignore(u => u.LessonsAsStudentId);
             builder.Ignore(u => u.LessonsAsTeacherId);
-            builder.Ignore(u => u.WaitingListId);
+            builder.Ignore(u => u.LessonWaitingListId);
         }
     }
 }

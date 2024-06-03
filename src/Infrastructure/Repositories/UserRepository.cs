@@ -5,6 +5,8 @@ using Domain.Repositories;
 using Infrastructure.Entities;
 using Infrastructure.Persistence;
 
+using System.Reflection;
+
 namespace Infrastructure.Repositories
 {
     public sealed class UserRepository(IDataAccessor database) : IUserRepository
@@ -61,6 +63,7 @@ namespace Infrastructure.Repositories
             {
                 UserDataEntity userDataEntity = new UserDataEntity(user);
                 _database.Insert(userDataEntity);
+                SetPrivateField(user, nameof(User.Id), userDataEntity.Id);
                 return userDataEntity.Id;
             }
             catch (Exception)
@@ -75,6 +78,8 @@ namespace Infrastructure.Repositories
             {
                 List<UserDataEntity> userDataEntities = users.Select(user => new UserDataEntity(user)).ToList();
                 _database.Insert(userDataEntities);
+                for (int i = 0; i < users.Count; i++)
+                    SetPrivateField(users[i], nameof(User.Id), userDataEntities[i].Id);
                 return userDataEntities.Select(userDataEntity => userDataEntity.Id).ToList();
             }
             catch (Exception)
@@ -93,6 +98,12 @@ namespace Infrastructure.Repositories
             {
                 throw new UserSaveException();
             }
-        }      
+        }
+
+        private static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class
+        {
+            var field = typeof(T).GetField($"<{fieldName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+            field?.SetValue(entity, value);
+        }
     }
 }

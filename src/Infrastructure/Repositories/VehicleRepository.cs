@@ -7,6 +7,8 @@ using Domain.Repositories;
 using Infrastructure.Entities;
 using Infrastructure.Persistence;
 
+using System.Reflection;
+
 namespace Infrastructure.Repositories
 {
     public sealed class VehicleRepository(IDataAccessor database) : IVehicleRepository
@@ -44,6 +46,7 @@ namespace Infrastructure.Repositories
             {
                 VehicleDataEntity vehicleDataEntity = new VehicleDataEntity(vehicle);
                 _database.Insert(vehicleDataEntity);
+                SetPrivateField(vehicle, nameof(Vehicle.Id), vehicleDataEntity.Id);
                 return vehicleDataEntity.Id;
             }
             catch (Exception)
@@ -58,6 +61,8 @@ namespace Infrastructure.Repositories
             {
                 List<VehicleDataEntity> vehicleDataEntities = vehicle.Select(v => new VehicleDataEntity(v)).ToList();
                 _database.Insert(vehicleDataEntities);
+                for (int i = 0; i < vehicleDataEntities.Count; i++)
+                    SetPrivateField(vehicle[i], nameof(Vehicle.Id), vehicleDataEntities[i].Id);
                 return vehicleDataEntities.Select(v => v.Id).ToList();
             }
             catch (Exception)
@@ -76,6 +81,12 @@ namespace Infrastructure.Repositories
             {
                 throw new VehicleSaveException();
             }
+        }
+
+        private static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class
+        {
+            var field = typeof(T).GetField($"<{fieldName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+            field?.SetValue(entity, value);
         }
     }
 }

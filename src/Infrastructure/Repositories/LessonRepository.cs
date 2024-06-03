@@ -6,6 +6,8 @@ using Domain.Repositories;
 using Infrastructure.Entities;
 using Infrastructure.Persistence;
 
+using System.Reflection;
+
 namespace Infrastructure.Repositories
 {
     public sealed class LessonRepository(IDataAccessor database) : ILessonRepository
@@ -91,6 +93,7 @@ namespace Infrastructure.Repositories
             {
                 LessonDataEntity lessonDataEntity = new LessonDataEntity(lesson);
                 _database.Insert(lessonDataEntity);
+                SetPrivateField(lesson, nameof(Lesson.Id), lessonDataEntity.Id);
                 return lessonDataEntity.Id;
             }
             catch (Exception exc)
@@ -106,6 +109,8 @@ namespace Infrastructure.Repositories
             {
                 List<LessonDataEntity> lessonDataEntities = lessons.Select(l => new LessonDataEntity(l)).ToList();
                 _database.Insert(lessonDataEntities);
+                for (int i = 0; i < lessons.Count; i++)
+                    SetPrivateField(lessons[i], nameof(Lesson.Id), lessonDataEntities[i].Id);
                 return lessonDataEntities.Select(l => l.Id).ToList();
             }
             catch (Exception)
@@ -137,6 +142,12 @@ namespace Infrastructure.Repositories
             {
                 throw new LessonSaveException();
             }
+        }
+
+        private static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class
+        {
+            var field = typeof(T).GetField($"<{fieldName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+            field?.SetValue(entity, value);
         }
     }
 }
