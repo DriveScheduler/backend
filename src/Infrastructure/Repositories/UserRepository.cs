@@ -7,7 +7,7 @@ using Infrastructure.Persistence;
 
 namespace Infrastructure.Repositories
 {
-    internal sealed class UserRepository(IDataAccessor database) : IUserRepository
+    public sealed class UserRepository(IDataAccessor database) : IUserRepository
     {
         private readonly IDataAccessor _database = database;
 
@@ -63,7 +63,7 @@ namespace Infrastructure.Repositories
                 _database.Insert(userDataEntity);
                 return userDataEntity.Id;
             }
-            catch (Exception exc)
+            catch (Exception)
             {
                 throw new UserSaveException();
             }
@@ -77,7 +77,7 @@ namespace Infrastructure.Repositories
                 _database.Insert(userDataEntities);
                 return userDataEntities.Select(userDataEntity => userDataEntity.Id).ToList();
             }
-            catch (Exception exc)
+            catch (Exception)
             {
                 throw new UserSaveException();
             }

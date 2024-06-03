@@ -48,7 +48,7 @@ namespace UseCases.Vehicles
             Assert.NotNull(vehicle);
             Assert.Equal(registrationNumber, vehicle.RegistrationNumber.Value);
             Assert.Equal(name, vehicle.Name);
-            Assert.IsType<Car>(type);
+            Assert.IsType<Car>(vehicle);
         }
 
         [Theory]

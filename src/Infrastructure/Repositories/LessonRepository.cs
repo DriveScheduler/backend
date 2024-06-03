@@ -8,7 +8,7 @@ using Infrastructure.Persistence;
 
 namespace Infrastructure.Repositories
 {
-    internal sealed class LessonRepository(IDataAccessor database) : ILessonRepository
+    public sealed class LessonRepository(IDataAccessor database) : ILessonRepository
     {
         private readonly IDataAccessor _database = database;
 

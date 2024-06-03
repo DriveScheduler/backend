@@ -36,6 +36,10 @@ namespace Infrastructure.Configurations
 
             builder.Property(u => u.Type)
                 .IsRequired();
+
+            builder.Ignore(u => u.LessonsAsStudentId);
+            builder.Ignore(u => u.LessonsAsTeacherId);
+            builder.Ignore(u => u.WaitingListId);
         }
     }
 }

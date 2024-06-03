@@ -161,7 +161,7 @@ namespace UseCases.Schedule
             var car = DataSet.GetCar(1);
             _userRepository.Insert(teacher);
             _vehicleRepository.Insert(car);
-            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, teacher, LicenceType.Car, car));
+            _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, teacher, LicenceType.Car, car));            
 
             // Act
             var command = new AddStudentToLesson_Command(lessonId, invalidUserId);

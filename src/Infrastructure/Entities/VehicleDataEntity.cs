@@ -9,7 +9,7 @@ namespace Infrastructure.Entities
         public string RegistrationNumber { get; set; }
         public string Name { get; set; }
         public LicenceType Type { get; set; }
-
+        public List<int> LessonsId { get; set; } = [];
         public List<LessonDataEntity> Lessons { get; set; }
 
 
@@ -22,19 +22,20 @@ namespace Infrastructure.Entities
             RegistrationNumber = domainModel.RegistrationNumber.Value;
             Name = domainModel.Name;
             Type = domainModel.GetType();
-            Lessons = domainModel.Lessons.Select(l => new LessonDataEntity(l)).ToList();
+            LessonsId = domainModel.Lessons.Select(l => l.Id).ToList();
+            //Lessons = domainModel.Lessons.Select(l => new LessonDataEntity(l)).ToList();
         }
 
         public override Vehicle ToDomainModel()
-        {            
-            if (Type == LicenceType.Car)            
-                return new Car(Id, RegistrationNumber, Name);            
-            else if (Type == LicenceType.Bus)            
-                return new Bus(Id, RegistrationNumber, Name);            
-            else if (Type == LicenceType.Truck)            
-                return new Truck(Id, RegistrationNumber, Name);            
-            else            
-                return new Motorcycle(Id, RegistrationNumber, Name);          
+        {
+            if (Type == LicenceType.Car)
+                return new Car(Id, RegistrationNumber, Name);
+            else if (Type == LicenceType.Bus)
+                return new Bus(Id, RegistrationNumber, Name);
+            else if (Type == LicenceType.Truck)
+                return new Truck(Id, RegistrationNumber, Name);
+            else
+                return new Motorcycle(Id, RegistrationNumber, Name);
         }
     }
 }

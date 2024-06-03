@@ -8,18 +8,25 @@ namespace Infrastructure.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public DateTime Start { get; set; }        
+        public DateTime Start { get; set; }
         public int Duration { get; set; }
+        public LicenceType Type { get; set; }
+
         public Guid TeacherId { get; set; }
         public UserDataEntity Teacher { get; set; }
-        public LicenceType Type { get; set; }
+
+        public int VehicleId { get; set; }
         public VehicleDataEntity Vehicle { get; set; }
+
+        public Guid? StudentId { get; set; }
         public UserDataEntity? Student { get; set; }
-        public List<UserDataEntity> WaitingList { get; set; }       
+
+        public List<Guid> WaitingListId { get; set; } = [];
+        public List<UserDataEntity> WaitingList { get; set; }
 
         public LessonDataEntity() { }
 
-        public LessonDataEntity(Lesson domainModel) : base(domainModel){ }
+        public LessonDataEntity(Lesson domainModel) : base(domainModel) { }
 
         public override void FromDomainModel(Lesson domainModel)
         {
@@ -28,11 +35,14 @@ namespace Infrastructure.Entities
             Start = domainModel.Start;
             Duration = domainModel.Duration.Value;
             TeacherId = domainModel.Teacher.Id;
-            Teacher = new UserDataEntity(domainModel.Teacher);
+            //Teacher = new UserDataEntity(domainModel.Teacher);
             Type = domainModel.Type;
-            Vehicle = new VehicleDataEntity(domainModel.Vehicle);            
-            Student = domainModel.Student == null ? null : new UserDataEntity(domainModel.Student);
-            WaitingList = domainModel.WaitingList.Select(u => new UserDataEntity(u)).ToList();            
+            VehicleId = domainModel.Vehicle.Id;
+            //Vehicle = new VehicleDataEntity(domainModel.Vehicle);
+            StudentId = domainModel.Student == null ? null : domainModel.Student.Id;
+            //Student = domainModel.Student == null ? null : new UserDataEntity(domainModel.Student);
+            WaitingListId = domainModel.WaitingList.Select(u => u.Id).ToList();
+            //WaitingList = domainModel.WaitingList.Select(u => new UserDataEntity(u)).ToList();
         }
 
         public override Lesson ToDomainModel()

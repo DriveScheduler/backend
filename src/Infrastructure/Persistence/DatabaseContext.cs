@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    internal sealed class DatabaseContext : DbContext, IDataAccessor
+    public sealed class DatabaseContext : DbContext, IDataAccessor
     {
         public DatabaseContext()
         {            
@@ -40,29 +40,37 @@ namespace Infrastructure.Persistence
         public void Insert<T>(T entity) where T : class
         {
             //Set<T>().Attach(entity);
-            Set<T>().Add(entity);
+            //ChangeTracker.Clear();
+            Add(entity);
+            //Set<T>().Add(entity);
             SaveChanges();
         }
         public void Insert<T>(List<T> entities) where T : class
         {
             //Set<T>().AttachRange(entities);
-            Set<T>().AddRange(entities);
+            //ChangeTracker.Clear();
+            //Set<T>().AddRange(entities);
+            AddRange(entities);
             SaveChanges();
         }
 
         void IDataAccessor.Update<T>(T entity) where T : class
         {
             //Set<T>().Attach(entity);
-            Set<T>().Update(entity);
+            //ChangeTracker.Clear();
+            //Set<T>().Update(entity);
+            Update(entity);
             SaveChanges();
         }
 
         public void Delete<T>(T entity) where T : class
         {
             //Set<T>().Attach(entity);
-            Set<T>().Remove(entity);
+            //ChangeTracker.Clear();
+            //Set<T>().Remove(entity);
+            Remove(entity);
             SaveChanges();
-        }
+        }       
 
 
         internal DbSet<UserDataEntity> Users { get; set; }
@@ -70,25 +78,25 @@ namespace Infrastructure.Persistence
         internal DbSet<VehicleDataEntity> Vehicles { get; set; }
 
         IEnumerable<Lesson> IDataAccessor.Lessons => Lessons
+            .AsNoTracking()
             .Include(l => l.Teacher)
             .Include(l => l.Student)
             .Include(l => l.WaitingList)
             .Include(l => l.Vehicle)
-            //.AsNoTracking()
             .AsEnumerable()
             .Select(l => l.ToDomainModel());
 
         IEnumerable<User> IDataAccessor.Users => Users
+            .AsNoTracking()
             .Include(u => u.LessonsAsTeacher)
             .Include(u => u.LessonsAsStudent)
             .Include(u => u.WaitingList)
-            //.AsNoTracking()
             .AsEnumerable()
             .Select(u => u.ToDomainModel());
 
         IEnumerable<Vehicle> IDataAccessor.Vehicles => Vehicles
-            .Include(v => v.Lessons)
-            //.AsNoTracking()
+            .AsNoTracking()
+            .Include(v => v.Lessons)            
             .AsEnumerable()
             .Select(v => v.ToDomainModel());
     }

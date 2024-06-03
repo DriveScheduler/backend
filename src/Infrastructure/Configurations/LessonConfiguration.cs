@@ -11,39 +11,41 @@ namespace Infrastructure.Configurations
         {
             builder.ToTable("Lessons");
 
-            builder.Property(c => c.Id)
+            builder.Property(lesson => lesson.Id)
                 .IsRequired()
                 .ValueGeneratedOnAdd();
 
-            builder.Property(c => c.Name)
+            builder.Property(lesson => lesson.Name)
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.Property(c => c.Start)
+            builder.Property(lesson => lesson.Start)
                 .IsRequired();
 
-            builder.Property(c => c.Duration)                
+            builder.Property(lesson => lesson.Duration)                
                 .IsRequired();               
 
-            builder.Property(c => c.Type)
+            builder.Property(lesson => lesson.Type)
                 .IsRequired();
 
             builder
-                 .HasOne(l => l.Teacher)
-                 .WithMany(u => u.LessonsAsTeacher)
-                 .HasForeignKey(l => l.TeacherId);
+                 .HasOne(lesson => lesson.Teacher)
+                 .WithMany(user => user.LessonsAsTeacher)
+            .HasForeignKey(lesson => lesson.TeacherId);
 
             builder
-                .HasOne(c => c.Vehicle)
-                .WithMany(v => v.Lessons);
+                .HasOne(lesson => lesson.Vehicle)
+                .WithMany(vehicle => vehicle.Lessons)
+            .HasForeignKey(lesson => lesson.VehicleId);
 
             builder
-                .HasOne(l => l.Student)
-                .WithMany(u => u.LessonsAsStudent);                
+                .HasOne(lesson => lesson.Student)
+                .WithMany(user => user.LessonsAsStudent)
+                .HasForeignKey(lesson => lesson.StudentId);
 
             builder
-                .HasMany(l => l.WaitingList)
-                .WithMany(u => u.WaitingList)
+                .HasMany(lesson => lesson.WaitingList)
+                .WithMany(user => user.WaitingList)
                 .UsingEntity(j => j.ToTable("LessonUsersPending"));            
         }
     }

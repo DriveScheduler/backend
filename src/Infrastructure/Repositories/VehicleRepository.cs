@@ -9,7 +9,7 @@ using Infrastructure.Persistence;
 
 namespace Infrastructure.Repositories
 {
-    internal sealed class VehicleRepository(IDataAccessor database) : IVehicleRepository
+    public sealed class VehicleRepository(IDataAccessor database) : IVehicleRepository
     {
         private readonly IDataAccessor _database = database;
 
