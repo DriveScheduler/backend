@@ -2,6 +2,7 @@
 
 using Domain.Exceptions.Lessons;
 using Domain.Models;
+using Domain.Models.Users;
 using Domain.Repositories;
 
 using MediatR;

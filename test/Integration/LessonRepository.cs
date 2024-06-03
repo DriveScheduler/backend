@@ -1,6 +1,8 @@
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Models;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
 using Domain.Repositories;
 
 using Infrastructure.Persistence;
@@ -32,8 +34,8 @@ namespace Integration
         [Fact]
         public void LessonShouldBeCreatedWithId()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
-            Vehicle vehicle = new Vehicle("AA-123-AA", "Renault", LicenceType.Car);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
+            Car vehicle = new Car("AA-123-AA", "Renault");
             Lesson lesson = new Lesson("Cours 1", DateTime.Now, 30, teacher, LicenceType.Car, vehicle);
 
             _lessonRepository.Insert(lesson);
@@ -44,8 +46,8 @@ namespace Integration
         [Fact]
         public void LessonShouldBeGetByQuery()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
-            Vehicle vehicle = new Vehicle("AA-123-AA", "Renault", LicenceType.Car);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
+            Car vehicle = new Car("AA-123-AA", "Renault");
             Lesson lesson = new Lesson("Cours 1", DateTime.Now, 30, teacher, LicenceType.Car, vehicle);
 
             _lessonRepository.Insert(lesson);
@@ -57,8 +59,8 @@ namespace Integration
         [Fact]
         public void LessonShouldBeUpdate()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
-            Vehicle vehicle = new Vehicle("AA-123-AA", "Renault", LicenceType.Car);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
+            Car vehicle = new Car("AA-123-AA", "Renault");
             Lesson lesson = new Lesson("Cours 1", DateTime.Now, 30, teacher, LicenceType.Car, vehicle);
 
             _lessonRepository.Insert(lesson);
@@ -74,8 +76,8 @@ namespace Integration
         [Fact]
         public void LessonShouldBeDelete()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
-            Vehicle vehicle = new Vehicle("AA-123-AA", "Renault", LicenceType.Car);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
+            Car vehicle = new Car("AA-123-AA", "Renault");
             Lesson lesson = new Lesson("Cours 1", DateTime.Now, 30, teacher, LicenceType.Car, vehicle);
 
             _lessonRepository.Insert(lesson);

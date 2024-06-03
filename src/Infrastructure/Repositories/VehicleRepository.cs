@@ -1,9 +1,10 @@
 ﻿using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Vehicles;
-using Domain.Models;
+using Domain.Models.Vehicles;
 using Domain.Repositories;
 
+using Infrastructure.Entities;
 using Infrastructure.Persistence;
 
 namespace Infrastructure.Repositories
@@ -14,7 +15,7 @@ namespace Infrastructure.Repositories
 
         public Vehicle FindAvailable(DateTime start, int duration, LicenceType vehicleType)
         {
-            List<Vehicle> vehicles = _database.Vehicles.Where(v => v.Type == vehicleType).ToList();
+            List<Vehicle> vehicles = _database.Vehicles.Where(v => v.GetType() == vehicleType).ToList();
 
             DateTime lessonEnd = start.AddMinutes(duration);
             Vehicle? vehicle = vehicles.FirstOrDefault(v => !v.Lessons.Any(lesson => (lesson.Start.AddMinutes(lesson.Duration.Value) >= start && start >= lesson.Start) || (lesson.Start <= lessonEnd && lessonEnd <= lesson.Start.AddMinutes(lesson.Duration.Value))));
@@ -37,11 +38,13 @@ namespace Infrastructure.Repositories
         }
 
 
-        public void Insert(Vehicle vehicle)
+        public int Insert(Vehicle vehicle)
         {
             try
             {
-                _database.Insert(vehicle);
+                VehicleDataEntity vehicleDataEntity = new VehicleDataEntity(vehicle);
+                _database.Insert(vehicleDataEntity);
+                return vehicleDataEntity.Id;
             }
             catch (Exception)
             {
@@ -49,11 +52,13 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public void Insert(List<Vehicle> vehicle)
+        public List<int> Insert(List<Vehicle> vehicle)
         {
             try
             {
-                _database.Insert(vehicle);
+                List<VehicleDataEntity> vehicleDataEntities = vehicle.Select(v => new VehicleDataEntity(v)).ToList();
+                _database.Insert(vehicleDataEntities);
+                return vehicleDataEntities.Select(v => v.Id).ToList();
             }
             catch (Exception)
             {
@@ -65,7 +70,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                _database.Update(vehicle);
+                _database.Update(new VehicleDataEntity(vehicle));
             }
             catch (Exception)
             {

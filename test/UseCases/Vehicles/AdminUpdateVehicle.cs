@@ -1,6 +1,4 @@
 ﻿using Application.UseCases.Vehicles.Commands;
-
-using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Vehicles;
 using Domain.Repositories;
@@ -11,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
 using Infrastructure.Persistence;
+using Domain.Models.Vehicles;
 
 namespace UseCases.Vehicles
 {

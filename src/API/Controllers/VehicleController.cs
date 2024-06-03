@@ -4,7 +4,7 @@ using API.Outputs.Vehicles;
 
 using Application.UseCases.Vehicles.Commands;
 using Application.UseCases.Vehicles.Queries;
-using Domain.Models;
+using Domain.Models.Vehicles;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;

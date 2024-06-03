@@ -1,8 +1,9 @@
-﻿using Domain.Enums;
-using Domain.Exceptions.Lessons;
+﻿using Domain.Exceptions.Lessons;
 using Domain.Models;
+using Domain.Models.Users;
 using Domain.Repositories;
 
+using Infrastructure.Entities;
 using Infrastructure.Persistence;
 
 namespace Infrastructure.Repositories
@@ -15,7 +16,7 @@ namespace Infrastructure.Repositories
         {
             return _database.Lessons
                 .ToList();
-        }       
+        }
 
         public Lesson GetById(int id)
         {
@@ -25,22 +26,27 @@ namespace Infrastructure.Repositories
             return lesson;
         }
 
-        public List<Lesson> GetLessonsForUser(User user, DateTime start, DateTime end,List<Guid> teacherIds, bool onlyEmptyLesson = false)
+        public List<Lesson> GetLessonsForStudent(Student student, DateTime start, DateTime end, List<Guid> teacherIds, bool onlyEmptyLesson = false)
         {
             IEnumerable<Lesson> query = _database.Lessons;
-            if (user.Type == UserType.Student)
-            {
-                query = query.Where(lesson => lesson.Type == user.LicenceType);
-                if (teacherIds.Count > 0)
-                    query = query.Where(lesson => teacherIds.Contains(lesson.TeacherId));
-            }
-            else if (user.Type == UserType.Teacher)
-                query = query.Where(lesson => lesson.Teacher.Id == user.Id);
 
+            query = query.Where(lesson => lesson.Type == student.LicenceType);
+            if (teacherIds.Count > 0)
+                query = query.Where(lesson => teacherIds.Contains(lesson.Teacher.Id));
 
             if (onlyEmptyLesson)
                 query = query.Where(lesson => lesson.Student == null);
 
+            DateTime calculatedEndDate = end.AddDays(1).Date;
+            return query
+                .Where(lesson => lesson.Start.Date >= start.Date.Date && lesson.Start.AddMinutes(lesson.Duration.Value).Date <= calculatedEndDate.Date)
+                .ToList();
+        }
+
+        public List<Lesson> GetLessonsForTeacher(Teacher teacher, DateTime start, DateTime end)
+        {
+            IEnumerable<Lesson> query = _database.Lessons;
+            query = query.Where(lesson => lesson.Teacher.Id == teacher.Id);
 
             DateTime calculatedEndDate = end.AddDays(1).Date;
             return query
@@ -69,33 +75,38 @@ namespace Infrastructure.Repositories
             DateTime calculatedEndDate = end.Date.AddDays(1).Date;
 
             IEnumerable<Lesson> query = _database.Lessons;
-            if (user.Type == UserType.Student)
+            if (user.GetType() == typeof(Student))
                 query = query
                     .Where(lesson => lesson.Student != null && lesson.Student.Id == user.Id && lesson.Start >= start && lesson.Start <= calculatedEndDate);
-            else if (user.Type == UserType.Teacher)
+            else if (user.GetType() == typeof(Teacher))
                 query = query
                     .Where(lesson => lesson.Teacher.Id == user.Id && lesson.Start >= start && lesson.Start <= calculatedEndDate);
 
             return query.ToList();
         }
 
-        public void Insert(Lesson lesson)
+        public int Insert(Lesson lesson)
         {
             try
             {
-                _database.Insert(lesson);
+                LessonDataEntity lessonDataEntity = new LessonDataEntity(lesson);
+                _database.Insert(lessonDataEntity);
+                return lessonDataEntity.Id;
             }
-            catch (Exception)
+            catch (Exception exc)
             {
-                throw new LessonSaveException();
+                throw exc;
+                //throw new LessonSaveException();
             }
         }
 
-        public void Insert(List<Lesson> lessons)
+        public List<int> Insert(List<Lesson> lessons)
         {
             try
             {
-                _database.Insert(lessons);
+                List<LessonDataEntity> lessonDataEntities = lessons.Select(l => new LessonDataEntity(l)).ToList();
+                _database.Insert(lessonDataEntities);
+                return lessonDataEntities.Select(l => l.Id).ToList();
             }
             catch (Exception)
             {
@@ -107,8 +118,8 @@ namespace Infrastructure.Repositories
         public void Update(Lesson lesson)
         {
             try
-            {
-                _database.Update(lesson);
+            {                
+                _database.Update(new LessonDataEntity(lesson));
             }
             catch (Exception)
             {
@@ -120,7 +131,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                _database.Delete(lesson);
+                _database.Delete(new LessonDataEntity(lesson));
             }
             catch (Exception)
             {

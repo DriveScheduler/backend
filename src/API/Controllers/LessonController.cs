@@ -8,6 +8,7 @@ using Application.UseCases.Users.Queries;
 
 using Domain.Enums;
 using Domain.Models;
+using Domain.Models.Users;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;

@@ -3,6 +3,8 @@
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Models;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
 using Domain.Repositories;
 
 using MediatR;
@@ -25,14 +27,14 @@ namespace Application.UseCases.Lessons.Commands
 
         public Task<int> Handle(CreateLesson_Command request, CancellationToken cancellationToken)
         {
-            User teacher = _userRepository.GetUserById(request.TeacherId);
+            Teacher teacher = _userRepository.GetTeacherById(request.TeacherId);
             Vehicle vehicle = _vehicleRepository.FindAvailable(request.Date, request.Duration, teacher.LicenceType);
             
             if (request.Date < _systemClock.Now)
                 throw new LessonValidationException("Le date et l'heure du cours ne peuvent pas être inférieur à maintenant");
 
             DateTime end = request.Date.AddMinutes(request.Duration);
-            if (teacher.LessonsAsTeacher.Any(teacherLesson => teacherLesson.Start < end && teacherLesson.End > request.Date))
+            if (teacher.Lessons.Any(teacherLesson => teacherLesson.Start < end && teacherLesson.End > request.Date))
                 throw new LessonValidationException("Le moniteur n'est pas disponible pour cette plage horaire");
 
             Lesson lesson = new Lesson(
@@ -43,8 +45,8 @@ namespace Application.UseCases.Lessons.Commands
                 teacher.LicenceType,
                 vehicle);
        
-            _lessonRepository.Insert(lesson);
-            return Task.FromResult(lesson.Id);
+            int id = _lessonRepository.Insert(lesson);
+            return Task.FromResult(id);
         }
     }
 }

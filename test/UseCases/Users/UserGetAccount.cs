@@ -1,6 +1,4 @@
 ﻿using Application.UseCases.Users.Queries;
-
-using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Users;
 using Domain.Repositories;
@@ -10,6 +8,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Domain.Models.Users;
 
 namespace UseCases.Users
 {

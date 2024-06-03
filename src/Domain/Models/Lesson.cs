@@ -1,5 +1,7 @@
 ﻿using Domain.Enums;
 using Domain.Exceptions.Lessons;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
 using Domain.ValueObjects;
 
 namespace Domain.Models
@@ -10,19 +12,18 @@ namespace Domain.Models
         public string Name { get; private set; }
         public DateTime Start { get; private set; }
         public DateTime End => Start.AddMinutes(Duration.Value);
-        public LessonDuration Duration { get; private set; }
-        public Guid TeacherId { get; private set; }
-        public User Teacher { get; private set; }
+        public LessonDuration Duration { get; private set; }        
+        public Teacher Teacher { get; private set; }
         public LicenceType Type { get; set; }
         public Vehicle Vehicle { get; private set; }
-        public User? Student { get; private set; }
+        public Student? Student { get; private set; }
 
-        private readonly List<User> _waitingList;
-        public IReadOnlyList<User> WaitingList => _waitingList;
+        private readonly List<Student> _waitingList;
+        public IReadOnlyList<Student> WaitingList => _waitingList;
 
         private Lesson() { }
 
-        public Lesson(string name, DateTime start, int duration, User teacher, LicenceType type, Vehicle vehicle)
+        public Lesson(string name, DateTime start, int duration, Teacher teacher, LicenceType type, Vehicle vehicle)
         {
             ThrowIfInvalidName(name);
             ThrowIfUserIsNotTeacher(teacher);
@@ -37,7 +38,7 @@ namespace Domain.Models
             Student = null;
             _waitingList = [];
         }
-        public Lesson(int id, string name, DateTime start, int duration, User teacher, LicenceType type, Vehicle vehicle, User? student = null)
+        public Lesson(int id, string name, DateTime start, int duration, Teacher teacher, LicenceType type, Vehicle vehicle, Student? student = null)
         {
             ThrowIfInvalidName(name);
             ThrowIfUserIsNotTeacher(teacher);
@@ -54,7 +55,7 @@ namespace Domain.Models
             _waitingList = [];
         }
 
-        public void Update(string name, DateTime start, int duration, User teacher, Vehicle vehicle)
+        public void Update(string name, DateTime start, int duration, Teacher teacher, Vehicle vehicle)
         {
             ThrowIfInvalidName(name);
             ThrowIfUserIsNotTeacher(teacher);
@@ -67,7 +68,7 @@ namespace Domain.Models
             Vehicle = vehicle;
         }
 
-        public void AddStudent(User student)
+        public void AddStudent(Student student)
         {
             if (student is null) throw new ArgumentNullException(nameof(student));
             if (Student is not null) throw new LessonValidationException("Le cours est complet");
@@ -76,12 +77,12 @@ namespace Domain.Models
 
             Student = student;
         }
-        public void RemoveStudent(User student)
+        public void RemoveStudent()
         {
             Student = null;
         }
 
-        public void AddStudentToWaitingList(User student)
+        public void AddStudentToWaitingList(Student student)
         {
             if (student is null) throw new ArgumentNullException(nameof(student));
             if (Student is null) throw new LessonValidationException("Le cours n'est pas complet");
@@ -96,7 +97,7 @@ namespace Domain.Models
             _waitingList.Add(student);
         }
 
-        public void RemoveStudentFromWaitingList(User student)
+        public void RemoveStudentFromWaitingList(Student student)
         {
             if (student is null) throw new ArgumentNullException(nameof(student));
             _waitingList.Remove(student);
@@ -128,14 +129,14 @@ namespace Domain.Models
 
         private void ThrowIfUserIsNotStudent(User user, string? message = null)
         {
-            if (user.Type != UserType.Student)
+            if (user.GetType() != typeof(Student))
                 throw new LessonValidationException(
                     message is null ? "L'utilisateur doit être un élève pour s'incrire au cours" : message);
         }
 
         private void ThrowIfUserIsNotTeacher(User user)
         {
-            if (user.Type != UserType.Teacher)
+            if (user.GetType() != typeof(Teacher))
                 throw new LessonValidationException("La personne en charge du cours doit être un moniteur");
         }
 

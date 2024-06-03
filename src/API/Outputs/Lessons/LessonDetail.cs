@@ -1,6 +1,7 @@
 ﻿using API.Outputs.Users;
 
 using Domain.Models;
+using Domain.Models.Users;
 
 namespace API.Outputs.Lessons
 {

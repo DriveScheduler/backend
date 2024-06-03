@@ -1,6 +1,4 @@
 ﻿using Application.UseCases.Users.Commands;
-
-using Domain.Models;
 using Domain.Enums;
 
 using Domain.Exceptions.Users;
@@ -12,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
 using Infrastructure.Persistence;
+using Domain.Models.Users;
 
 namespace UseCases.Users
 {

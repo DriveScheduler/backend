@@ -2,6 +2,8 @@
 using Application.Models;
 
 using Domain.Models;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
 using Domain.Repositories;
 
 using MediatR;
@@ -22,8 +24,8 @@ namespace Application.UseCases.Users.Queries
 
         public Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)
         {
-            User user = _userRepository.GetUserById(request.UserId);
-            IReadOnlyList<Lesson> allStudentLessons = user.LessonsAsStudent;
+            Student student = _userRepository.GetStudentById(request.UserId);
+            IReadOnlyList<Lesson> allStudentLessons = student.Lessons;
 
             List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End < _clock.Now).ToList();
             User? favouriteTeacher = FavouriteTeacher(achievedLessons, out int teacherTotalTime);
@@ -50,7 +52,7 @@ namespace Application.UseCases.Users.Queries
             totalTime = 0;
             User? favoriteTeacher = null;
 
-            Dictionary<User, List<Lesson>> teacherLessons = studentLessons.GroupBy(l => l.Teacher).ToDictionary(row => row.Key, row => row.ToList());
+            Dictionary<Teacher, List<Lesson>> teacherLessons = studentLessons.GroupBy(l => l.Teacher).ToDictionary(row => row.Key, row => row.ToList());
             if (teacherLessons.Count == 1)
             {
                 totalTime = teacherLessons.First().Value.Sum(l => l.Duration.Value);
@@ -58,7 +60,7 @@ namespace Application.UseCases.Users.Queries
             }
 
             int maxDuration = 0;
-            foreach (KeyValuePair<User, List<Lesson>> row in teacherLessons)
+            foreach (KeyValuePair<Teacher, List<Lesson>> row in teacherLessons)
             {
                 int total = row.Value.Sum(l => l.Duration.Value);
                 if (total > maxDuration)

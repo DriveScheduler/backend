@@ -2,7 +2,6 @@
 using Application.Abstractions;
 
 using Infrastructure;
-using Infrastructure.Persistence;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -42,9 +41,9 @@ namespace UseCases
             _serviceCollection.AddScoped<IEmailSender, FakeEmailSender>();
         }
 
-        private void AddFakeDataAccessor()
-        {
-            _serviceCollection.AddSingleton<IDataAccessor, FakeDataAccessor>();
-        }
+        //private void AddFakeDataAccessor()
+        //{
+        //    //_serviceCollection.AddSingleton<IDataAccessor, FakeDataAccessor>();
+        //}
     }
 }

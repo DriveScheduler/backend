@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using UseCases.Fakes;
 using UseCases.TestData;
 using Infrastructure.Persistence;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
 
 namespace UseCases.Users
 {

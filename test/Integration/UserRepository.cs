@@ -1,6 +1,6 @@
 ﻿using Domain.Enums;
 using Domain.Exceptions.Lessons;
-using Domain.Models;
+using Domain.Models.Users;
 using Domain.Repositories;
 
 using Infrastructure.Persistence;
@@ -30,7 +30,7 @@ namespace Integration
         [Fact]
         public void UserShouldBeCreatedWithId()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
 
             _userRepository.Insert(teacher);
 
@@ -40,9 +40,9 @@ namespace Integration
         [Fact]
         public void UserShouldBeCreatedWithDifferentId()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
-            User student = new User("student", "student", "student@gmail.com", "mdp", LicenceType.Car, UserType.Student);
-            User admin = new User("admin", "admin", "admin@gmail.com", "mdp", LicenceType.Car, UserType.Admin);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
+            Student student = new Student("student", "student", "student@gmail.com", "mdp", LicenceType.Car);
+            Admin admin = new Admin("admin", "admin", "admin@gmail.com", "mdp", LicenceType.Car);
 
             _userRepository.Insert([teacher, student, admin]);
 
@@ -58,7 +58,7 @@ namespace Integration
         [Fact]
         public void UserShouldBeGetByQuery()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
 
             _userRepository.Insert(teacher);
 
@@ -69,11 +69,11 @@ namespace Integration
         [Fact]
         public void UserShouldBeUpdate()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
 
             _userRepository.Insert(teacher);
 
-            User updatedTeacher = new User(teacher.Id, "teacher2", "teacher2", "teacher2@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
+            Teacher updatedTeacher = new Teacher(teacher.Id, "teacher2", "teacher2", "teacher2@gmail.com", "mdp", LicenceType.Car);
             _userRepository.Update(updatedTeacher);
 
             User userFromQuery = _userRepository.GetUserById(teacher.Id);

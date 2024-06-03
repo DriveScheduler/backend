@@ -1,5 +1,4 @@
 ﻿using Domain.Enums;
-using Domain.Models;
 
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,12 +16,12 @@ namespace API.Authentication
 
         private readonly IConfiguration _configuration = configuration;
 
-        public string GenerateToken(User user)
+        public string GenerateToken(Guid userId, string name, UserType userType)
         {
             var claims = new List<Claim> {
-                new Claim(CLAIM_ID, user.Id.ToString()),
-                new Claim(CLAIM_FIRSTNAME, user.FirstName.Value),
-                new Claim(CLAIM_ROLE, ((int)user.Type).ToString()),
+                new Claim(CLAIM_ID, userId.ToString()),
+                new Claim(CLAIM_FIRSTNAME, name),
+                new Claim(CLAIM_ROLE, ((int)userType).ToString()),
             };
             var jwtToken = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],

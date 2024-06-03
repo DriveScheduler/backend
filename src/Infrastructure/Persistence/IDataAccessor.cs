@@ -1,4 +1,8 @@
 ﻿using Domain.Models;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
+
+using Infrastructure.Entities;
 
 namespace Infrastructure.Persistence
 {

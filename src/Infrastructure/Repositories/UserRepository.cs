@@ -1,8 +1,8 @@
-﻿using Domain.Enums;
-using Domain.Exceptions.Users;
-using Domain.Models;
+﻿using Domain.Exceptions.Users;
+using Domain.Models.Users;
 using Domain.Repositories;
 
+using Infrastructure.Entities;
 using Infrastructure.Persistence;
 
 namespace Infrastructure.Repositories
@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
         public List<User> GetAllTeachers()
         {
             return _database.Users                
-                .Where(user => user.Type == UserType.Teacher)
+                .Where(user => user.GetType() == typeof(Teacher))
                 .ToList();
         }
 
@@ -33,31 +33,51 @@ namespace Infrastructure.Repositories
                 throw new UserNotFoundException();
             return user;
         }
+        public Teacher GetTeacherById(Guid id)
+        {
+            User user = GetUserById(id);
+            if(user is Teacher teacher)            
+                return teacher;        
+            throw new UserNotInRoleException("L'utilisateur n'est pas un moniteur");
+        }
+
+        public Student GetStudentById(Guid id)
+        {
+            User user = GetUserById(id);
+            if (user is Student student)
+                return student;
+            throw new UserNotInRoleException("L'utilisateur n'est pas un élève");
+        }
+
 
         public bool IsEmailUnique(string email)
         {
             return _database.Users.FirstOrDefault(user => user.Email.Value == email) is null;
         }
 
-        public void Insert(User user)
+        public Guid Insert(User user)
         {
             try
             {
-                _database.Insert(user);
+                UserDataEntity userDataEntity = new UserDataEntity(user);
+                _database.Insert(userDataEntity);
+                return userDataEntity.Id;
             }
-            catch (Exception)
+            catch (Exception exc)
             {
                 throw new UserSaveException();
             }
         }
 
-        public void Insert(List<User> users)
+        public List<Guid> Insert(List<User> users)
         {
             try
             {
-                _database.Insert(users);
+                List<UserDataEntity> userDataEntities = users.Select(user => new UserDataEntity(user)).ToList();
+                _database.Insert(userDataEntities);
+                return userDataEntities.Select(userDataEntity => userDataEntity.Id).ToList();
             }
-            catch (Exception)
+            catch (Exception exc)
             {
                 throw new UserSaveException();
             }
@@ -67,12 +87,12 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                _database.Update(user);
+                _database.Update(new UserDataEntity(user));
             }
             catch (Exception)
             {
                 throw new UserSaveException();
             }
-        }
+        }      
     }
 }

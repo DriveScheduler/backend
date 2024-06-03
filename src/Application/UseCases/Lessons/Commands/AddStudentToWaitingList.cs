@@ -2,6 +2,7 @@
 
 using Domain.Exceptions.Lessons;
 using Domain.Models;
+using Domain.Models.Users;
 using Domain.Repositories;
 
 using MediatR;
@@ -21,7 +22,7 @@ namespace Application.UseCases.Lessons.Commands
 
         public Task Handle(AddStudentToWaitingList_Command request, CancellationToken cancellationToken)
         {
-            User student = _userRepository.GetUserById(request.UserId);
+            Student student = _userRepository.GetStudentById(request.UserId);
             Lesson lesson = _lessonRepository.GetById(request.LessonId);
 
             if (lesson.Start < _systemClock.Now)

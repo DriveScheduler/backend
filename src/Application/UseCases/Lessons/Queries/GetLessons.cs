@@ -1,5 +1,5 @@
-﻿using Domain.Enums;
-using Domain.Models;
+﻿using Domain.Models;
+using Domain.Models.Users;
 using Domain.Repositories;
 
 using MediatR;
@@ -19,7 +19,12 @@ namespace Application.UseCases.Lessons.Queries
         public Task<List<Lesson>> Handle(GetLessons_Query request, CancellationToken cancellationToken)
         {
             User user = _userRepository.GetUserById(request.UserId);
-            return Task.FromResult(_lessonRepository.GetLessonsForUser(user, request.Start, request.End, request.TeacherIds, request.OnlyEmptyLesson));
+            if(user is Student student)
+                return Task.FromResult(_lessonRepository.GetLessonsForStudent(student, request.Start, request.End, request.TeacherIds, request.OnlyEmptyLesson));
+            else if(user is Teacher teacher)
+                return Task.FromResult(_lessonRepository.GetLessonsForTeacher(teacher, request.Start, request.End));
+            else
+                return Task.FromResult(new List<Lesson>());
         }
     }
 }

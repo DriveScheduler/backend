@@ -1,6 +1,4 @@
 using Application.UseCases.Users.Commands;
-
-using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Users;
 using Domain.Repositories;
@@ -11,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
 using Infrastructure.Persistence;
+using Domain.Models.Users;
 
 namespace UseCases.Users
 {
@@ -44,11 +43,11 @@ namespace UseCases.Users
 
             // Act
             var command = new CreateUser_Command(name, firstname, email, password, licenceType, UserType.Student);
-            User user = await _mediator.Send(command);
+            Guid userId = await _mediator.Send(command);
 
             // Assert
-            Assert.NotEqual(Guid.Empty, user.Id);
-            Assert.NotNull(_userRepository.GetUserById(user.Id));
+            Assert.NotEqual(Guid.Empty, userId);
+            Assert.NotNull(_userRepository.GetUserById(userId));
         }
 
         [Fact]

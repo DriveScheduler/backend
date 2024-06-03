@@ -1,18 +1,19 @@
 ﻿using Application.Abstractions;
 using Application.UseCases.Lessons.Commands;
 
-using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;
+using Domain.Models;
 using Domain.Repositories;
+
+using Infrastructure.Persistence;
 
 using MediatR;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
-using Infrastructure.Persistence;
 
 
 namespace UseCases.Schedule
@@ -52,9 +53,9 @@ namespace UseCases.Schedule
             Guid studentId = new Guid("00000000-0000-0000-0000-000000000002");
             int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student = DataSet.GetCarStudent(studentId);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataSet.GetCarTeacher(teacherId);
+            var student = DataSet.GetCarStudent(studentId);
+            var car = DataSet.GetCar(1);
             _userRepository.Insert(teacher);
             _userRepository.Insert(student);
             _vehicleRepository.Insert(car);
@@ -80,11 +81,11 @@ namespace UseCases.Schedule
             Guid studentId3 = new Guid("00000000-0000-0000-0000-000000000004");
             int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student1 = DataSet.GetCarStudent(studentId1);
-            User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataSet.GetCarTeacher(teacherId);
+            var student1 = DataSet.GetCarStudent(studentId1);
+            var student2 = DataSet.GetCarStudent(studentId2);
+            var student3 = DataSet.GetCarStudent(studentId3);
+            var car = DataSet.GetCar(1);
             _userRepository.Insert(teacher);
             _userRepository.Insert(student1);
             _userRepository.Insert(student2);
@@ -108,9 +109,9 @@ namespace UseCases.Schedule
             Guid studentId = new Guid("00000000-0000-0000-0000-000000000002");
             int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student = DataSet.GetMotorcycleStudent(studentId);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataSet.GetCarTeacher(teacherId);
+            var student = DataSet.GetMotorcycleStudent(studentId);
+            var car = DataSet.GetCar(1);
             _userRepository.Insert(teacher);
             _userRepository.Insert(student);
             _vehicleRepository.Insert(car);
@@ -132,9 +133,9 @@ namespace UseCases.Schedule
             Guid teacherId2 = new Guid("00000000-0000-0000-0000-000000000003");
             int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User teacher2 = DataSet.GetCarTeacher(teacherId2);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataSet.GetCarTeacher(teacherId);
+            var teacher2 = DataSet.GetCarTeacher(teacherId2);
+            var car = DataSet.GetCar(1);
             _userRepository.Insert(teacher);
             _userRepository.Insert(teacher2);
             _vehicleRepository.Insert(car);
@@ -156,8 +157,8 @@ namespace UseCases.Schedule
             Guid invalidUserId = new Guid("00000000-0000-0000-0000-000000000003");
             int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataSet.GetCarTeacher(teacherId);
+            var car = DataSet.GetCar(1);
             _userRepository.Insert(teacher);
             _vehicleRepository.Insert(car);
             _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, teacher, LicenceType.Car, car));
@@ -179,9 +180,9 @@ namespace UseCases.Schedule
             const int lessonId = 1;
             const int invalidLessonId = 2;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student = DataSet.GetCarStudent(studentId);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataSet.GetCarTeacher(teacherId);
+            var student = DataSet.GetCarStudent(studentId);
+            var car = DataSet.GetCar(1);
             _userRepository.Insert(teacher);
             _userRepository.Insert(student);
             _vehicleRepository.Insert(car);
@@ -204,9 +205,9 @@ namespace UseCases.Schedule
             DateTime lessonStart = _clock.Now.AddSeconds(-1);
             const int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student = DataSet.GetCarStudent(studentId);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataSet.GetCarTeacher(teacherId);
+            var student = DataSet.GetCarStudent(studentId);
+            var car = DataSet.GetCar(1);
             _userRepository.Insert(teacher);
             _userRepository.Insert(student);
             _vehicleRepository.Insert(car);

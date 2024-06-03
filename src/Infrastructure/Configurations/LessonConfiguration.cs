@@ -1,15 +1,13 @@
-﻿using Domain.Models;
-
-using Infrastructure.Configurations.ValueObjectsConverter;
+﻿using Infrastructure.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal class LessonConfiguration : IEntityTypeConfiguration<Lesson>
+    internal class LessonConfiguration : IEntityTypeConfiguration<LessonDataEntity>
     {
-        public void Configure(EntityTypeBuilder<Lesson> builder)
+        public void Configure(EntityTypeBuilder<LessonDataEntity> builder)
         {
             builder.ToTable("Lessons");
 
@@ -24,8 +22,7 @@ namespace Infrastructure.Configurations
             builder.Property(c => c.Start)
                 .IsRequired();
 
-            builder.Property(c => c.Duration)
-                .HasConversion<LessonDurationConverter>()
+            builder.Property(c => c.Duration)                
                 .IsRequired();               
 
             builder.Property(c => c.Type)
@@ -47,9 +44,7 @@ namespace Infrastructure.Configurations
             builder
                 .HasMany(l => l.WaitingList)
                 .WithMany(u => u.WaitingList)
-                .UsingEntity(j => j.ToTable("LessonUsersPending"));
-
-            builder.Ignore(l => l.End);
+                .UsingEntity(j => j.ToTable("LessonUsersPending"));            
         }
     }
 }
