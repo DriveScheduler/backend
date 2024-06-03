@@ -6,8 +6,7 @@ namespace API.Outputs.Lessons
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public string Date { get; }
-        public string Status { get; }
+        public string Date { get; }        
         public DateTime StartTime { get; }
         public DateTime EndTime { get; }
         public string Time { get; }
@@ -19,8 +18,7 @@ namespace API.Outputs.Lessons
         {
             Id = lesson.Id;
             Title = lesson.Name;            
-            Date = lesson.Start.ToShortDateString();
-            Status = "PAS ENCORE FAIT";
+            Date = lesson.Start.ToShortDateString();            
             StartTime = lesson.Start;
             EndTime = lesson.End;
             Time = $"{lesson.Start:HH:mm} à {lesson.End:HH:mm}";
