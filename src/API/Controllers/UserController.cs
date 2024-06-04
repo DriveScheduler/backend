@@ -105,7 +105,8 @@ namespace API.Controllers
             try
             {
                 UserLessonPlanning planning = await _mediator.Send(query);
-                return Ok(new UserLessonPlanningOutput(planning));
+                User connectedUser = await _mediator.Send(new GetUserById_Query(GetUserId()));
+                return Ok(new UserLessonPlanningOutput(planning, connectedUser));
             }
             catch (Exception e)
             {
