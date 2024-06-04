@@ -18,10 +18,9 @@ namespace Infrastructure.Entities
 
         public List<int> LessonsAsStudentId { get; set; } = [];
         public List<LessonDataEntity> LessonsAsStudent { get; set; }
-
-        //public List<int> LessonWaitingListId { get; set; } = [];
-        //public List<LessonDataEntity> LessonWaitingList { get; set; }
+        
         public List<UserLessonWaitingList> LessonWaitingLists { get; set; }
+
 
         private UserDataEntity() { }
         public UserDataEntity(User domainModel) : base(domainModel) { }
@@ -37,8 +36,7 @@ namespace Infrastructure.Entities
             Type = domainModel.GetRole();
             if (domainModel is Student student)
             {
-                LessonsAsStudentId = student.Lessons.Select(l => l.Id).ToList();
-                //LessonWaitingListId = student.WaitingList.Select(l => l.Id).ToList();
+                LessonsAsStudentId = student.Lessons.Select(l => l.Id).ToList();                
                 LessonWaitingLists = student.WaitingList.Select(l => new UserLessonWaitingList() { UserId = domainModel.Id, LessonId = l.Id}).ToList();
             }
             else if (domainModel is Teacher teacher)
@@ -47,7 +45,7 @@ namespace Infrastructure.Entities
             }
         }
 
-        public override User ToDomainModel()
+        public override User BaseDomainModel()
         {
             if (Type == UserType.Student)
                 return new Student(Id, Name, FirstName, Email, Password, LicenceType);
@@ -57,17 +55,17 @@ namespace Infrastructure.Entities
                 return new Admin(Name, FirstName, Email, Password, LicenceType);
         }
 
-        public override User ToDomainModel_Deep()
+        public override User FullDomainModel()
         {
-            User user = ToDomainModel();
+            User user = BaseDomainModel();
             if (Type == UserType.Student)
             {
-                SetPrivateField((Student)user, "_lessons", LessonsAsStudent.Select(l => l.ToDomainModel()).ToList());
-                SetPrivateField((Student)user, "_waitingList", LessonWaitingLists.Select(l => l.Lesson.ToDomainModel()).ToList());
+                SetPrivateField((Student)user, "_lessons", LessonsAsStudent.Select(l => l.BaseDomainModel()).ToList());
+                SetPrivateField((Student)user, "_waitingList", LessonWaitingLists.Select(l => l.Lesson.BaseDomainModel()).ToList());
             }
             else if (Type == UserType.Teacher)
             {
-                SetPrivateField((Teacher)user, "_lessons", LessonsAsTeacher.Select(l => l.ToDomainModel()).ToList());
+                SetPrivateField((Teacher)user, "_lessons", LessonsAsTeacher.Select(l => l.BaseDomainModel()).ToList());
             }
             return user;
         }

@@ -20,9 +20,7 @@ namespace Infrastructure.Entities
 
         public Guid? StudentId { get; set; }
         public UserDataEntity? Student { get; set; }
-
-        //public List<Guid> UserWaitingListId { get; set; } = [];
-        //public List<UserDataEntity> UserWaitingList { get; set; }
+        
         public List<UserLessonWaitingList> UserWaitingLists { get; set; }
 
         private LessonDataEntity() { }
@@ -38,23 +36,22 @@ namespace Infrastructure.Entities
             TeacherId = domainModel.Teacher.Id;
             Type = domainModel.Type;
             VehicleId = domainModel.Vehicle.Id;
-            StudentId = domainModel.Student?.Id;
-            //UserWaitingListId = domainModel.WaitingList.Select(u => u.Id).ToList();
+            StudentId = domainModel.Student?.Id;            
             UserWaitingLists = domainModel.WaitingList.Select(u => new UserLessonWaitingList() { UserId = u.Id, LessonId = domainModel.Id}).ToList();
         }
 
-        public override Lesson ToDomainModel()
+        public override Lesson BaseDomainModel()
         {
-            Student? student = Student == null ? null : (Student)Student.ToDomainModel();
-            Lesson lesson = new Lesson(Id, Name, Start, Duration, (Teacher)Teacher.ToDomainModel(), Type, Vehicle.ToDomainModel(), student);            
+            Student? student = Student == null ? null : (Student)Student.BaseDomainModel();
+            Lesson lesson = new Lesson(Id, Name, Start, Duration, (Teacher)Teacher.BaseDomainModel(), Type, Vehicle.BaseDomainModel(), student);            
 
             return lesson;
         }
 
-        public override Lesson ToDomainModel_Deep()
+        public override Lesson FullDomainModel()
         {
-            Lesson lesson = ToDomainModel();
-            SetPrivateField(lesson, "_waitingList", UserWaitingLists.Select(u => (Student)u.User.ToDomainModel()).ToList());
+            Lesson lesson = BaseDomainModel();
+            SetPrivateField(lesson, "_waitingList", UserWaitingLists.Select(u => (Student)u.User.BaseDomainModel()).ToList());
             return lesson;
         }
     }

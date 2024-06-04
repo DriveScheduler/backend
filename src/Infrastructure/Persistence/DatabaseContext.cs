@@ -85,7 +85,7 @@ namespace Infrastructure.Persistence
                 .ThenInclude(u => u.User)
             .Include(l => l.Vehicle)
             .AsEnumerable()
-            .Select(l => l.ToDomainModel_Deep());
+            .Select(l => l.FullDomainModel());
 
         IEnumerable<User> IDataAccessor.Users => Users
             .AsNoTracking()
@@ -94,12 +94,12 @@ namespace Infrastructure.Persistence
             .Include(u => u.LessonWaitingLists)
                 .ThenInclude(l => l.Lesson)
             .AsEnumerable()
-            .Select(u => u.ToDomainModel_Deep());
+            .Select(u => u.FullDomainModel());
 
         IEnumerable<Vehicle> IDataAccessor.Vehicles => Vehicles
             .AsNoTracking()
             .Include(v => v.Lessons)            
             .AsEnumerable()
-            .Select(v => v.ToDomainModel_Deep());
+            .Select(v => v.FullDomainModel());
     }
 }

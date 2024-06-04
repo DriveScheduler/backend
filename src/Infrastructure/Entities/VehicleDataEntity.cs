@@ -25,7 +25,7 @@ namespace Infrastructure.Entities
             LessonsId = domainModel.Lessons.Select(l => l.Id).ToList();
         }
 
-        public override Vehicle ToDomainModel()
+        public override Vehicle BaseDomainModel()
         {
             if (Type == LicenceType.Car)
                 return new Car(Id, RegistrationNumber, Name);
@@ -37,10 +37,10 @@ namespace Infrastructure.Entities
                 return new Motorcycle(Id, RegistrationNumber, Name);
         }
 
-        public override Vehicle ToDomainModel_Deep()
+        public override Vehicle FullDomainModel()
         {
-            Vehicle vehicle = ToDomainModel();
-            SetPrivateField(vehicle, "_lessons", Lessons.Select(l => l.ToDomainModel()).ToList());
+            Vehicle vehicle = BaseDomainModel();
+            SetPrivateField(vehicle, "_lessons", Lessons.Select(l => l.BaseDomainModel()).ToList());
             return vehicle;
         }
     }
