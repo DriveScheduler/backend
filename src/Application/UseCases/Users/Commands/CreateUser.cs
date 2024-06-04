@@ -18,11 +18,14 @@ namespace Application.UseCases.Users.Commands
             if (_userRepository.IsEmailUnique(request.Email) == false)
                 throw new UserValidationException("L'adresse email est déjà utilisée");
 
-            User user;
+            User user = null;
             if (request.Type == UserType.Teacher)
                 user = new Teacher(request.Name, request.Firstname, request.Email, request.Password, request.LicenceType);
-            else
+            else if (request.Type == UserType.Student)
                 user = new Student(request.Name, request.Firstname, request.Email, request.Password, request.LicenceType);
+            else if (request.Type == UserType.Admin)
+                user = new Admin(request.Name, request.Firstname, request.Email, request.Password, request.LicenceType);
+
 
             _userRepository.Insert(user);
             return Task.FromResult(user.Id);

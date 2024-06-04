@@ -52,7 +52,7 @@ namespace Infrastructure.Entities
             else if (Type == UserType.Teacher)
                 return new Teacher(Id, Name, FirstName, Email, Password, LicenceType);
             else
-                return new Admin(Name, FirstName, Email, Password, LicenceType);
+                return new Admin(Id, Name, FirstName, Email, Password, LicenceType);
         }
 
         public override User FullDomainModel()
