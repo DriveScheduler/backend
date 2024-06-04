@@ -30,6 +30,12 @@ namespace Infrastructure.Repositories
             if (vehicle is null) throw new VehicleNotFoundException();
             return vehicle;
         }
+
+        public void DeleteById(int id)
+        {
+            _database.Delete( _database.Vehicles.FirstOrDefault(v => v.Id == id) ?? throw new VehicleNotFoundException());
+        }
+
         public List<Vehicle> GetAll()
         {
             return _database.Vehicles.ToList();

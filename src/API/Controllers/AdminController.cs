@@ -67,6 +67,21 @@ namespace API.Controllers
                 return BadRequest(e.Message);
             }
         }
+        
+        [HttpDelete("Vehicles/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var command = new DeleteVehicle_Command(id);
+            try
+            {
+                await _mediator.Send(command);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
         [HttpGet("Vehicles")]
         public async Task<IActionResult> Vehicles()
