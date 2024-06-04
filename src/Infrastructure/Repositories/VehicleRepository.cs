@@ -49,7 +49,7 @@ namespace Infrastructure.Repositories
                 throw new LessonValidationException("Aucun vehicule disponibe pour valider ce cours");
 
             return vehicle;
-        }
+        }            
 
         public bool IsRegistrationNumberUnique(string registrationNumber)
         {
@@ -97,6 +97,22 @@ namespace Infrastructure.Repositories
                 if (dataEntity is null)
                     throw new VehicleNotFoundException();
                 dataEntity.FromDomainModel(vehicle);
+                _database.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw new VehicleSaveException();
+            }
+        }
+
+        public void DeleteById(int id)
+        {
+            try
+            {
+                VehicleDataEntity? dataEntity = _database.Vehicles.FirstOrDefault(v => v.Id == id);
+                if (dataEntity is null)
+                    throw new VehicleNotFoundException();
+                _database.Remove(dataEntity);
                 _database.SaveChanges();
             }
             catch (Exception)

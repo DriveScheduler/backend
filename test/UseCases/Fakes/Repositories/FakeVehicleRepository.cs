@@ -79,5 +79,12 @@ namespace UseCases.Fakes.Repositories
               .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)
               ?.SetValue(entity, value);
         }
+
+        public void DeleteById(int id)
+        {
+            Vehicle? vehicle = _vehicles.FirstOrDefault(v => v.Id == id);
+            if (vehicle is null) throw new VehicleNotFoundException();
+            _vehicles.Remove(vehicle);
+        }
     }
 }

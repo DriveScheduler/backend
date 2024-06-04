@@ -7,6 +7,7 @@ namespace Domain.Repositories
         public void Insert(User user);
         public void Insert(List<User> users);        
         public void Update(User user);
+        public void DeleteById(Guid id);
 
         public List<User> GetAll();
         public User GetUserById(Guid id);

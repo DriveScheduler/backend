@@ -8,7 +8,7 @@ namespace Domain.Repositories
         public void Insert(Vehicle vehicle);
         public void Insert(List<Vehicle> vehicle);        
         public void Update(Vehicle vehicle);
-
+        public void DeleteById(int id);
         public Vehicle GetById(int id);        
         public List<Vehicle> GetAll();
         public List<Vehicle> GetVehiclesByType(LicenceType vehicleType);

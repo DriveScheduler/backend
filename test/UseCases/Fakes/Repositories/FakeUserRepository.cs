@@ -95,5 +95,11 @@ namespace UseCases.Fakes.Repositories
         {
             return _users;
         }
+
+        public void DeleteById(Guid id)
+        {
+            User user = GetUserById(id);
+            _users.Remove(user);
+        }
     }
 }
