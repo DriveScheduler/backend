@@ -26,7 +26,7 @@ namespace Domain.Models
         public Lesson(string name, DateTime start, int duration, Teacher teacher, LicenceType type, Vehicle vehicle)
         {
             ThrowIfInvalidName(name);            
-            ThrowIfLicenceTypeNotMatch(teacher, "Le moniteur doit pouvoir assurer ce type de cours");
+            ThrowIfLicenceTypeNotMatch(teacher, type, "Le moniteur doit pouvoir assurer ce type de cours");
 
             Name = name;
             Start = start;
@@ -40,7 +40,7 @@ namespace Domain.Models
         public Lesson(int id, string name, DateTime start, int duration, Teacher teacher, LicenceType type, Vehicle vehicle, Student? student = null)
         {
             ThrowIfInvalidName(name);            
-            ThrowIfLicenceTypeNotMatch(teacher, "Le moniteur doit pouvoir assurer ce type de cours");
+            ThrowIfLicenceTypeNotMatch(teacher, type, "Le moniteur doit pouvoir assurer ce type de cours");
 
             Id = id;
             Name = name;
@@ -56,7 +56,7 @@ namespace Domain.Models
         public void Update(string name, DateTime start, int duration, Teacher teacher, Vehicle vehicle)
         {
             ThrowIfInvalidName(name);            
-            ThrowIfLicenceTypeNotMatch(teacher, "Le moniteur doit pouvoir assurer ce type de cours");
+            ThrowIfLicenceTypeNotMatch(teacher, Type, "Le moniteur doit pouvoir assurer ce type de cours");
 
             Name = name;
             Start = start;
@@ -69,7 +69,7 @@ namespace Domain.Models
         {
             if (student is null) throw new ArgumentNullException(nameof(student));
             if (Student is not null) throw new LessonValidationException("Le cours est complet");
-            ThrowIfLicenceTypeNotMatch(student);            
+            ThrowIfLicenceTypeNotMatch(student, Type);            
 
             Student = student;
         }
@@ -82,7 +82,7 @@ namespace Domain.Models
         {
             if (student is null) throw new ArgumentNullException(nameof(student));
             if (Student is null) throw new LessonValidationException("Le cours n'est pas complet");
-            ThrowIfLicenceTypeNotMatch(student);            
+            ThrowIfLicenceTypeNotMatch(student, Type);            
 
             if (_waitingList.Any(user => user.Id == student.Id))
                 throw new LessonValidationException("L'utilisateur est déjà dans la liste d'attente");        
@@ -117,10 +117,10 @@ namespace Domain.Models
                 throw new LessonValidationException("Le nom du cours est obligatoire");
         }
 
-        private void ThrowIfLicenceTypeNotMatch(User user, string? message = null)
+        private void ThrowIfLicenceTypeNotMatch(User user, LicenceType licenceType, string? message = null)
         {
             if (user is null) return;
-            if (user.LicenceType != Type)
+            if (user.LicenceType != licenceType)
                 throw new LessonValidationException(
                     message is null ? "Le permis de l'utilisateur ne correspond pas au type de cours" : message);
         }

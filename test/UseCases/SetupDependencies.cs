@@ -1,14 +1,11 @@
 ﻿using Application;
 using Application.Abstractions;
 
-using Domain.Repositories;
-
 using Infrastructure;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.Fakes;
-using UseCases.Fakes.Repositories;
 
 namespace UseCases
 {
@@ -54,15 +51,7 @@ namespace UseCases
         {
             _serviceCollection.AddScoped<IEmailSender, FakeEmailSender>();
             return this;
-        }
-
-        public SetupDependencies AddFakeRepositories()
-        {
-            _serviceCollection.AddScoped<ILessonRepository, FakeLessonRepository>();
-            _serviceCollection.AddScoped<IUserRepository, FakeUserRepository>();
-            _serviceCollection.AddScoped<IVehicleRepository, FakeVehicleRepository>();
-            return this;
-        }
+        }       
         #endregion
 
         #region DATABASE
