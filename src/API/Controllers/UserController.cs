@@ -90,7 +90,8 @@ namespace API.Controllers
             try
             {
                 UserDashboard dashboard = await _mediator.Send(query);
-                return Ok(new UserDashboardOutput(dashboard));
+                User connectedUser = await _mediator.Send(new GetUserById_Query(GetUserId()));
+                return Ok(new UserDashboardOutput(dashboard, connectedUser));
             }
             catch (Exception e)
             {
@@ -121,7 +122,8 @@ namespace API.Controllers
             try
             {
                 UserLessonHistory history = await _mediator.Send(query);
-                return Ok(new UserLessonHistoryOutput(history));
+                User connectedUser = await _mediator.Send(new GetUserById_Query(GetUserId()));
+                return Ok(new UserLessonHistoryOutput(history, connectedUser));
             }
             catch (Exception e)
             {
