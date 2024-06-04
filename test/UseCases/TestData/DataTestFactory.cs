@@ -4,7 +4,7 @@ using Domain.Models.Vehicles;
 
 namespace UseCases.TestData
 {
-    internal static class DataSet
+    internal static class DataTestFactory
     {
 
         #region TEACHER        

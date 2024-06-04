@@ -128,7 +128,7 @@ namespace UseCases.Users
             const string password = "mdp123";
             const LicenceType licenceType = LicenceType.Car;
 
-            User user = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
+            User user = DataTestFactory.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
             string existingEmail = user.Email.Value;
             _userRepository.Insert(user);
 

@@ -73,7 +73,7 @@ namespace UseCases.Users
             _clock.Set(dataset.Date);
 
             // Arrange
-            User user = DataSet.GetCarStudent(Guid.NewGuid());
+            User user = DataTestFactory.GetCarStudent(Guid.NewGuid());
 
             _userRepository.Insert(dataset.Student);
             _userRepository.Insert(dataset.GetAllTeachers());
@@ -131,7 +131,7 @@ namespace UseCases.Users
             _clock.Set(dataset.Date);
 
             // Arrange
-            User user = DataSet.GetCarStudent(Guid.NewGuid());
+            User user = DataTestFactory.GetCarStudent(Guid.NewGuid());
 
             _userRepository.Insert(dataset.Student);
             _userRepository.Insert(dataset.GetAllTeachers());
@@ -176,8 +176,8 @@ namespace UseCases.Users
             Assert.Equal(expectedNextLesson, dashboard.NextLesson);
             Assert.Equal(expectedLastLessons, dashboard.LastLesson);
 
-            Assert.Equal(expectedFavoriteTeacher, dashboard.FavoriteTeacher);
-            Assert.Equal(expectedFavoriteTeacherTime, dashboard.FavoriteTeacherTimeSpent);
+            Assert.Equal(expectedFavoriteTeacher, dashboard.FavoriteUser);
+            Assert.Equal(expectedFavoriteTeacherTime, dashboard.FavoriteUserTimeSpent);
 
             Assert.Equal(expectedFavoriteVehicle, dashboard.FavoriteVehicle);
             Assert.Equal(expectedFavoriteVehicleTime, dashboard.FavoriteVehicleTimeSpent);
@@ -192,7 +192,7 @@ namespace UseCases.Users
             _clock.Set(dataset.Date);
 
             // Arrange
-            User user = DataSet.GetCarStudent(Guid.NewGuid());
+            User user = DataTestFactory.GetCarStudent(Guid.NewGuid());
 
             _userRepository.Insert(dataset.Student);
             _userRepository.Insert(dataset.GetAllTeachers());

@@ -9,7 +9,7 @@
 
     public static class UserTypeExtension
     {
-        public static string ToString(this UserType userType) =>
+        public static string ToText(this UserType userType) =>
              userType switch
              {
                  UserType.Student => "Elève",

@@ -10,7 +10,7 @@ namespace API.Outputs
         public UserTypeOutput(UserType userType)
         {
             Value = (int)userType;
-            Label = userType.ToString();
+            Label = userType.ToText();
         }
     }
 }

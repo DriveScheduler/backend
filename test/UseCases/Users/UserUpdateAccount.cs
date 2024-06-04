@@ -37,7 +37,7 @@ namespace UseCases.Users
             const string updatedFirstname = "John";
             const string updatedEmail = "john.doe@gmail.com";            
 
-            _userRepository.Insert(DataSet.GetCarStudent(userId));
+            _userRepository.Insert(DataTestFactory.GetCarStudent(userId));
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, updatedName, updatedFirstname, updatedEmail);
@@ -61,7 +61,7 @@ namespace UseCases.Users
             const string firstname = "John";
             const string email = "john.doe@gmail.com";            
 
-            _userRepository.Insert(DataSet.GetCarStudent(userId));
+            _userRepository.Insert(DataTestFactory.GetCarStudent(userId));
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, string.Empty, firstname, email);
@@ -80,7 +80,7 @@ namespace UseCases.Users
             const string firstname = "John";
             const string email = "john.doe@gmail.com";            
 
-            _userRepository.Insert(DataSet.GetCarStudent(userId));
+            _userRepository.Insert(DataTestFactory.GetCarStudent(userId));
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, name, string.Empty, email);
@@ -99,7 +99,7 @@ namespace UseCases.Users
             const string firstname = "John";
             const string email = "john.doe@gmail.com";            
 
-            _userRepository.Insert(DataSet.GetCarStudent(userId));
+            _userRepository.Insert(DataTestFactory.GetCarStudent(userId));
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, name, firstname, string.Empty);
@@ -120,7 +120,7 @@ namespace UseCases.Users
             const string name = "Doe";
             const string firstname = "John";                        
 
-            _userRepository.Insert(DataSet.GetCarStudent(userId));
+            _userRepository.Insert(DataTestFactory.GetCarStudent(userId));
 
             // Act
             var updateCommand = new UpdateUser_Command(userId, name, firstname, invalidEmail);
@@ -136,8 +136,8 @@ namespace UseCases.Users
             const string name = "Doe";
             const string firstname = "John";            
 
-            User user1 = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
-            User user2 = DataSet.GetStudent(id:new Guid("00000000-0000-0000-0000-000000000002"), email:"test.test@gmail.com");
+            User user1 = DataTestFactory.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
+            User user2 = DataTestFactory.GetStudent(id:new Guid("00000000-0000-0000-0000-000000000002"), email:"test.test@gmail.com");
             string existingEmail = user1.Email.Value;            
             _userRepository.Insert(user1);
             _userRepository.Insert(user2);

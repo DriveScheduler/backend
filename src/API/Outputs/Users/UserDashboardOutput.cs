@@ -9,8 +9,8 @@ namespace API.Outputs.Users
     {
         public LessonLight? NextLesson { get; }
         public LessonLight? LastLesson { get; }
-        public UserLight? FavoriteTeacher { get; init; }
-        public int FavoriteTeacherTimeSpent { get; init; }
+        public UserLight? FavoriteUser { get; init; }
+        public int FavoriteUserTimeSpent { get; init; }
         public VehicleLight? FavoriteVehicle { get; init; }
         public int FavoriteVehicleTimeSpent { get; init; }
         public int TimeSpentThisWeek { get; init; }
@@ -20,8 +20,8 @@ namespace API.Outputs.Users
             NextLesson = dashboard.NextLesson != null ? new LessonLight(dashboard.NextLesson) : null;
             LastLesson = dashboard.LastLesson != null ? new LessonLight(dashboard.LastLesson) : null;
 
-            FavoriteTeacher = dashboard.FavoriteTeacher != null ? new UserLight(dashboard.FavoriteTeacher) : null;
-            FavoriteTeacherTimeSpent = dashboard.FavoriteTeacherTimeSpent;
+            FavoriteUser = dashboard.FavoriteUser != null ? new UserLight(dashboard.FavoriteUser) : null;
+            FavoriteUserTimeSpent = dashboard.FavoriteUserTimeSpent;
 
             FavoriteVehicle = dashboard.FavoriteVehicle != null ? new VehicleLight(dashboard.FavoriteVehicle) : null;
             FavoriteVehicleTimeSpent = dashboard.FavoriteVehicleTimeSpent;

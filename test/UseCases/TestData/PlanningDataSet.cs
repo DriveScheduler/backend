@@ -9,18 +9,18 @@ namespace UseCases.TestData
     {
         public readonly DateTime Date = new DateTime(2024, 05, 15, 12, 00, 00);
 
-        public readonly Student Student = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
+        public readonly Student Student = DataTestFactory.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
 
-        private readonly Teacher Teacher1 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000010"));
-        private readonly Teacher Teacher2 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000020"));
-        private readonly Teacher Teacher3 = DataSet.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000030"));
+        private readonly Teacher Teacher1 = DataTestFactory.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000010"));
+        private readonly Teacher Teacher2 = DataTestFactory.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000020"));
+        private readonly Teacher Teacher3 = DataTestFactory.GetCarTeacher(new Guid("00000000-0000-0000-0000-000000000030"));
 
         public List<User> GetAllTeachers() => new List<User>() { Teacher1, Teacher2, Teacher3 };
 
 
-        private readonly Car Car1 = DataSet.GetCar(1);
-        private readonly Car Car2 = DataSet.GetCar(2);
-        private readonly Car Car3 = DataSet.GetCar(3);
+        private readonly Car Car1 = DataTestFactory.GetCar(1);
+        private readonly Car Car2 = DataTestFactory.GetCar(2);
+        private readonly Car Car3 = DataTestFactory.GetCar(3);
 
         public List<Vehicle> GetAllVehicles() => new List<Vehicle>() { Car1, Car2, Car3 };
 

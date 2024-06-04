@@ -91,7 +91,7 @@ namespace UseCases.Vehicles
             const string name = "Peugeot 208";
             const LicenceType type = LicenceType.Car;
 
-            Vehicle vehicle = DataSet.GetTruck(1);
+            Vehicle vehicle = DataTestFactory.GetTruck(1);
             string existingRegistrationNumber = vehicle.RegistrationNumber.Value;
 
             _vehicleRepository.Insert(vehicle);

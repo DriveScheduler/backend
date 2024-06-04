@@ -23,14 +23,20 @@ namespace Application.UseCases.Users.Queries
 
         public Task<UserLessonPlanning> Handle(GetUserLessonPlanning_Query request, CancellationToken cancellationToken)
         {
-            Student user = _userRepository.GetStudentById(request.UserId);
+            User user = _userRepository.GetUserById(request.UserId);
 
             DateTime tomorrow = _clock.Now.Date.AddDays(1).Date;
             DateTime lastDayOfThisWeek = GetLastDayOfWeek(_clock.Now);            
             DateTime firstDayOfNextWeek = GetFirstDayOfWeek(_clock.Now.AddDays(7));
             DateTime lastDayOfThisMonth = GetLastDayOfMonth(_clock.Now);
 
-            List<Lesson> lessons = _lessonRepository.GetLessonsForStudent(user)
+            List<Lesson> lessons = [];
+            if (user is Student student)
+                lessons = _lessonRepository.GetLessonsForStudent(student);
+            else if (user is Teacher teacher)
+                lessons = _lessonRepository.GetLessonsForTeacher(teacher);
+
+            lessons = lessons
                 .Where(lesson => lesson.Start > _clock.Now)
                 .OrderBy(lesson => lesson.Start)
                 .ToList();

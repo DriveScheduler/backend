@@ -48,9 +48,9 @@ namespace UseCases.Schedule
             Guid studentId = new Guid("00000000-0000-0000-0000-000000000001");
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000002");
 
-            var student = DataSet.GetCarStudent(studentId);
-            var teacher = DataSet.GetCarTeacher(teacherId);
-            Vehicle car = DataSet.GetCar(1);
+            var student = DataTestFactory.GetCarStudent(studentId);
+            var teacher = DataTestFactory.GetCarTeacher(teacherId);
+            Vehicle car = DataTestFactory.GetCar(1);
 
             DateTime rangeStart = new DateTime(2024, 05, 13);
             DateTime rangeEnd = new DateTime(2024, 05, 17);
@@ -92,10 +92,10 @@ namespace UseCases.Schedule
             Guid studentId2 = new Guid("00000000-0000-0000-0000-000000000002");
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000003");
 
-            var student1 = DataSet.GetCarStudent(studentId1);
-            var student2 = DataSet.GetCarStudent(studentId2);
-            var teacher = DataSet.GetCarTeacher(teacherId);
-            Vehicle car = DataSet.GetCar(1);
+            var student1 = DataTestFactory.GetCarStudent(studentId1);
+            var student2 = DataTestFactory.GetCarStudent(studentId2);
+            var teacher = DataTestFactory.GetCarTeacher(teacherId);
+            Vehicle car = DataTestFactory.GetCar(1);
 
             DateTime rangeStart = new DateTime(2024, 05, 13);
             DateTime rangeEnd = new DateTime(2024, 05, 17);
@@ -138,7 +138,7 @@ namespace UseCases.Schedule
             DateTime rangeStart = new DateTime(2024, 05, 13);
             DateTime rangeEnd = new DateTime(2024, 05, 17);
 
-            _userRepository.Insert(DataSet.GetCarStudent(Guid.NewGuid()));
+            _userRepository.Insert(DataTestFactory.GetCarStudent(Guid.NewGuid()));
 
             // Act
             var query = new GetUserPlanning_Query(invalidStudentId, rangeStart, rangeEnd);
@@ -157,10 +157,10 @@ namespace UseCases.Schedule
             Guid studentId2 = new Guid("00000000-0000-0000-0000-000000000002");
             Guid teacherId = new Guid("00000000-0000-0000-0000-000000000003");
 
-            var student1 = DataSet.GetCarStudent(studentId1);
-            var student2 = DataSet.GetCarStudent(studentId2);
-            var teacher = DataSet.GetCarTeacher(teacherId);
-            Vehicle car = DataSet.GetCar(1);
+            var student1 = DataTestFactory.GetCarStudent(studentId1);
+            var student2 = DataTestFactory.GetCarStudent(studentId2);
+            var teacher = DataTestFactory.GetCarTeacher(teacherId);
+            Vehicle car = DataTestFactory.GetCar(1);
 
             DateTime rangeStart = new DateTime(2024, 05, 13);
             DateTime rangeEnd = new DateTime(2024, 05, 17);
@@ -205,11 +205,11 @@ namespace UseCases.Schedule
             Guid teacherId1 = new Guid("00000000-0000-0000-0000-000000000003");
             Guid teacherId2 = new Guid("00000000-0000-0000-0000-000000000004");
 
-            var student1 = DataSet.GetCarStudent(studentId1);
-            var student2 = DataSet.GetCarStudent(studentId2);
-            var teacher1 = DataSet.GetCarTeacher(teacherId1);
-            var teacher2 = DataSet.GetCarTeacher(teacherId2);
-            Vehicle car = DataSet.GetCar(1);
+            var student1 = DataTestFactory.GetCarStudent(studentId1);
+            var student2 = DataTestFactory.GetCarStudent(studentId2);
+            var teacher1 = DataTestFactory.GetCarTeacher(teacherId1);
+            var teacher2 = DataTestFactory.GetCarTeacher(teacherId2);
+            Vehicle car = DataTestFactory.GetCar(1);
 
             DateTime rangeStart = new DateTime(2024, 05, 13);
             DateTime rangeEnd = new DateTime(2024, 05, 17);

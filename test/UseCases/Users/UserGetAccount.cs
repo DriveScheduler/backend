@@ -34,7 +34,7 @@ namespace UseCases.Users
             Guid userId = new Guid("00000000-0000-0000-0000-000000000001");
             const LicenceType licenceType = LicenceType.Car;
 
-            User expectedUser = DataSet.GetStudent(userId, licenceType);
+            User expectedUser = DataTestFactory.GetStudent(userId, licenceType);
             _userRepository.Insert(expectedUser);
 
             // Act
