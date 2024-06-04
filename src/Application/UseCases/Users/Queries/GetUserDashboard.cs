@@ -22,7 +22,7 @@ namespace Application.UseCases.Users.Queries
 
         public Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)
         {
-            User user = _userRepository.GetStudentById(request.UserId);
+            User user = _userRepository.GetUserById(request.UserId);
 
             IReadOnlyList<Lesson> allLessons = [];
             List<Lesson> achievedLessons = [];
