@@ -29,14 +29,7 @@ namespace Infrastructure.Persistence
 
             ChangeTracker.Clear();
             Database.EnsureDeleted();
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite("Data Source=C:\\Users\\Romain\\Documents\\UnitTests\\DriveScheduler\\backend\\src\\Infrastructure\\database.db");
-            base.OnConfiguring(optionsBuilder);
-        }
-
+        }    
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -88,23 +81,25 @@ namespace Infrastructure.Persistence
             .AsNoTracking()
             .Include(l => l.Teacher)
             .Include(l => l.Student)
-            .Include(l => l.UserWaitingList)
+            .Include(l => l.UserWaitingLists)
+                .ThenInclude(u => u.User)
             .Include(l => l.Vehicle)
             .AsEnumerable()
-            .Select(l => l.ToDomainModel(0));
+            .Select(l => l.ToDomainModel_Deep());
 
         IEnumerable<User> IDataAccessor.Users => Users
             .AsNoTracking()
             .Include(u => u.LessonsAsTeacher)
             .Include(u => u.LessonsAsStudent)
-            .Include(u => u.LessonWaitingList)
+            .Include(u => u.LessonWaitingLists)
+                .ThenInclude(l => l.Lesson)
             .AsEnumerable()
-            .Select(u => u.ToDomainModel(0));
+            .Select(u => u.ToDomainModel_Deep());
 
         IEnumerable<Vehicle> IDataAccessor.Vehicles => Vehicles
             .AsNoTracking()
             .Include(v => v.Lessons)            
             .AsEnumerable()
-            .Select(v => v.ToDomainModel(0));
+            .Select(v => v.ToDomainModel_Deep());
     }
 }

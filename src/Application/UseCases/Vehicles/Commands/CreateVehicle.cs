@@ -14,26 +14,26 @@ namespace Application.UseCases.Vehicles.Commands
         private readonly IVehicleRepository _vehicleRepository = vehicleRepository;
 
         public Task<int> Handle(CreateVehicle_Command request, CancellationToken cancellationToken)
-        {          
-            if(_vehicleRepository.IsRegistrationNumberUnique(request.RegistrationNumber) == false) 
+        {
+            if (_vehicleRepository.IsRegistrationNumberUnique(request.RegistrationNumber) == false)
                 throw new VehicleValidationException("Un véhicule avec cette immatriculation existe déjà");
 
             Vehicle vehicle = null;
             switch (request.Type)
             {
-                case LicenceType.Car :
+                case LicenceType.Car:
                     vehicle = new Car(request.RegistrationNumber, request.Name); break;
                 case LicenceType.Truck:
                     vehicle = new Truck(request.RegistrationNumber, request.Name); break;
                 case LicenceType.Motorcycle:
                     vehicle = new Motorcycle(request.RegistrationNumber, request.Name); break;
                 case LicenceType.Bus:
-                    vehicle = new Bus(request.RegistrationNumber, request.Name); break;                    
-            }            
+                    vehicle = new Bus(request.RegistrationNumber, request.Name); break;
+            }
 
-            int id = _vehicleRepository.Insert(vehicle);
+            _vehicleRepository.Insert(vehicle);
 
-            return Task.FromResult(id);
+            return Task.FromResult(vehicle.Id);
         }
     }
 }

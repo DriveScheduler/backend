@@ -45,8 +45,8 @@ namespace Application.UseCases.Lessons.Commands
                 teacher.LicenceType,
                 vehicle);
        
-            int id = _lessonRepository.Insert(lesson);
-            return Task.FromResult(id);
+            _lessonRepository.Insert(lesson);
+            return Task.FromResult(lesson.Id);
         }
     }
 }

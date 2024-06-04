@@ -57,14 +57,13 @@ namespace Infrastructure.Repositories
             return _database.Users.FirstOrDefault(user => user.Email.Value == email) is null;
         }
 
-        public Guid Insert(User user)
+        public void Insert(User user)
         {
             try
             {
                 UserDataEntity userDataEntity = new UserDataEntity(user);
                 _database.Insert(userDataEntity);
-                SetPrivateField(user, nameof(User.Id), userDataEntity.Id);
-                return userDataEntity.Id;
+                SetPrivateField(user, nameof(User.Id), userDataEntity.Id);                
             }
             catch (Exception)
             {
@@ -72,15 +71,14 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<Guid> Insert(List<User> users)
+        public void Insert(List<User> users)
         {
             try
             {
                 List<UserDataEntity> userDataEntities = users.Select(user => new UserDataEntity(user)).ToList();
                 _database.Insert(userDataEntities);
                 for (int i = 0; i < users.Count; i++)
-                    SetPrivateField(users[i], nameof(User.Id), userDataEntities[i].Id);
-                return userDataEntities.Select(userDataEntity => userDataEntity.Id).ToList();
+                    SetPrivateField(users[i], nameof(User.Id), userDataEntities[i].Id);                
             }
             catch (Exception)
             {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class PolisleGotaga : Migration
+    public partial class PolisleGotagaV1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,8 +36,7 @@ namespace Infrastructure.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     RegistrationNumber = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    LessonsId = table.Column<string>(type: "TEXT", nullable: false)
+                    Type = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,8 +55,7 @@ namespace Infrastructure.Migrations
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
                     TeacherId = table.Column<Guid>(type: "TEXT", nullable: false),
                     VehicleId = table.Column<int>(type: "INTEGER", nullable: false),
-                    StudentId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    UserWaitingListId = table.Column<string>(type: "TEXT", nullable: false)
+                    StudentId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -85,21 +83,21 @@ namespace Infrastructure.Migrations
                 name: "LessonUsersPending",
                 columns: table => new
                 {
-                    LessonWaitingListId = table.Column<int>(type: "INTEGER", nullable: false),
-                    UserWaitingListId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    LessonId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LessonUsersPending", x => new { x.LessonWaitingListId, x.UserWaitingListId });
+                    table.PrimaryKey("PK_LessonUsersPending", x => new { x.UserId, x.LessonId });
                     table.ForeignKey(
-                        name: "FK_LessonUsersPending_Lessons_LessonWaitingListId",
-                        column: x => x.LessonWaitingListId,
+                        name: "FK_LessonUsersPending_Lessons_LessonId",
+                        column: x => x.LessonId,
                         principalTable: "Lessons",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LessonUsersPending_Users_UserWaitingListId",
-                        column: x => x.UserWaitingListId,
+                        name: "FK_LessonUsersPending_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -121,9 +119,9 @@ namespace Infrastructure.Migrations
                 column: "VehicleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LessonUsersPending_UserWaitingListId",
+                name: "IX_LessonUsersPending_LessonId",
                 table: "LessonUsersPending",
-                column: "UserWaitingListId");
+                column: "LessonId");
         }
 
         /// <inheritdoc />

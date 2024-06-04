@@ -33,15 +33,17 @@ internal class Program
 
         userRepository.Insert([teacher, student, student1, student2]);
         lesson.AddStudent(student);
+        lesson.AddStudentToWaitingList(student1);
+        lesson.AddStudentToWaitingList(student2);
         vehicleRepository.Insert(vehicle);
         lessonRepository.Insert(lesson);
-        
+
 
         Lesson lessonV2 = lessonRepository.GetById(lesson.Id);
-        lessonV2.AddStudent(student);        
-        lessonV2.AddStudentToWaitingList(student1);
-        lessonV2.AddStudentToWaitingList(student2);
-        lessonRepository.Update(lessonV2);
+        //lessonV2.AddStudent(student);        
+        //lessonV2.AddStudentToWaitingList(student1);
+        //lessonV2.AddStudentToWaitingList(student2);
+        //lessonRepository.Update(lessonV2);
 
 
         var builder = WebApplication.CreateBuilder(args);

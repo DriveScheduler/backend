@@ -5,8 +5,8 @@ namespace Domain.Repositories
 {
     public interface ILessonRepository
     {
-        public int Insert(Lesson lesson);        
-        public List<int> Insert(List<Lesson> lesson);        
+        public void Insert(Lesson lesson);        
+        public void Insert(List<Lesson> lesson);        
         public void Update(Lesson lesson);
         public void Delete(Lesson lesson);
         public Lesson GetById(int id);

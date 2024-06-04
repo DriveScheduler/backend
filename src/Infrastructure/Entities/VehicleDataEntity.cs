@@ -22,24 +22,25 @@ namespace Infrastructure.Entities
             RegistrationNumber = domainModel.RegistrationNumber.Value;
             Name = domainModel.Name;
             Type = domainModel.GetType();
-            LessonsId = domainModel.Lessons.Select(l => l.Id).ToList();            
+            LessonsId = domainModel.Lessons.Select(l => l.Id).ToList();
         }
 
-        public override Vehicle ToDomainModel(int level)
+        public override Vehicle ToDomainModel()
         {
-            if (level >= 2) return null;
-            level++;
-
-            Vehicle vehicle;
             if (Type == LicenceType.Car)
-                vehicle = new Car(Id, RegistrationNumber, Name);
+                return new Car(Id, RegistrationNumber, Name);
             else if (Type == LicenceType.Bus)
-                vehicle = new Bus(Id, RegistrationNumber, Name);
+                return new Bus(Id, RegistrationNumber, Name);
             else if (Type == LicenceType.Truck)
-                vehicle = new Truck(Id, RegistrationNumber, Name);
+                return new Truck(Id, RegistrationNumber, Name);
             else
-                vehicle = new Motorcycle(Id, RegistrationNumber, Name);
-            SetPrivateField(vehicle, "_lessons", Lessons.Select(l => l.ToDomainModel(level)).ToList());
+                return new Motorcycle(Id, RegistrationNumber, Name);
+        }
+
+        public override Vehicle ToDomainModel_Deep()
+        {
+            Vehicle vehicle = ToDomainModel();
+            SetPrivateField(vehicle, "_lessons", Lessons.Select(l => l.ToDomainModel()).ToList());
             return vehicle;
         }
     }

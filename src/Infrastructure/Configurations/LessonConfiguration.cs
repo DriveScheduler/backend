@@ -5,6 +5,8 @@ using Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+using System.Reflection.Emit;
+
 namespace Infrastructure.Configurations
 {
     internal class LessonConfiguration : IEntityTypeConfiguration<LessonDataEntity>
@@ -43,20 +45,20 @@ namespace Infrastructure.Configurations
             builder
                 .HasOne(lesson => lesson.Student)
                 .WithMany(user => user.LessonsAsStudent)
-                .HasForeignKey(lesson => lesson.StudentId);
+                .HasForeignKey(lesson => lesson.StudentId);           
 
-            builder
-                .HasMany(lesson => lesson.UserWaitingList)
-                .WithMany(user => user.LessonWaitingList)
-                .UsingEntity(j => j.ToTable("LessonUsersPending"));
+            //builder
+            //    .HasMany(lesson => lesson.UserWaitingLists)
+            //    .WithMany(user => user.)
+            //.UsingEntity(j => j.ToTable("LessonUsersPending"));
             //.UsingEntity(
             //   "LessonUsersPending",
-            //   left => left.HasOne(typeof(UserDataEntity)).WithMany().HasForeignKey(nameof(UserDataEntity.LessonWaitingListId)).HasPrincipalKey(nameof(LessonDataEntity.Id)),
-            //   right => right.HasOne(typeof(LessonDataEntity)).WithMany().HasForeignKey(nameof(LessonDataEntity.UserWaitingListId)).HasPrincipalKey(nameof(UserDataEntity.Id)),
+            //   right => right.HasOne(typeof(UserDataEntity)).WithMany().HasForeignKey(nameof(UserDataEntity.LessonWaitingListId)).HasPrincipalKey(nameof(LessonDataEntity.Id)),
+            //   left => left.HasOne(typeof(LessonDataEntity)).WithMany().HasForeignKey(nameof(LessonDataEntity.UserWaitingListId)).HasPrincipalKey(nameof(UserDataEntity.Id)),
             //   join => join.HasKey("LessonId", "UserId"));
 
 
-            builder.Ignore(lesson => lesson.UserWaitingListId);
+            //builder.Ignore(lesson => lesson.UserWaitingListId);
         }
     }
 }

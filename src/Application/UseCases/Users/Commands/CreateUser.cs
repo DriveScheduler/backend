@@ -19,13 +19,13 @@ namespace Application.UseCases.Users.Commands
                 throw new UserValidationException("L'adresse email est déjà utilisée");
 
             User user;
-            if(request.Type == UserType.Teacher)
+            if (request.Type == UserType.Teacher)
                 user = new Teacher(request.Name, request.Firstname, request.Email, request.Password, request.LicenceType);
             else
-                user = new Student(request.Name, request.Firstname, request.Email, request.Password, request.LicenceType);           
+                user = new Student(request.Name, request.Firstname, request.Email, request.Password, request.LicenceType);
 
-            Guid id = _userRepository.Insert(user);            
-            return Task.FromResult(id);
-        }  
+            _userRepository.Insert(user);
+            return Task.FromResult(user.Id);
+        }
     }
 }

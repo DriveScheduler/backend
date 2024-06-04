@@ -40,14 +40,13 @@ namespace Infrastructure.Repositories
         }
 
 
-        public int Insert(Vehicle vehicle)
+        public void Insert(Vehicle vehicle)
         {
             try
             {
                 VehicleDataEntity vehicleDataEntity = new VehicleDataEntity(vehicle);
                 _database.Insert(vehicleDataEntity);
-                SetPrivateField(vehicle, nameof(Vehicle.Id), vehicleDataEntity.Id);
-                return vehicleDataEntity.Id;
+                SetPrivateField(vehicle, nameof(Vehicle.Id), vehicleDataEntity.Id);                
             }
             catch (Exception)
             {
@@ -55,15 +54,14 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<int> Insert(List<Vehicle> vehicle)
+        public void Insert(List<Vehicle> vehicle)
         {
             try
             {
                 List<VehicleDataEntity> vehicleDataEntities = vehicle.Select(v => new VehicleDataEntity(v)).ToList();
                 _database.Insert(vehicleDataEntities);
                 for (int i = 0; i < vehicleDataEntities.Count; i++)
-                    SetPrivateField(vehicle[i], nameof(Vehicle.Id), vehicleDataEntities[i].Id);
-                return vehicleDataEntities.Select(v => v.Id).ToList();
+                    SetPrivateField(vehicle[i], nameof(Vehicle.Id), vehicleDataEntities[i].Id);                
             }
             catch (Exception)
             {

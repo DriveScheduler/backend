@@ -87,31 +87,28 @@ namespace Infrastructure.Repositories
             return query.ToList();
         }
 
-        public int Insert(Lesson lesson)
+        public void Insert(Lesson lesson)
         {
             try
             {
                 LessonDataEntity lessonDataEntity = new LessonDataEntity(lesson);
                 _database.Insert(lessonDataEntity);
-                SetPrivateField(lesson, nameof(Lesson.Id), lessonDataEntity.Id);
-                return lessonDataEntity.Id;
+                SetPrivateField(lesson, nameof(Lesson.Id), lessonDataEntity.Id);                
             }
-            catch (Exception exc)
-            {
-                throw exc;
-                //throw new LessonSaveException();
+            catch (Exception)
+            {                
+                throw new LessonSaveException();
             }
         }
 
-        public List<int> Insert(List<Lesson> lessons)
+        public void Insert(List<Lesson> lessons)
         {
             try
             {
                 List<LessonDataEntity> lessonDataEntities = lessons.Select(l => new LessonDataEntity(l)).ToList();
                 _database.Insert(lessonDataEntities);
                 for (int i = 0; i < lessons.Count; i++)
-                    SetPrivateField(lessons[i], nameof(Lesson.Id), lessonDataEntities[i].Id);
-                return lessonDataEntities.Select(l => l.Id).ToList();
+                    SetPrivateField(lessons[i], nameof(Lesson.Id), lessonDataEntities[i].Id);               
             }
             catch (Exception)
             {

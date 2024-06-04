@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240603220435_Pol is le Gotaga V2")]
-    partial class PolisleGotagaV2
+    [Migration("20240604002109_Pol is le Gotaga V1")]
+    partial class PolisleGotagaV1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -97,15 +97,26 @@ namespace Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
+            modelBuilder.Entity("Infrastructure.Entities.UserLessonWaitingList", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("UserId", "LessonId");
+
+                    b.HasIndex("LessonId");
+
+                    b.ToTable("LessonUsersPending", (string)null);
+                });
+
             modelBuilder.Entity("Infrastructure.Entities.VehicleDataEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("LessonsId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -122,21 +133,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Vehicles", (string)null);
-                });
-
-            modelBuilder.Entity("LessonDataEntityUserDataEntity", b =>
-                {
-                    b.Property<int>("LessonWaitingListId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Guid>("UserWaitingListId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("LessonWaitingListId", "UserWaitingListId");
-
-                    b.HasIndex("UserWaitingListId");
-
-                    b.ToTable("LessonUsersPending", (string)null);
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.LessonDataEntity", b =>
@@ -164,23 +160,34 @@ namespace Infrastructure.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("LessonDataEntityUserDataEntity", b =>
+            modelBuilder.Entity("Infrastructure.Entities.UserLessonWaitingList", b =>
                 {
-                    b.HasOne("Infrastructure.Entities.LessonDataEntity", null)
-                        .WithMany()
-                        .HasForeignKey("LessonWaitingListId")
+                    b.HasOne("Infrastructure.Entities.LessonDataEntity", "Lesson")
+                        .WithMany("UserWaitingLists")
+                        .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.Entities.UserDataEntity", null)
-                        .WithMany()
-                        .HasForeignKey("UserWaitingListId")
+                    b.HasOne("Infrastructure.Entities.UserDataEntity", "User")
+                        .WithMany("LessonWaitingLists")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.LessonDataEntity", b =>
+                {
+                    b.Navigation("UserWaitingLists");
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.UserDataEntity", b =>
                 {
+                    b.Navigation("LessonWaitingLists");
+
                     b.Navigation("LessonsAsStudent");
 
                     b.Navigation("LessonsAsTeacher");
