@@ -68,7 +68,7 @@ namespace API.Controllers
             }
         }
         
-        [HttpDelete("Vehicles/{id}")]
+        [HttpDelete("Vehicle/{id}")]
         public async Task<IActionResult> DeleteVehicleById(int id)
         {
             var command = new DeleteVehicle_Command(id);
@@ -113,7 +113,7 @@ namespace API.Controllers
             }
         }
         
-        [HttpDelete("Users/{id}")]
+        [HttpDelete("User/{id}")]
         public async Task<IActionResult> DeleteUserById(Guid id)
         {
             var command = new DeleteUser_Command(id);
