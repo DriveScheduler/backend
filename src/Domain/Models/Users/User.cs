@@ -37,6 +37,13 @@ namespace Domain.Models.Users
             Email = new Email(email);
         }
 
-        public abstract UserType GetRole();      
+        public abstract UserType GetRole();
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is User user)
+                return Id == user.Id;
+            return false;
+        }
     }
 }

@@ -1,11 +1,7 @@
-﻿using Domain.Models;
-
-using Infrastructure.Entities;
+﻿using Infrastructure.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-using System.Reflection.Emit;
 
 namespace Infrastructure.Configurations
 {
@@ -45,20 +41,7 @@ namespace Infrastructure.Configurations
             builder
                 .HasOne(lesson => lesson.Student)
                 .WithMany(user => user.LessonsAsStudent)
-                .HasForeignKey(lesson => lesson.StudentId);           
-
-            //builder
-            //    .HasMany(lesson => lesson.UserWaitingLists)
-            //    .WithMany(user => user.)
-            //.UsingEntity(j => j.ToTable("LessonUsersPending"));
-            //.UsingEntity(
-            //   "LessonUsersPending",
-            //   right => right.HasOne(typeof(UserDataEntity)).WithMany().HasForeignKey(nameof(UserDataEntity.LessonWaitingListId)).HasPrincipalKey(nameof(LessonDataEntity.Id)),
-            //   left => left.HasOne(typeof(LessonDataEntity)).WithMany().HasForeignKey(nameof(LessonDataEntity.UserWaitingListId)).HasPrincipalKey(nameof(UserDataEntity.Id)),
-            //   join => join.HasKey("LessonId", "UserId"));
-
-
-            //builder.Ignore(lesson => lesson.UserWaitingListId);
+                .HasForeignKey(lesson => lesson.StudentId);
         }
     }
 }

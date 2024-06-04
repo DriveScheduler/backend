@@ -13,90 +13,14 @@ namespace Infrastructure.Repositories
 {
     internal sealed class LessonRepository(DatabaseContext database) : ILessonRepository
     {
-        private readonly DatabaseContext _database = database;
-
-        //public List<Lesson> GetAll()
-        //{
-        //    return _database.Lessons
-        //        .Select(l => l.FullDomainModel())
-        //        .ToList();
-        //}
-
-        //public Lesson GetById(int id)
-        //{
-        //    LessonDataEntity? lesson = _database.Lessons.Find(id);
-        //    if (lesson is null)
-        //        throw new LessonNotFoundException();
-        //    return lesson.FullDomainModel();
-        //}
-
-        //public List<Lesson> GetLessonsForStudent(Student student, DateTime start, DateTime end, List<Guid> teacherIds, bool onlyEmptyLesson = false)
-        //{
-        //    IEnumerable<Lesson> query = _database.Lessons.Select(l => l.FullDomainModel());
-
-        //    query = query.Where(lesson => lesson.Type == student.LicenceType);
-        //    if (teacherIds.Count > 0)
-        //        query = query.Where(lesson => teacherIds.Contains(lesson.Teacher.Id));
-
-        //    if (onlyEmptyLesson)
-        //        query = query.Where(lesson => lesson.Student == null);
-
-        //    DateTime calculatedEndDate = end.AddDays(1).Date;
-        //    return query
-        //        .Where(lesson => lesson.Start.Date >= start.Date.Date && lesson.Start.AddMinutes(lesson.Duration.Value).Date <= calculatedEndDate.Date)
-        //        .ToList();
-        //}
-
-        //public List<Lesson> GetLessonsForTeacher(Teacher teacher, DateTime start, DateTime end)
-        //{
-        //    IEnumerable<Lesson> query = _database.Lessons.Select(l => l.FullDomainModel());
-        //    query = query.Where(lesson => lesson.Teacher.Id == teacher.Id);
-
-        //    DateTime calculatedEndDate = end.AddDays(1).Date;
-        //    return query
-        //        .Where(lesson => lesson.Start.Date >= start.Date.Date && lesson.Start.AddMinutes(lesson.Duration.Value).Date <= calculatedEndDate.Date)
-        //        .ToList();
-        //}
-
-        //public List<Lesson> GetPassedLesson(User user, DateTime now)
-        //{
-        //    return _database.Lessons
-        //        .Where(lesson => lesson.StudentId == user.Id && lesson.Start > now)
-        //        .OrderBy(lesson => lesson.Start)
-        //        .Select(l => l.FullDomainModel())
-        //        .ToList();
-        //}
-
-        //public List<Lesson> GetUserHistory(User user, DateTime now)
-        //{
-        //    return _database.Lessons
-        //        .Select(l => l.FullDomainModel())
-        //        .Where(lesson => lesson.Student == user && (lesson.Start.AddMinutes(lesson.Duration.Value)) <= now)
-        //        .OrderByDescending(lesson => lesson.Start)
-        //        .ToList();
-        //}
-
-        //public List<Lesson> GetUserPlanning(User user, DateTime start, DateTime end)
-        //{
-        //    DateTime calculatedEndDate = end.Date.AddDays(1).Date;
-
-        //    IEnumerable<Lesson> query = _database.Lessons.Select(l => l.FullDomainModel());
-        //    if (user.GetType() == typeof(Student))
-        //        query = query
-        //            .Where(lesson => lesson.Student != null && lesson.Student.Id == user.Id && lesson.Start >= start && lesson.Start <= calculatedEndDate);
-        //    else if (user.GetType() == typeof(Teacher))
-        //        query = query
-        //            .Where(lesson => lesson.Teacher.Id == user.Id && lesson.Start >= start && lesson.Start <= calculatedEndDate);
-
-        //    return query.ToList();
-        //}
+        private readonly DatabaseContext _database = database;   
 
         public void Insert(Lesson lesson)
         {
             try
             {
                 LessonDataEntity lessonDataEntity = new LessonDataEntity(lesson);
-                _database.Lessons.Add(lessonDataEntity);
+                _database.Add(lessonDataEntity);
                 _database.SaveChanges();
                 SetPrivateField(lesson, nameof(Lesson.Id), lessonDataEntity.Id);                
             }
@@ -111,7 +35,7 @@ namespace Infrastructure.Repositories
             try
             {
                 List<LessonDataEntity> lessonDataEntities = lessons.Select(l => new LessonDataEntity(l)).ToList();
-                _database.Lessons.AddRange(lessonDataEntities);
+                _database.AddRange(lessonDataEntities);
                 _database.SaveChanges();
                 for (int i = 0; i < lessons.Count; i++)
                     SetPrivateField(lessons[i], nameof(Lesson.Id), lessonDataEntities[i].Id);               
@@ -127,12 +51,11 @@ namespace Infrastructure.Repositories
         {
             try
             {  
-                LessonDataEntity? dataEntity = _database.Lessons.Find(lesson.Id);
+                LessonDataEntity? dataEntity = _database.Lessons.FirstOrDefault(l => l.Id == lesson.Id);
                 if (dataEntity is null)
                     throw new LessonNotFoundException();
                 dataEntity.FromDomainModel(lesson);
-                _database.SaveChanges();
-                //_database.Update(dataEntity);
+                _database.SaveChanges();                
             }
             catch (Exception)
             {
@@ -144,12 +67,11 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                LessonDataEntity? dataEntity = _database.Lessons.Find(lesson.Id);
+                LessonDataEntity? dataEntity = _database.Lessons.FirstOrDefault(l => l.Id == lesson.Id);
                 if (dataEntity is null)
                     throw new LessonNotFoundException();              
-                _database.Lessons.Remove(dataEntity);
-                _database.SaveChanges();
-                //_database.Delete(dataEntity);
+                _database.Remove(dataEntity);
+                _database.SaveChanges();                
             }
             catch (Exception)
             {
@@ -166,7 +88,7 @@ namespace Infrastructure.Repositories
 
         public Lesson GetById(int id)
         {
-            LessonDataEntity? dataEntity = _database.Lessons.Find(id);
+            LessonDataEntity? dataEntity = _database.Lessons.FirstOrDefault(l => l.Id == id);
             if (dataEntity is null)
                 throw new LessonNotFoundException();
             return dataEntity.FullDomainModel();

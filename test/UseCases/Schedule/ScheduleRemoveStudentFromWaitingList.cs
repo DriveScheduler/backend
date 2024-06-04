@@ -18,34 +18,33 @@ using UseCases.TestData;
 
 namespace UseCases.Schedule
 {
-    public class ScheduleRemoveStudentFromWaitingList : IClassFixture<SetupDependencies>, IDisposable
+    public class ScheduleRemoveStudentFromWaitingList
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
-
-        private readonly IDataAccessor _database;
+        
         private readonly IMediator _mediator;
         private readonly ISystemClock _clock;
         private readonly FakeEmailSender _emailSender;
 
-        public ScheduleRemoveStudentFromWaitingList(SetupDependencies fixture)
+        public ScheduleRemoveStudentFromWaitingList()
         {
+            SetupDependencies fixture = new SetupDependencies();
+            fixture
+                .AddDefaultDependencies()
+                .AddFakeEmailSender()
+                .Build();
+
             _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
-
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
             _emailSender = (FakeEmailSender)fixture.ServiceProvider.GetRequiredService<IEmailSender>();
         }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
-
+    
 
         [Fact]
         public async void ScheduleShould_RemoveStudentFromLesson_And_NotifyWaitingStudents()

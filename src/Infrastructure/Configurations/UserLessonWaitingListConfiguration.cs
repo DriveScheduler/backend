@@ -12,7 +12,7 @@ namespace Infrastructure.Configurations
             builder.ToTable("LessonUsersPending");
 
             builder.HasKey(e => new { e.UserId, e.LessonId });
-            
+
             builder
                 .HasOne(e => e.User)
                 .WithMany(user => user.LessonWaitingLists)

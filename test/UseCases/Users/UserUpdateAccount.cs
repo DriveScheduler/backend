@@ -14,23 +14,19 @@ using Domain.Models.Users;
 
 namespace UseCases.Users
 {
-    public class UserUpdateAccount : IClassFixture<SetupDependencies>, IDisposable
+    public class UserUpdateAccount
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IDataAccessor _database;
+        private readonly IUserRepository _userRepository;        
         private readonly IMediator _mediator;
 
-        public UserUpdateAccount(SetupDependencies fixture)
+        public UserUpdateAccount()
         {
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+            
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-        }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+        }   
 
         [Fact]
         public async void UserShould_UpdateHisAccount()

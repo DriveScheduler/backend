@@ -32,7 +32,7 @@ namespace UseCases.Fakes.Repositories
             User user = GetUserById(id);
             if (user is Student student)
                 return student;
-            throw new UserNotInRoleException("L'utilisateur n'est pas un élève");
+            throw new UserIsNotAStudentException();
         }
 
         public Teacher GetTeacherById(Guid id)
@@ -40,7 +40,7 @@ namespace UseCases.Fakes.Repositories
             User user = GetUserById(id);
             if (user is Teacher teacher)
                 return teacher;
-            throw new UserNotInRoleException("L'utilisateur n'est pas un moniteur");
+            throw new UserIsNotATeacherException();
 
         }
 

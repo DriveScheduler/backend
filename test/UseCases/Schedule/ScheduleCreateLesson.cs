@@ -17,31 +17,27 @@ using UseCases.TestData;
 
 namespace UseCases.Schedule
 {
-    public class ScheduleCreateLesson : IClassFixture<SetupDependencies>, IDisposable
+    public class ScheduleCreateLesson
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
-
-        private readonly IDataAccessor _database;
+        
         private readonly IMediator _mediator;
         private readonly ISystemClock _clock;
 
-        public ScheduleCreateLesson(SetupDependencies fixture)
+        public ScheduleCreateLesson()
         {
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+
             _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
-
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
-        }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+        }      
 
         [Fact]
         public async void ScheduleShould_CreateLesson()
@@ -178,8 +174,7 @@ namespace UseCases.Schedule
             var createLessonWithSameVehicleAtSameTimeCommand = new CreateLesson_Command("Cours 1", _clock.Now, 30, studentId);
 
             // Assert
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(createLessonWithSameVehicleAtSameTimeCommand));
-            Assert.Equal("La personne en charge du cours doit être un moniteur", exc.Message);
+            UserIsNotATeacherException exc = await Assert.ThrowsAsync<UserIsNotATeacherException>(() => _mediator.Send(createLessonWithSameVehicleAtSameTimeCommand));            
         }
 
         [Theory]

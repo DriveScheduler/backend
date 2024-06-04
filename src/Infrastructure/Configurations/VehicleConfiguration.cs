@@ -15,7 +15,7 @@ namespace Infrastructure.Configurations
                 .IsRequired()
                 .ValueGeneratedOnAdd();
 
-            builder.Property(v => v.RegistrationNumber)                
+            builder.Property(v => v.RegistrationNumber)
                 .IsRequired();
 
             builder.Property(v => v.Name)

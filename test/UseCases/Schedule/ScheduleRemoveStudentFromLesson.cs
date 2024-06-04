@@ -17,31 +17,31 @@ using UseCases.TestData;
 
 namespace UseCases.Schedule
 {
-    public class ScheduleRemoveStudentFromLesson : IClassFixture<SetupDependencies>, IDisposable
+    public class ScheduleRemoveStudentFromLesson
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
-
-        private readonly IDataAccessor _database;
+        
         private readonly IMediator _mediator;
         private readonly ISystemClock _clock;
 
-        public ScheduleRemoveStudentFromLesson(SetupDependencies fixture)
+        public ScheduleRemoveStudentFromLesson()
         {
+            SetupDependencies fixture = new SetupDependencies();
+            fixture
+                .AddDefaultDependencies()
+                .AddFakeEmailSender()
+                .Build();
+
             _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
-
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
         }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+      
 
         [Fact]
         public async void ScheduleShould_RemoveStudentFromLesson()

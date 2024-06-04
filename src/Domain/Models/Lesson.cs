@@ -116,6 +116,13 @@ namespace Domain.Models
             else return UserLessonState.BookedByOther;
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj is Lesson lesson)
+                return Id == lesson.Id;
+            return false;
+        }
+
         private void ThrowIfInvalidName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))

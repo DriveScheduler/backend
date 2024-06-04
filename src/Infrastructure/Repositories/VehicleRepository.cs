@@ -13,28 +13,14 @@ namespace Infrastructure.Repositories
 {
     internal sealed class VehicleRepository(DatabaseContext database) : IVehicleRepository
     {
-        private readonly DatabaseContext _database = database;
-       
-
-        //public Vehicle GetById(int id)
-        //{
-        //    VehicleDataEntity? vehicle = _database.Vehicles.Find(id);
-        //    if (vehicle is null) throw new VehicleNotFoundException();
-        //    return vehicle.FullDomainModel();
-        //}
-
-        //public bool IsRegistrationNumberUnique(string registrationNumber)
-        //{
-        //    return _database.Vehicles.FirstOrDefault(v => v.RegistrationNumber == registrationNumber) is null;
-        //}
-
+        private readonly DatabaseContext _database = database;      
 
         public void Insert(Vehicle vehicle)
         {
             try
             {
                 VehicleDataEntity vehicleDataEntity = new VehicleDataEntity(vehicle);
-                _database.Vehicles.Add(vehicleDataEntity);
+                _database.Add(vehicleDataEntity);
                 _database.SaveChanges();
                 SetPrivateField(vehicle, nameof(Vehicle.Id), vehicleDataEntity.Id);                
             }
@@ -49,7 +35,7 @@ namespace Infrastructure.Repositories
             try
             {
                 List<VehicleDataEntity> vehicleDataEntities = vehicle.Select(v => new VehicleDataEntity(v)).ToList();
-                _database.Vehicles.AddRange(vehicleDataEntities);
+                _database.AddRange(vehicleDataEntities);
                 _database.SaveChanges();
                 for (int i = 0; i < vehicleDataEntities.Count; i++)
                     SetPrivateField(vehicle[i], nameof(Vehicle.Id), vehicleDataEntities[i].Id);                
@@ -64,7 +50,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                VehicleDataEntity? dataEntity = _database.Vehicles.Find(vehicle.Id);
+                VehicleDataEntity? dataEntity = _database.Vehicles.FirstOrDefault(v => v.Id == vehicle.Id);
                 if (dataEntity is null) 
                     throw new VehicleNotFoundException();
                 dataEntity.FromDomainModel(vehicle);
@@ -84,7 +70,7 @@ namespace Infrastructure.Repositories
 
         public Vehicle GetById(int id)
         {
-            VehicleDataEntity? dataEntity = _database.Vehicles.Find(id);
+            VehicleDataEntity? dataEntity = _database.Vehicles.FirstOrDefault(v => v.Id == id);
             if (dataEntity is null)
                 throw new VehicleNotFoundException();
             return dataEntity.FullDomainModel();

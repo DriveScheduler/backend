@@ -13,23 +13,20 @@ using Domain.Models.Vehicles;
 
 namespace UseCases.Vehicles
 {
-    public class AdminCreateVechicle : IClassFixture<SetupDependencies>, IDisposable
+    public class AdminCreateVechicle
     {
-        private readonly IVehicleRepository _vehicleRepository;
-        private readonly IDataAccessor _database;
+        private readonly IVehicleRepository _vehicleRepository;        
         private readonly IMediator _mediator;
 
-        public AdminCreateVechicle(SetupDependencies fixture)
+        public AdminCreateVechicle()
         {
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
         }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+     
 
         [Fact]
         public async void AdminShould_CreateAVehicle()

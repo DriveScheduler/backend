@@ -21,40 +21,63 @@ namespace UseCases
         public SetupDependencies()
         {            
             _serviceCollection = new ServiceCollection();
+            _serviceCollection.ApplicationMediator();          
+        }     
+        
+        public void BuildDefault()
+        {
+            AddDefaultDependencies();
+            Build();
+        }
 
-            _serviceCollection.ApplicationMediator();
-            //_serviceCollection.AddRepositories();
-
-            _serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
-            
-            AddFakeSystemClock();  
-            AddFakeEmailSender();
-            AddFakeRepositories();
-            //AddFakeDataAccessor();
-
+        public void Build()
+        {
             ServiceProvider = _serviceCollection.BuildServiceProvider();
-        }        
+        }
 
-        private void AddFakeSystemClock()
+        public SetupDependencies AddDefaultDependencies()
+        {
+            AddFakeSystemClock();
+            AddRepositories();
+            AddInMemoryDatabase();
+            return this;
+        }
+
+        #region FAKES
+        public SetupDependencies AddFakeSystemClock()
         {
             _serviceCollection.AddSingleton<ISystemClock>(new FakeSystemClock(new DateTime(2024, 04, 25, 8, 30, 00)));
+            return this;
         }
 
-        private void AddFakeEmailSender()
+        public SetupDependencies AddFakeEmailSender()
         {
             _serviceCollection.AddScoped<IEmailSender, FakeEmailSender>();
+            return this;
         }
 
-        private void AddFakeRepositories()
+        public SetupDependencies AddFakeRepositories()
         {
             _serviceCollection.AddScoped<ILessonRepository, FakeLessonRepository>();
             _serviceCollection.AddScoped<IUserRepository, FakeUserRepository>();
             _serviceCollection.AddScoped<IVehicleRepository, FakeVehicleRepository>();
+            return this;
+        }
+        #endregion
+
+        #region DATABASE
+
+        public SetupDependencies AddInMemoryDatabase()
+        {
+            _serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
+            return this;
         }
 
-        //private void AddFakeDataAccessor()
-        //{
-        //    //_serviceCollection.AddSingleton<IDataAccessor, FakeDataAccessor>();
-        //}
+        public SetupDependencies AddRepositories()
+        {
+            _serviceCollection.AddRepositories();
+            return this;
+        }
+        #endregion
     }
 }

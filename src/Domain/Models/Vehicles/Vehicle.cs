@@ -48,5 +48,12 @@ namespace Domain.Models.Vehicles
             if (string.IsNullOrWhiteSpace(name))
                 throw new VehicleValidationException("Le nom est obligatoire");
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is Vehicle vehicle)
+                return Id == vehicle.Id;
+            return false;
+        }
     }
 }

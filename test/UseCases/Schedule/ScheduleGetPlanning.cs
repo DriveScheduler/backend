@@ -1,9 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.UseCases.Users.Queries;
 
-using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Users;
+using Domain.Models;
+using Domain.Models.Vehicles;
 using Domain.Repositories;
 
 using MediatR;
@@ -12,37 +13,30 @@ using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.Fakes;
 using UseCases.TestData;
-using Infrastructure.Persistence;
-using Domain.Models.Users;
-using Domain.Models.Vehicles;
 
 namespace UseCases.Schedule
 {
-    public class ScheduleGetPlanning : IClassFixture<SetupDependencies>, IDisposable
+    public class ScheduleGetPlanning
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
-
-        private readonly IDataAccessor _database;
+        
         private readonly IMediator _mediator;
         private readonly FakeSystemClock _clock;
 
-        public ScheduleGetPlanning(SetupDependencies fixture)
+        public ScheduleGetPlanning()
         {
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+
             _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
-
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = (FakeSystemClock)fixture.ServiceProvider.GetRequiredService<ISystemClock>();
-        }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+        }       
 
 
         [Fact]

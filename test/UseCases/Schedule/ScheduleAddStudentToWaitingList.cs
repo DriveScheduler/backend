@@ -17,31 +17,27 @@ using UseCases.TestData;
 
 namespace UseCases.Schedule
 {
-    public class ScheduleAddStudentToWaitingList : IClassFixture<SetupDependencies>, IDisposable
+    public class ScheduleAddStudentToWaitingList
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
-
-        private readonly IDataAccessor _database;
+        
         private readonly IMediator _mediator;
         private readonly ISystemClock _clock;
 
-        public ScheduleAddStudentToWaitingList(SetupDependencies fixture)
+        public ScheduleAddStudentToWaitingList()
         {
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+
             _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
-
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
-        }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+        }        
 
         [Fact]
         public async Task ScheduleShould_AddStudentToWaitingList_WhenLessonIsFull()
@@ -148,10 +144,7 @@ namespace UseCases.Schedule
             _lessonRepository.Insert(new Lesson(lessonId, "Cours 1", _clock.Now, 30, teacher, LicenceType.Car, car, student1));
 
             // Act
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(new AddStudentToWaitingList_Command(lessonId, teacher2.Id)));
-
-            // Assert
-            Assert.Equal("L'utilisateur doit être un élève pour s'incrire à la file d'attente du cours", exc.Message);
+            UserIsNotAStudentException exc = await Assert.ThrowsAsync<UserIsNotAStudentException>(() => _mediator.Send(new AddStudentToWaitingList_Command(lessonId, teacher2.Id)));                        
         }
 
         [Fact]

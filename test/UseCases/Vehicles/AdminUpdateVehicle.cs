@@ -1,6 +1,7 @@
 ﻿using Application.UseCases.Vehicles.Commands;
-using Domain.Enums;
+
 using Domain.Exceptions.Vehicles;
+using Domain.Models.Vehicles;
 using Domain.Repositories;
 
 using MediatR;
@@ -8,29 +9,24 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
-using Infrastructure.Persistence;
-using Domain.Models.Vehicles;
 
 namespace UseCases.Vehicles
 {
-    public class AdminUpdateVehicle : IClassFixture<SetupDependencies>, IDisposable
+    public class AdminUpdateVehicle 
     {
-        private readonly IVehicleRepository _vehicleRepository;
-        private readonly IDataAccessor _database;
+        private readonly IVehicleRepository _vehicleRepository;        
         private readonly IMediator _mediator;
 
-        public AdminUpdateVehicle(SetupDependencies fixture)
+        public AdminUpdateVehicle()
         {
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+            
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
         }
 
-        public void Dispose()
-        {
-            _database.Clear();
-        }
-
+ 
         [Fact]
         public async void AdminShould_UpdateAVehicle()
         {

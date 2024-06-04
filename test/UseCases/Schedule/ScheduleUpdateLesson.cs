@@ -5,8 +5,6 @@ using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;
 using Domain.Models;
-using Domain.Models.Users;
-using Domain.Models.Vehicles;
 using Domain.Repositories;
 
 using Infrastructure.Persistence;
@@ -19,31 +17,28 @@ using UseCases.TestData;
 
 namespace UseCases.Schedule
 {
-    public class ScheduleUpdateLesson : IClassFixture<SetupDependencies>, IDisposable
+    public class ScheduleUpdateLesson
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
-
-        private readonly IDataAccessor _database;
+        
         private readonly IMediator _mediator;
         private readonly ISystemClock _clock;
 
-        public ScheduleUpdateLesson(SetupDependencies fixture)
+        public ScheduleUpdateLesson()
         {
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+
             _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
 
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
         }
 
-        public void Dispose()
-        {
-            _database.Clear();
-        }
 
         [Fact]
         public async void ScheduleShould_UpdateLesson()
@@ -226,8 +221,7 @@ namespace UseCases.Schedule
             var command = new UpdateLesson_Command(lessonId, "Cours 1", _clock.Now, 30, studentId);
 
             // Assert
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("La personne en charge du cours doit être un moniteur", exc.Message);
+            UserIsNotATeacherException exc = await Assert.ThrowsAsync<UserIsNotATeacherException>(() => _mediator.Send(command));            
         }
 
         [Theory]

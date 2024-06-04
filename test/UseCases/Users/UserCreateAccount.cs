@@ -13,23 +13,19 @@ using Domain.Models.Users;
 
 namespace UseCases.Users
 {
-    public class UserCreateAccount : IClassFixture<SetupDependencies>, IDisposable
+    public class UserCreateAccount
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IDataAccessor _database;
+        private readonly IUserRepository _userRepository;        
         private readonly IMediator _mediator;
 
-        public UserCreateAccount(SetupDependencies fixture)
+        public UserCreateAccount()
         {
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+            
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-        }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+        }      
 
         [Fact]
         public async void UserShould_CreateAnAccount()
