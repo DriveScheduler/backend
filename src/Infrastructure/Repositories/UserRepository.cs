@@ -23,6 +23,14 @@ namespace Infrastructure.Repositories
                 .ToList();
         }
 
+        public void DeleteById(Guid id)
+        {
+            User? user = _database.Users.FirstOrDefault(user => user.Id == id);
+            if (user is null)
+                throw new UserNotFoundException();
+            _database.Delete(user);
+        }
+
         public User GetUserByEmail(string email)
         {
             User? user = _database.Users.FirstOrDefault(user => user.Email.Value == email);
