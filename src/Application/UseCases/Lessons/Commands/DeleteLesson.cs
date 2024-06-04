@@ -24,7 +24,7 @@ namespace Application.UseCases.Lessons.Commands
         public Task Handle(DeleteLesson_Command request, CancellationToken cancellationToken)
         {
             Lesson lesson = _lessonRepository.GetById(request.LessonId); 
-            User teacher = _userRepository.GetUserById(request.UserId);
+            Teacher teacher = _userRepository.GetTeacherById(request.UserId);
 
             if(lesson.Teacher.Id != teacher.Id)
                 throw new LessonValidationException("Vous n'êtes pas le professeur de ce cours");
