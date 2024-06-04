@@ -11,6 +11,11 @@ namespace Infrastructure.Repositories
     {
         private readonly IDataAccessor _database = database;
 
+        public List<User> GetAll()
+        {
+            return _database.Users.ToList();
+        }
+
         public List<User> GetAllTeachers()
         {
             return _database.Users                
@@ -73,6 +78,6 @@ namespace Infrastructure.Repositories
             {
                 throw new UserSaveException();
             }
-        }
+        }    
     }
 }
