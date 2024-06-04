@@ -1,11 +1,14 @@
 ﻿using Application;
 using Application.Abstractions;
 
+using Domain.Repositories;
+
 using Infrastructure;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.Fakes;
+using UseCases.Fakes.Repositories;
 
 namespace UseCases
 {
@@ -20,12 +23,13 @@ namespace UseCases
             _serviceCollection = new ServiceCollection();
 
             _serviceCollection.ApplicationMediator();
-            _serviceCollection.AddRepositories();
+            //_serviceCollection.AddRepositories();
 
             _serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
             
             AddFakeSystemClock();  
             AddFakeEmailSender();
+            AddFakeRepositories();
             //AddFakeDataAccessor();
 
             ServiceProvider = _serviceCollection.BuildServiceProvider();
@@ -39,6 +43,13 @@ namespace UseCases
         private void AddFakeEmailSender()
         {
             _serviceCollection.AddScoped<IEmailSender, FakeEmailSender>();
+        }
+
+        private void AddFakeRepositories()
+        {
+            _serviceCollection.AddScoped<ILessonRepository, FakeLessonRepository>();
+            _serviceCollection.AddScoped<IUserRepository, FakeUserRepository>();
+            _serviceCollection.AddScoped<IVehicleRepository, FakeVehicleRepository>();
         }
 
         //private void AddFakeDataAccessor()

@@ -13,6 +13,7 @@ using MediatR;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using UseCases.Fakes.Repositories;
 using UseCases.TestData;
 
 
@@ -20,29 +21,30 @@ namespace UseCases.Schedule
 {
     public class ScheduleAddStudentToLesson : IClassFixture<SetupDependencies>, IDisposable
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ILessonRepository _lessonRepository;
-        private readonly IVehicleRepository _vehicleRepository;
-
-        private readonly IDataAccessor _database;
+        private readonly FakeUserRepository _userRepository;
+        private readonly FakeLessonRepository _lessonRepository;
+        private readonly FakeVehicleRepository _vehicleRepository;
+        
         private readonly IMediator _mediator;
         private readonly ISystemClock _clock;
 
 
         public ScheduleAddStudentToLesson(SetupDependencies fixture)
-        {
-            _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
-            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
-            _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
-
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+        {            
+            fixture.ServiceProvider.CreateScope();
+            _lessonRepository = (FakeLessonRepository)fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
+            _userRepository = (FakeUserRepository)fixture.ServiceProvider.GetRequiredService<IUserRepository>();
+            _vehicleRepository = (FakeVehicleRepository)fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
+            
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
         }
 
         public void Dispose()
         {
-            _database.Clear();
+            _lessonRepository.Clear();
+            _userRepository.Clear();
+            _vehicleRepository.Clear();
         }
 
         [Fact]
@@ -145,8 +147,8 @@ namespace UseCases.Schedule
             var command = new AddStudentToLesson_Command(lessonId, teacherId2);
 
             // Assert            
-            LessonValidationException exc = await Assert.ThrowsAsync<LessonValidationException>(() => _mediator.Send(command));
-            Assert.Equal("L'utilisateur doit être un élève pour s'incrire au cours", exc.Message);
+            UserNotInRoleException exc = await Assert.ThrowsAsync<UserNotInRoleException>(() => _mediator.Send(command));
+            Assert.Equal("L'utilisateur n'est pas un élève", exc.Message);
         }
 
         [Fact]

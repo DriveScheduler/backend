@@ -37,7 +37,6 @@ namespace Domain.Models.Users
             Email = new Email(email);
         }
 
-        public abstract UserType GetRole();
-        //public abstract override string ToString();
+        public abstract UserType GetRole();      
     }
 }

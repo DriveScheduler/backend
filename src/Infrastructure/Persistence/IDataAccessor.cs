@@ -8,9 +8,9 @@ namespace Infrastructure.Persistence
 {
     public interface IDataAccessor
     {
-        public IEnumerable<Lesson> Lessons { get; }
-        public IEnumerable<User> Users { get; }
-        public IEnumerable<Vehicle> Vehicles { get; }
+        //public IEnumerable<LessonDataEntity> Lessons { get; }
+        //public IEnumerable<UserDataEntity> Users { get; }
+        //public IEnumerable<VehicleDataEntity> Vehicles { get; }
 
         public void Insert<T>(T entity) where T : class;
         public void Insert<T>(List<T> entities) where T : class;

@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Entities
 {
-    public abstract class DataEntity<TDomainModel> where TDomainModel : class
+    internal abstract class DataEntity<TDomainModel> where TDomainModel : class
     {
         public DataEntity() { }
 

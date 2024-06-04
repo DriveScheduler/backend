@@ -23,8 +23,12 @@ namespace Application.UseCases.Users.Queries
 
         public Task<UserLessonHistory> Handle(GetUserLessonHistory_Query request, CancellationToken cancellationToken)
         {
-            User user = _userRepository.GetUserById(request.UserId);
-            List<Lesson> lessons = _lessonRepository.GetUserHistory(user, _clock.Now);
+            User user = _userRepository.GetUserById(request.UserId);           
+
+            List<Lesson> lessons = _lessonRepository.GetLessonForUser(user)
+                 .Where(lesson => lesson.Student == user && lesson.End <= _clock.Now)
+                 .OrderByDescending(lesson => lesson.Start)
+                 .ToList();         
 
             UserLessonHistory history = new UserLessonHistory()
             {

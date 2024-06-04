@@ -1,0 +1,101 @@
+﻿using Domain.Exceptions.Users;
+using Domain.Models;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
+using Domain.Repositories;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace UseCases.Fakes.Repositories
+{
+    internal sealed class FakeUserRepository : IUserRepository
+    {
+        private List<User> _users = [];
+
+        public void Clear()
+        {
+            _users = [];
+        }
+
+        public List<Teacher> GetAllTeachers()
+        {
+            return _users.OfType<Teacher>().ToList();
+        }
+
+        public Student GetStudentById(Guid id)
+        {
+            User user = GetUserById(id);
+            if (user is Student student)
+                return student;
+            throw new UserNotInRoleException("L'utilisateur n'est pas un élève");
+        }
+
+        public Teacher GetTeacherById(Guid id)
+        {
+            User user = GetUserById(id);
+            if (user is Teacher teacher)
+                return teacher;
+            throw new UserNotInRoleException("L'utilisateur n'est pas un moniteur");
+
+        }
+
+        public User GetUserByEmail(string email)
+        {
+            User? user = _users.FirstOrDefault(u => u.Email.Value == email);
+            if (user is null)
+                throw new UserNotFoundException();
+            return user;
+        }
+
+        public User GetUserById(Guid id)
+        {
+            User? user = _users.FirstOrDefault(u => u.Id == id);
+            if (user is null)
+                throw new UserNotFoundException();
+            return user;
+        }
+
+        public void Insert(User user)
+        {
+            if (user.Id == Guid.Empty)
+            {
+                Guid id = new Guid();
+                SetPrivateField(user, nameof(user.Id), id);
+            }
+            _users.Add(user);
+        }
+
+        public void Insert(List<User> users)
+        {
+            foreach (var user in users)
+            {
+                if (user.Id == Guid.Empty)
+                {
+                    SetPrivateField(user, nameof(user.Id), new Guid());
+                }
+            }
+            _users.AddRange(users);
+        }
+
+        public bool IsEmailUnique(string email)
+        {
+            return _users.FirstOrDefault(u => u.Email.Value == email) is null;
+        }
+
+        public void Update(User user)
+        {
+        }
+
+        private static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class
+        {
+            typeof(T)
+              .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)
+              ?.SetValue(entity, value);
+        }
+    }
+}

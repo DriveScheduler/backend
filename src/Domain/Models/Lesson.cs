@@ -100,7 +100,9 @@ namespace Domain.Models
         public void RemoveStudentFromWaitingList(Student student)
         {
             if (student is null) throw new ArgumentNullException(nameof(student));
-            _waitingList.Remove(student);
+            Student? studentInWaitingList = _waitingList.FirstOrDefault(s => s.Id == student.Id);
+            if (studentInWaitingList is not null)
+                _waitingList.Remove(studentInWaitingList);
         }
 
 
@@ -138,7 +140,6 @@ namespace Domain.Models
         {
             if (user.GetType() != typeof(Teacher))
                 throw new LessonValidationException("La personne en charge du cours doit être un moniteur");
-        }
-
+        }     
     }
 }

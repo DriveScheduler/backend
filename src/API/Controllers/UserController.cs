@@ -74,7 +74,7 @@ namespace API.Controllers
             var query = new GetTeachers_Query();
             try
             {
-                List<User> teachers = await _mediator.Send(query);
+                List<Teacher> teachers = await _mediator.Send(query);
                 return Ok(teachers.Select(teacher => new UserLight(teacher)));
             }
             catch (Exception e)
