@@ -30,6 +30,10 @@ namespace Infrastructure.Repositories
             if (vehicle is null) throw new VehicleNotFoundException();
             return vehicle;
         }
+        public List<Vehicle> GetAll()
+        {
+            return _database.Vehicles.ToList();
+        }
 
         public bool IsRegistrationNumberUnique(string registrationNumber)
         {
@@ -71,6 +75,6 @@ namespace Infrastructure.Repositories
             {
                 throw new VehicleSaveException();
             }
-        }
+        }    
     }
 }

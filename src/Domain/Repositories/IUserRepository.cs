@@ -9,6 +9,7 @@ namespace Domain.Repositories
         public void Update(User user);
         public User GetUserById(Guid id);        
         public User GetUserByEmail(string email);        
+        public List<User> GetAll();
         public List<User> GetAllTeachers();
         public bool IsEmailUnique(string email);
     }

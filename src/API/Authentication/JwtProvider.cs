@@ -14,6 +14,7 @@ namespace API.Authentication
         public static string CLAIM_ID = "ID";
         public static string CLAIM_FIRSTNAME = "FirstName";
         public static string CLAIM_ROLE = "Role";
+        public static string CLAIM_ADMIN_ROLE = "Admin";
 
         private readonly IConfiguration _configuration = configuration;
 
@@ -24,6 +25,10 @@ namespace API.Authentication
                 new Claim(CLAIM_FIRSTNAME, user.FirstName.Value),
                 new Claim(CLAIM_ROLE, ((int)user.Type).ToString()),
             };
+            if(user.Type == UserType.Admin)
+            {
+                claims.Add(new Claim(CLAIM_ADMIN_ROLE, "true"));
+            }
             var jwtToken = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
