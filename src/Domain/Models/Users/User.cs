@@ -3,7 +3,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Models.Users
 {
-    public abstract class User
+    public abstract class User : IEquatable<User>
     {
         public Guid Id { get; }
         public Surname Name { get; private set; }
@@ -44,6 +44,16 @@ namespace Domain.Models.Users
             if (obj is User user)
                 return Id == user.Id;
             return false;
+        }
+
+        public bool Equals(User? other)
+        {
+            return Equals(other as object);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
     }
 }

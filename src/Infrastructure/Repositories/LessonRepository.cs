@@ -13,8 +13,9 @@ namespace Infrastructure.Repositories
 {
     internal sealed class LessonRepository(DatabaseContext database) : ILessonRepository
     {
-        private readonly DatabaseContext _database = database;   
+        private readonly DatabaseContext _database = database;
 
+        #region GET
         public void Insert(Lesson lesson)
         {
             try
@@ -22,10 +23,10 @@ namespace Infrastructure.Repositories
                 LessonDataEntity lessonDataEntity = new LessonDataEntity(lesson);
                 _database.Add(lessonDataEntity);
                 _database.SaveChanges();
-                SetPrivateField(lesson, nameof(Lesson.Id), lessonDataEntity.Id);                
+                SetPrivateField(lesson, nameof(Lesson.Id), lessonDataEntity.Id);
             }
             catch (Exception)
-            {                
+            {
                 throw new LessonSaveException();
             }
         }
@@ -38,7 +39,7 @@ namespace Infrastructure.Repositories
                 _database.AddRange(lessonDataEntities);
                 _database.SaveChanges();
                 for (int i = 0; i < lessons.Count; i++)
-                    SetPrivateField(lessons[i], nameof(Lesson.Id), lessonDataEntities[i].Id);               
+                    SetPrivateField(lessons[i], nameof(Lesson.Id), lessonDataEntities[i].Id);
             }
             catch (Exception)
             {
@@ -50,12 +51,12 @@ namespace Infrastructure.Repositories
         public void Update(Lesson lesson)
         {
             try
-            {  
+            {
                 LessonDataEntity? dataEntity = _database.Lessons.FirstOrDefault(l => l.Id == lesson.Id);
                 if (dataEntity is null)
                     throw new LessonNotFoundException();
                 dataEntity.FromDomainModel(lesson);
-                _database.SaveChanges();                
+                _database.SaveChanges();
             }
             catch (Exception)
             {
@@ -69,9 +70,9 @@ namespace Infrastructure.Repositories
             {
                 LessonDataEntity? dataEntity = _database.Lessons.FirstOrDefault(l => l.Id == lesson.Id);
                 if (dataEntity is null)
-                    throw new LessonNotFoundException();              
+                    throw new LessonNotFoundException();
                 _database.Remove(dataEntity);
-                _database.SaveChanges();                
+                _database.SaveChanges();
             }
             catch (Exception)
             {
@@ -79,13 +80,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class
-        {
-            typeof(T)
-              .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)
-              ?.SetValue(entity, value);
-        }
+        #endregion
 
+        #region UPDATE
         public Lesson GetById(int id)
         {
             LessonDataEntity? dataEntity = _database.Lessons.FirstOrDefault(l => l.Id == id);
@@ -139,6 +136,13 @@ namespace Infrastructure.Repositories
                 .Where(l => l.Type == licenceType)
                 .Select(l => l.FullDomainModel())
                 .ToList();
-        }      
+        }
+        #endregion
+
+        private static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class
+        {
+            var field = typeof(T).GetField($"<{fieldName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+            field?.SetValue(entity, value);
+        }
     }
 }

@@ -27,7 +27,15 @@ namespace Infrastructure.Persistence
 
         internal IQueryable<UserDataEntity> Users => _users
             .Include(u => u.LessonsAsTeacher)
+                .ThenInclude(l => l.Student)
+             .Include(u => u.LessonsAsTeacher)
+                .ThenInclude(l => l.Vehicle)
+
             .Include(u => u.LessonsAsStudent)
+                .ThenInclude(l => l.Teacher)
+             .Include(u => u.LessonsAsStudent)
+                .ThenInclude(l => l.Vehicle)
+
             .Include(u => u.LessonWaitingLists)
                 .ThenInclude(l => l.Lesson);
 
@@ -36,10 +44,12 @@ namespace Infrastructure.Persistence
             .Include(l => l.Student)
             .Include(l => l.UserWaitingLists)
                 .ThenInclude(u => u.User)
-            .Include(l => l.Vehicle);
+            .Include(l => l.Vehicle)
+                .ThenInclude(v => v.Lessons);
 
         internal IQueryable<VehicleDataEntity> Vehicles => _vehicles
-            .Include(v => v.Lessons);
+            .Include(v => v.Lessons)
+                .ThenInclude(l => l.Teacher);
 
     }
 }

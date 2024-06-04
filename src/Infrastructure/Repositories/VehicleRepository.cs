@@ -13,61 +13,9 @@ namespace Infrastructure.Repositories
 {
     internal sealed class VehicleRepository(DatabaseContext database) : IVehicleRepository
     {
-        private readonly DatabaseContext _database = database;      
+        private readonly DatabaseContext _database = database;
 
-        public void Insert(Vehicle vehicle)
-        {
-            try
-            {
-                VehicleDataEntity vehicleDataEntity = new VehicleDataEntity(vehicle);
-                _database.Add(vehicleDataEntity);
-                _database.SaveChanges();
-                SetPrivateField(vehicle, nameof(Vehicle.Id), vehicleDataEntity.Id);                
-            }
-            catch (Exception)
-            {
-                throw new VehicleSaveException();
-            }
-        }
-
-        public void Insert(List<Vehicle> vehicle)
-        {
-            try
-            {
-                List<VehicleDataEntity> vehicleDataEntities = vehicle.Select(v => new VehicleDataEntity(v)).ToList();
-                _database.AddRange(vehicleDataEntities);
-                _database.SaveChanges();
-                for (int i = 0; i < vehicleDataEntities.Count; i++)
-                    SetPrivateField(vehicle[i], nameof(Vehicle.Id), vehicleDataEntities[i].Id);                
-            }
-            catch (Exception)
-            {
-                throw new VehicleSaveException();
-            }
-        }
-      
-        public void Update(Vehicle vehicle)
-        {
-            try
-            {
-                VehicleDataEntity? dataEntity = _database.Vehicles.FirstOrDefault(v => v.Id == vehicle.Id);
-                if (dataEntity is null) 
-                    throw new VehicleNotFoundException();
-                dataEntity.FromDomainModel(vehicle);
-                _database.SaveChanges();
-            }
-            catch (Exception)
-            {
-                throw new VehicleSaveException();
-            }
-        }
-
-        private static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class
-        {
-            var field = typeof(T).GetField($"<{fieldName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
-            field?.SetValue(entity, value);
-        }
-
+        #region GET
         public Vehicle GetById(int id)
         {
             VehicleDataEntity? dataEntity = _database.Vehicles.FirstOrDefault(v => v.Id == id);
@@ -107,5 +55,61 @@ namespace Infrastructure.Repositories
         {
             return _database.Vehicles.FirstOrDefault(v => v.RegistrationNumber == registrationNumber) is null;
         }
+        #endregion
+
+        #region UPDATE
+        public void Insert(Vehicle vehicle)
+        {
+            try
+            {
+                VehicleDataEntity vehicleDataEntity = new VehicleDataEntity(vehicle);
+                _database.Add(vehicleDataEntity);
+                _database.SaveChanges();
+                SetPrivateField(vehicle, nameof(Vehicle.Id), vehicleDataEntity.Id);
+            }
+            catch (Exception)
+            {
+                throw new VehicleSaveException();
+            }
+        }
+
+        public void Insert(List<Vehicle> vehicle)
+        {
+            try
+            {
+                List<VehicleDataEntity> vehicleDataEntities = vehicle.Select(v => new VehicleDataEntity(v)).ToList();
+                _database.AddRange(vehicleDataEntities);
+                _database.SaveChanges();
+                for (int i = 0; i < vehicleDataEntities.Count; i++)
+                    SetPrivateField(vehicle[i], nameof(Vehicle.Id), vehicleDataEntities[i].Id);
+            }
+            catch (Exception)
+            {
+                throw new VehicleSaveException();
+            }
+        }
+
+        public void Update(Vehicle vehicle)
+        {
+            try
+            {
+                VehicleDataEntity? dataEntity = _database.Vehicles.FirstOrDefault(v => v.Id == vehicle.Id);
+                if (dataEntity is null)
+                    throw new VehicleNotFoundException();
+                dataEntity.FromDomainModel(vehicle);
+                _database.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw new VehicleSaveException();
+            }
+        }
+        #endregion
+
+        private static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class
+        {
+            var field = typeof(T).GetField($"<{fieldName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+            field?.SetValue(entity, value);
+        }    
     }
 }

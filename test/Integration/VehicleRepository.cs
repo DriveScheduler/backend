@@ -10,21 +10,15 @@ using Xunit;
 
 namespace Integration
 {
-    public class VehicleRepository : IClassFixture<SetupDependencies>, IDisposable
+    public class VehicleRepository
     {
-        private readonly IVehicleRepository _vehicleRepository;
-        private readonly IDataAccessor _database;
+        private readonly IVehicleRepository _vehicleRepository;        
 
-        public VehicleRepository(SetupDependencies fixture)
+        public VehicleRepository()
         {
-            _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
-        }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+            SetupDependencies fixture = new SetupDependencies();
+            _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();           
+        }   
 
         [Fact]
         public void VehicleShouldBeCreatedWithId()

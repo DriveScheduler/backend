@@ -4,14 +4,14 @@ using Domain.ValueObjects;
 
 namespace Domain.Models.Vehicles
 {
-    public abstract class Vehicle
+    public abstract class Vehicle : IEquatable<Vehicle>
     {
         public int Id { get; }
         public RegistrationNumber RegistrationNumber { get; private set; }
         public string Name { get; private set; }        
 
 
-        public readonly List<Lesson> _lessons;
+        private readonly List<Lesson> _lessons;
         public IReadOnlyList<Lesson> Lessons => _lessons;
 
         public abstract LicenceType GetType();        
@@ -54,6 +54,16 @@ namespace Domain.Models.Vehicles
             if (obj is Vehicle vehicle)
                 return Id == vehicle.Id;
             return false;
+        }
+
+        public bool Equals(Vehicle? other)
+        {
+            return Equals(other as object);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using Domain.Enums;
-using Domain.Exceptions.Lessons;
 using Domain.Models.Users;
 using Domain.Repositories;
-
-using Infrastructure.Persistence;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,21 +8,16 @@ using Xunit;
 
 namespace Integration
 {
-    public class UserRepository : IClassFixture<SetupDependencies>, IDisposable
+    public class UserRepository
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IDataAccessor _database;
+        private readonly IUserRepository _userRepository;        
 
-        public UserRepository(SetupDependencies fixture)
+        public UserRepository()
         {
-            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            SetupDependencies fixture = new SetupDependencies();
+            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();            
         }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+        
 
         [Fact]
         public void UserShouldBeCreatedWithId()

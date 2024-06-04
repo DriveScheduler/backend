@@ -5,30 +5,23 @@ using Domain.Models.Users;
 using Domain.Models.Vehicles;
 using Domain.Repositories;
 
-using Infrastructure.Persistence;
-
 using Microsoft.Extensions.DependencyInjection;
 
 using Xunit;
 
 namespace Integration
 {
-    public class LessonRepository : IClassFixture<SetupDependencies>, IDisposable
+    public class LessonRepository
     {
-        private readonly ILessonRepository _lessonRepository;
-        private readonly IDataAccessor _database;
+        private readonly ILessonRepository _lessonRepository;        
 
 
-        public LessonRepository(SetupDependencies fixture)
+        public LessonRepository()
         {
-            _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
-        }
+            SetupDependencies fixture = new SetupDependencies();            
 
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+            _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();            
+        }  
 
 
         [Fact]

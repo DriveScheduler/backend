@@ -6,7 +6,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Models
 {
-    public sealed class Lesson
+    public sealed class Lesson : IEquatable<Lesson>
     {
         public int Id { get; }
         public string Name { get; private set; }
@@ -25,8 +25,7 @@ namespace Domain.Models
 
         public Lesson(string name, DateTime start, int duration, Teacher teacher, LicenceType type, Vehicle vehicle)
         {
-            ThrowIfInvalidName(name);
-            ThrowIfUserIsNotTeacher(teacher);
+            ThrowIfInvalidName(name);            
             ThrowIfLicenceTypeNotMatch(teacher, "Le moniteur doit pouvoir assurer ce type de cours");
 
             Name = name;
@@ -40,8 +39,7 @@ namespace Domain.Models
         }
         public Lesson(int id, string name, DateTime start, int duration, Teacher teacher, LicenceType type, Vehicle vehicle, Student? student = null)
         {
-            ThrowIfInvalidName(name);
-            ThrowIfUserIsNotTeacher(teacher);
+            ThrowIfInvalidName(name);            
             ThrowIfLicenceTypeNotMatch(teacher, "Le moniteur doit pouvoir assurer ce type de cours");
 
             Id = id;
@@ -57,8 +55,7 @@ namespace Domain.Models
 
         public void Update(string name, DateTime start, int duration, Teacher teacher, Vehicle vehicle)
         {
-            ThrowIfInvalidName(name);
-            ThrowIfUserIsNotTeacher(teacher);
+            ThrowIfInvalidName(name);            
             ThrowIfLicenceTypeNotMatch(teacher, "Le moniteur doit pouvoir assurer ce type de cours");
 
             Name = name;
@@ -72,8 +69,7 @@ namespace Domain.Models
         {
             if (student is null) throw new ArgumentNullException(nameof(student));
             if (Student is not null) throw new LessonValidationException("Le cours est complet");
-            ThrowIfLicenceTypeNotMatch(student);
-            ThrowIfUserIsNotStudent(student);
+            ThrowIfLicenceTypeNotMatch(student);            
 
             Student = student;
         }
@@ -86,8 +82,7 @@ namespace Domain.Models
         {
             if (student is null) throw new ArgumentNullException(nameof(student));
             if (Student is null) throw new LessonValidationException("Le cours n'est pas complet");
-            ThrowIfLicenceTypeNotMatch(student);
-            ThrowIfUserIsNotStudent(student, "L'utilisateur doit être un élève pour s'incrire à la file d'attente du cours");
+            ThrowIfLicenceTypeNotMatch(student);            
 
             if (_waitingList.Any(user => user.Id == student.Id))
                 throw new LessonValidationException("L'utilisateur est déjà dans la liste d'attente");        
@@ -114,14 +109,7 @@ namespace Domain.Models
 
             if (Student.Id == user.Id) return UserLessonState.BookedByUser;
             else return UserLessonState.BookedByOther;
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (obj is Lesson lesson)
-                return Id == lesson.Id;
-            return false;
-        }
+        }       
 
         private void ThrowIfInvalidName(string name)
         {
@@ -131,22 +119,30 @@ namespace Domain.Models
 
         private void ThrowIfLicenceTypeNotMatch(User user, string? message = null)
         {
+            if (user is null) return;
             if (user.LicenceType != Type)
                 throw new LessonValidationException(
                     message is null ? "Le permis de l'utilisateur ne correspond pas au type de cours" : message);
         }
 
-        private void ThrowIfUserIsNotStudent(User user, string? message = null)
+
+        public override bool Equals(object? obj)
         {
-            if (user.GetType() != typeof(Student))
-                throw new LessonValidationException(
-                    message is null ? "L'utilisateur doit être un élève pour s'incrire au cours" : message);
+            if (obj is Lesson lesson)
+                return Id == lesson.Id;
+            return false;
         }
 
-        private void ThrowIfUserIsNotTeacher(User user)
+        public bool Equals(Lesson? other)
         {
-            if (user.GetType() != typeof(Teacher))
-                throw new LessonValidationException("La personne en charge du cours doit être un moniteur");
-        }     
+            return Equals(other as object);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
+        }
+
+     
     }
 }

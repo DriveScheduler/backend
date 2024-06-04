@@ -12,7 +12,9 @@ namespace Infrastructure.Repositories
 {
     internal sealed class UserRepository(DatabaseContext database) : IUserRepository
     {
-        private readonly DatabaseContext _database = database;       
+        private readonly DatabaseContext _database = database;
+
+        #region GET
         public void Insert(User user)
         {
             try
@@ -20,7 +22,7 @@ namespace Infrastructure.Repositories
                 UserDataEntity userDataEntity = new UserDataEntity(user);
                 _database.Add(userDataEntity);
                 _database.SaveChanges();
-                SetPrivateField(user, nameof(User.Id), userDataEntity.Id);                
+                SetPrivateField(user, nameof(User.Id), userDataEntity.Id);
             }
             catch (Exception)
             {
@@ -36,13 +38,13 @@ namespace Infrastructure.Repositories
                 _database.AddRange(userDataEntities);
                 _database.SaveChanges();
                 for (int i = 0; i < users.Count; i++)
-                    SetPrivateField(users[i], nameof(User.Id), userDataEntities[i].Id);                
+                    SetPrivateField(users[i], nameof(User.Id), userDataEntities[i].Id);
             }
             catch (Exception)
             {
                 throw new UserSaveException();
             }
-        }        
+        }
 
         public void Update(User user)
         {
@@ -52,7 +54,7 @@ namespace Infrastructure.Repositories
                 if (dataEntity is null)
                     throw new UserNotFoundException();
                 dataEntity.FromDomainModel(user);
-                _database.SaveChanges();                
+                _database.SaveChanges();
             }
             catch (Exception)
             {
@@ -60,12 +62,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class
-        {
-            var field = typeof(T).GetField($"<{fieldName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
-            field?.SetValue(entity, value);
-        }
+        #endregion
 
+        #region UPDATE
         public List<Teacher> GetAllTeachers()
         {
             return _database.Users
@@ -110,5 +109,12 @@ namespace Infrastructure.Repositories
         {
             return _database.Users.FirstOrDefault(u => u.Email == email) is null;
         }
+        #endregion
+
+        private static void SetPrivateField<T>(T entity, string fieldName, object value) where T : class
+        {
+            var field = typeof(T).GetField($"<{fieldName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+            field?.SetValue(entity, value);
+        }       
     }
 }

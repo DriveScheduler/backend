@@ -1,6 +1,7 @@
 ﻿using Domain.Enums;
 using Domain.Models;
 using Domain.Models.Users;
+using Domain.Models.Vehicles;
 
 namespace Infrastructure.Entities
 {
@@ -43,7 +44,9 @@ namespace Infrastructure.Entities
         public override Lesson BaseDomainModel()
         {
             Student? student = Student == null ? null : (Student)Student.BaseDomainModel();
-            Lesson lesson = new Lesson(Id, Name, Start, Duration, (Teacher)Teacher.BaseDomainModel(), Type, Vehicle.BaseDomainModel(), student);            
+            Teacher? teacher = Teacher == null ? null : (Teacher)Teacher.BaseDomainModel();
+            Vehicle? vehicle = Vehicle == null ? null : Vehicle.BaseDomainModel();
+            Lesson lesson = new Lesson(Id, Name, Start, Duration, teacher, Type, vehicle, student);            
 
             return lesson;
         }

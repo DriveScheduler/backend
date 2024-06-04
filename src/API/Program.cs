@@ -2,14 +2,24 @@ using API.Authentication;
 
 using Application;
 
+using Domain.Enums;
+using Domain.Models;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
+using Domain.Repositories;
+
 using Infrastructure;
+using Infrastructure.Persistence;
+using Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
+
+using System.Data;
 
 internal class Program
 {
     private static void Main(string[] args)
-    {       
+    {
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
@@ -33,7 +43,7 @@ internal class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();            
+            app.UseSwagger();
             app.UseSwaggerUI();
         }
 
@@ -44,7 +54,7 @@ internal class Program
            .AllowAnyHeader());
 
 
-        app.UseAuthentication();        
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
 

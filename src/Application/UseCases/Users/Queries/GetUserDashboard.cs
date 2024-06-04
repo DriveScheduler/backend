@@ -13,12 +13,10 @@ namespace Application.UseCases.Users.Queries
     public sealed record GetUserDashboard_Query(Guid UserId) : IRequest<UserDashboard>;
 
     internal sealed class GetUserDashboard_QueryHandler(
-        ILessonRepository lessonRepository,  
         IUserRepository userRepository,
         ISystemClock clock
         ) : IRequestHandler<GetUserDashboard_Query, UserDashboard>
     {
-        private readonly ILessonRepository _lessonRepository = lessonRepository;  
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ISystemClock _clock = clock;
 
@@ -27,10 +25,10 @@ namespace Application.UseCases.Users.Queries
             Student student = _userRepository.GetStudentById(request.UserId);
             IReadOnlyList<Lesson> allStudentLessons = student.Lessons;
 
-            List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End < _clock.Now).ToList();
+            List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End <= _clock.Now).ToList();
             User? favouriteTeacher = FavouriteTeacher(achievedLessons, out int teacherTotalTime);
             Vehicle? favouriteVehicle = FavouriteVehicle(achievedLessons, out int vehicleTotalTime);
-            
+
             DateTime firstDayOfThisWeek = _clock.Now.AddDays(-1 * (_clock.Now.DayOfWeek - DayOfWeek.Monday)).Date;
 
             UserDashboard dashboard = new UserDashboard()
