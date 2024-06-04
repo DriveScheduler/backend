@@ -1,4 +1,6 @@
 ﻿using Domain.Models;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
 
 namespace Application.Models
 {

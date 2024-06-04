@@ -2,6 +2,7 @@
 
 using Domain.Exceptions.Lessons;
 using Domain.Models;
+using Domain.Models.Users;
 using Domain.Repositories;
 
 using MediatR;
@@ -25,7 +26,7 @@ namespace Application.UseCases.Lessons.Commands
             Lesson lesson = _lessonRepository.GetById(request.LessonId); 
             User teacher = _userRepository.GetUserById(request.UserId);
 
-            if(lesson.Teacher != teacher)
+            if(lesson.Teacher.Id != teacher.Id)
                 throw new LessonValidationException("Vous n'êtes pas le professeur de ce cours");
 
             _mediator.Publish(new TeacherDeleteLesson_Notification(request.LessonId), cancellationToken);

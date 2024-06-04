@@ -1,29 +1,19 @@
-﻿using Domain.Models;
+﻿using Infrastructure.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    internal sealed class DatabaseContext : DbContext, IDataAccessor
+    internal sealed class DatabaseContext : DbContext
     {
         public DatabaseContext()
-        {            
+        {
         }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
-        {            
-        }
-
-        public void Clear()
         {
-            Users.RemoveRange(Users.ToList());
-            Lessons.RemoveRange(Lessons.ToList());
-            Vehicles.RemoveRange(Vehicles.ToList());
-            SaveChanges();
-
-            ChangeTracker.Clear();
-            Database.EnsureDeleted();
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,49 +21,35 @@ namespace Infrastructure.Persistence
             base.OnModelCreating(modelBuilder);
         }
 
-        public void Insert<T>(T entity) where T : class
-        {
-            Set<T>().Add(entity);
-            SaveChanges();
-        }
-        public void Insert<T>(List<T> entities) where T : class
-        {
-            Set<T>().AddRange(entities);
-            SaveChanges();
-        }
+        private DbSet<UserDataEntity> _users { get; set; }
+        private DbSet<LessonDataEntity> _lessons { get; set; }
+        private DbSet<VehicleDataEntity> _vehicles { get; set; }
 
-        void IDataAccessor.Update<T>(T entity) where T : class
-        {
-            Set<T>().Update(entity);
-            SaveChanges();
-        }
+        internal IQueryable<UserDataEntity> Users => _users
+            .Include(u => u.LessonsAsTeacher)
+                .ThenInclude(l => l.Student)
+             .Include(u => u.LessonsAsTeacher)
+                .ThenInclude(l => l.Vehicle)
 
-        public void Delete<T>(T entity) where T : class
-        {
-            Set<T>().Remove(entity);
-            SaveChanges();
-        }
+            .Include(u => u.LessonsAsStudent)
+                .ThenInclude(l => l.Teacher)
+             .Include(u => u.LessonsAsStudent)
+                .ThenInclude(l => l.Vehicle)
 
+            .Include(u => u.LessonWaitingLists)
+                .ThenInclude(l => l.Lesson);
 
-        internal DbSet<User> Users { get; set; }
-        internal DbSet<Lesson> Lessons { get; set; }
-        internal DbSet<Vehicle> Vehicles { get; set; }
-
-        IEnumerable<Lesson> IDataAccessor.Lessons => Lessons
+        internal IQueryable<LessonDataEntity> Lessons => _lessons
             .Include(l => l.Teacher)
             .Include(l => l.Student)
-            .Include(l => l.WaitingList)
+            .Include(l => l.UserWaitingLists)
+                .ThenInclude(u => u.User)
             .Include(l => l.Vehicle)
-            .AsEnumerable();
+                .ThenInclude(v => v.Lessons);
 
-        IEnumerable<User> IDataAccessor.Users => Users
-            .Include(u => u.LessonsAsTeacher)
-            .Include(u => u.LessonsAsStudent)
-            .Include(u => u.WaitingList)
-            .AsEnumerable();
-
-        IEnumerable<Vehicle> IDataAccessor.Vehicles => Vehicles
+        internal IQueryable<VehicleDataEntity> Vehicles => _vehicles
             .Include(v => v.Lessons)
-            .AsEnumerable();
+                .ThenInclude(l => l.Teacher);
+
     }
 }

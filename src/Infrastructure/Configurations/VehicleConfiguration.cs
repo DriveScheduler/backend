@@ -1,15 +1,13 @@
-﻿using Domain.Models;
-
-using Infrastructure.Configurations.ValueObjectsConverter;
+﻿using Infrastructure.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
+    internal class VehicleConfiguration : IEntityTypeConfiguration<VehicleDataEntity>
     {
-        public void Configure(EntityTypeBuilder<Vehicle> builder)
+        public void Configure(EntityTypeBuilder<VehicleDataEntity> builder)
         {
             builder.ToTable("Vehicles");
 
@@ -18,7 +16,6 @@ namespace Infrastructure.Configurations
                 .ValueGeneratedOnAdd();
 
             builder.Property(v => v.RegistrationNumber)
-                .HasConversion<RegistrationNumberConverter>()
                 .IsRequired();
 
             builder.Property(v => v.Name)
@@ -27,6 +24,8 @@ namespace Infrastructure.Configurations
 
             builder.Property(v => v.Type)
                 .IsRequired();
+
+            builder.Ignore(v => v.LessonsId);
         }
     }
 }

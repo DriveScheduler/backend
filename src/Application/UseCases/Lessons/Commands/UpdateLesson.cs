@@ -2,6 +2,8 @@
 
 using Domain.Exceptions.Lessons;
 using Domain.Models;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
 using Domain.Repositories;
 
 using MediatR;
@@ -25,7 +27,7 @@ namespace Application.UseCases.Lessons.Commands
         public Task Handle(UpdateLesson_Command request, CancellationToken cancellationToken)
         {
             Lesson lesson = _lessonRepository.GetById(request.Id);
-            User teacher = _userRepository.GetUserById(request.TeacherId);
+            Teacher teacher = _userRepository.GetTeacherById(request.TeacherId);
             
             if (lesson.Start < _clock.Now)
                 throw new LessonValidationException("Le cours est déjà passé");
@@ -33,11 +35,11 @@ namespace Application.UseCases.Lessons.Commands
                 throw new LessonValidationException("Le date et l'heure du cours ne peuvent pas être inférieur à maintenant");
 
             DateTime end = request.Date.AddMinutes(request.Duration);
-            Vehicle vehicle = lesson.Vehicle;
+            Vehicle vehicle = _vehicleRepository.GetById(lesson.Vehicle.Id);
             if (vehicle.Lessons.Any(vehicleLesson => vehicleLesson.Start < end && vehicleLesson.End > request.Date && vehicleLesson.Id != lesson.Id))
                 vehicle = _vehicleRepository.FindAvailable(request.Date, request.Duration, lesson.Type);
 
-            if (teacher.LessonsAsTeacher.Any(teacherLesson => teacherLesson.Start < end && teacherLesson.End > request.Date && teacherLesson.Id != lesson.Id))
+            if (teacher.Lessons.Any(teacherLesson => teacherLesson.Start < end && teacherLesson.End > request.Date && teacherLesson.Id != lesson.Id))
                 throw new LessonValidationException("Le moniteur n'est pas disponible pour cette plage horaire");
 
             lesson.Update(

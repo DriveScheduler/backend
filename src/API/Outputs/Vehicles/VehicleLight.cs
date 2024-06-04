@@ -1,4 +1,4 @@
-﻿using Domain.Models;
+﻿using Domain.Models.Vehicles;
 
 namespace API.Outputs.Vehicles
 {
@@ -14,7 +14,7 @@ namespace API.Outputs.Vehicles
             Id = vehicle.Id;
             RegistrationNumber = vehicle.RegistrationNumber.Value;
             Name = vehicle.Name;
-            Type = new LicenceTypeOutput(vehicle.Type);
+            Type = new LicenceTypeOutput(vehicle.GetType());
         }
     }
 }

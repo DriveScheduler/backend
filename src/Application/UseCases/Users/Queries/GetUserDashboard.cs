@@ -2,6 +2,8 @@
 using Application.Models;
 
 using Domain.Models;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
 using Domain.Repositories;
 
 using MediatR;
@@ -11,24 +13,22 @@ namespace Application.UseCases.Users.Queries
     public sealed record GetUserDashboard_Query(Guid UserId) : IRequest<UserDashboard>;
 
     internal sealed class GetUserDashboard_QueryHandler(
-        ILessonRepository lessonRepository,  
         IUserRepository userRepository,
         ISystemClock clock
         ) : IRequestHandler<GetUserDashboard_Query, UserDashboard>
     {
-        private readonly ILessonRepository _lessonRepository = lessonRepository;  
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ISystemClock _clock = clock;
 
         public Task<UserDashboard> Handle(GetUserDashboard_Query request, CancellationToken cancellationToken)
         {
-            User user = _userRepository.GetUserById(request.UserId);
-            IReadOnlyList<Lesson> allStudentLessons = _lessonRepository.GetStudentLessons(user);
+            Student student = _userRepository.GetStudentById(request.UserId);
+            IReadOnlyList<Lesson> allStudentLessons = student.Lessons;
 
-            List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End < _clock.Now).ToList();
+            List<Lesson> achievedLessons = allStudentLessons.Where(l => l.End <= _clock.Now).ToList();
             User? favouriteTeacher = FavouriteTeacher(achievedLessons, out int teacherTotalTime);
             Vehicle? favouriteVehicle = FavouriteVehicle(achievedLessons, out int vehicleTotalTime);
-            
+
             DateTime firstDayOfThisWeek = _clock.Now.AddDays(-1 * (_clock.Now.DayOfWeek - DayOfWeek.Monday)).Date;
 
             UserDashboard dashboard = new UserDashboard()
@@ -50,7 +50,7 @@ namespace Application.UseCases.Users.Queries
             totalTime = 0;
             User? favoriteTeacher = null;
 
-            Dictionary<User, List<Lesson>> teacherLessons = studentLessons.GroupBy(l => l.Teacher).ToDictionary(row => row.Key, row => row.ToList());
+            Dictionary<Teacher, List<Lesson>> teacherLessons = studentLessons.GroupBy(l => l.Teacher).ToDictionary(row => row.Key, row => row.ToList());
             if (teacherLessons.Count == 1)
             {
                 totalTime = teacherLessons.First().Value.Sum(l => l.Duration.Value);
@@ -58,7 +58,7 @@ namespace Application.UseCases.Users.Queries
             }
 
             int maxDuration = 0;
-            foreach (KeyValuePair<User, List<Lesson>> row in teacherLessons)
+            foreach (KeyValuePair<Teacher, List<Lesson>> row in teacherLessons)
             {
                 int total = row.Value.Sum(l => l.Duration.Value);
                 if (total > maxDuration)

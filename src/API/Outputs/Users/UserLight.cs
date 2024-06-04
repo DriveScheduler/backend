@@ -1,4 +1,4 @@
-﻿using Domain.Models;
+﻿using Domain.Models.Users;
 
 namespace API.Outputs.Users
 {
@@ -18,7 +18,7 @@ namespace API.Outputs.Users
             FirstName = user.FirstName.Value;
             Email = user.Email.Value;
             LicenceType = new LicenceTypeOutput(user.LicenceType);
-            UserType = new UserTypeOutput(user.Type);
+            UserType = new UserTypeOutput(user.GetRole());
         }
     }
 }

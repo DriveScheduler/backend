@@ -1,9 +1,9 @@
-﻿using Domain.Models;
-using Domain.Enums;
+﻿using Domain.Enums;
 using Domain.Repositories;
 
 using MediatR;
 using Domain.Exceptions.Vehicles;
+using Domain.Models.Vehicles;
 
 namespace Application.UseCases.Vehicles.Commands
 {

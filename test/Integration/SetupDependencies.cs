@@ -18,6 +18,6 @@ namespace Integration
             _serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
 
             ServiceProvider = _serviceCollection.BuildServiceProvider();
-        }
+        }  
     }
 }

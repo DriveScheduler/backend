@@ -1,15 +1,13 @@
-﻿using Domain.Models;
-
-using Infrastructure.Configurations.ValueObjectsConverter;
+﻿using Infrastructure.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
+    internal sealed class UserConfiguration : IEntityTypeConfiguration<UserDataEntity>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<UserDataEntity> builder)
         {
             builder.ToTable("Users");
 
@@ -19,22 +17,18 @@ namespace Infrastructure.Configurations
 
             builder.Property(u => u.Name)
                 .IsRequired()
-                .HasConversion<SurnameConverter>()
                 .HasMaxLength(50);
 
             builder.Property(u => u.FirstName)
                 .IsRequired()
-                .HasConversion<FirstnameConverter>()
                 .HasMaxLength(50);
 
             builder.Property(u => u.Email)
                 .IsRequired()
-                .HasConversion<EmailConverter>()
                 .HasMaxLength(50);
 
             builder.Property(u => u.Password)
                .IsRequired()
-               .HasConversion<PasswordConverter>()
                .HasMaxLength(100);
 
             builder.Property(u => u.LicenceType)
@@ -42,6 +36,9 @@ namespace Infrastructure.Configurations
 
             builder.Property(u => u.Type)
                 .IsRequired();
+
+            builder.Ignore(u => u.LessonsAsStudentId);
+            builder.Ignore(u => u.LessonsAsTeacherId);
         }
     }
 }
