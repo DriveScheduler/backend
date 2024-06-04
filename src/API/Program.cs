@@ -37,6 +37,9 @@ internal class Program
         builder.Services.AddJwtTokenService(builder.Configuration);
         builder.Services.AddSwaggerJwtTokenService();
 
+        builder.Services.AddAuthorization(options =>
+              options.AddPolicy("Admin",
+              policy => policy.RequireClaim(JwtProvider.CLAIM_ADMIN_ROLE)));
 
         var app = builder.Build();
 

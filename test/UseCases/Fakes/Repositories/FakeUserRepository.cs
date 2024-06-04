@@ -1,15 +1,8 @@
 ﻿using Domain.Exceptions.Users;
-using Domain.Models;
 using Domain.Models.Users;
-using Domain.Models.Vehicles;
 using Domain.Repositories;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UseCases.Fakes.Repositories
 {
@@ -96,6 +89,11 @@ namespace UseCases.Fakes.Repositories
             typeof(T)
               .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)
               ?.SetValue(entity, value);
+        }
+
+        public List<User> GetAll()
+        {
+            return _users;
         }
     }
 }

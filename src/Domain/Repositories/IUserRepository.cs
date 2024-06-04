@@ -8,6 +8,7 @@ namespace Domain.Repositories
         public void Insert(List<User> users);        
         public void Update(User user);
 
+        public List<User> GetAll();
         public User GetUserById(Guid id);
         public Teacher GetTeacherById(Guid id);
         public Student GetStudentById(Guid id);

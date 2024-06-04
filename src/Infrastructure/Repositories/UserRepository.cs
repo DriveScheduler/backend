@@ -65,6 +65,13 @@ namespace Infrastructure.Repositories
         #endregion
 
         #region UPDATE
+        public List<User> GetAll()
+        {
+            return _database.Users
+                .Select(u => u.FullDomainModel())
+                .ToList();
+        }
+
         public List<Teacher> GetAllTeachers()
         {
             return _database.Users
@@ -115,6 +122,6 @@ namespace Infrastructure.Repositories
         {
             var field = typeof(T).GetField($"<{fieldName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
             field?.SetValue(entity, value);
-        }       
+        }      
     }
 }
