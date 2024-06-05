@@ -15,7 +15,7 @@ namespace Integration
             _serviceCollection = new ServiceCollection();
 
             _serviceCollection.AddRepositories();
-            _serviceCollection.SetupInMemoryDatabase(Guid.NewGuid().ToString());
+            _serviceCollection.SetupDatabase("Data Source=C:\\Users\\romai\\Documents\\CNAM\\DriveScheduler\\backend\\test\\Integration\\test_database.db");
 
             ServiceProvider = _serviceCollection.BuildServiceProvider();
         }  
