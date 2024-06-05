@@ -1,12 +1,7 @@
-﻿using Domain.Enums;
-using Domain.Models.Vehicles;
+﻿using Domain.Models.Vehicles;
 using Domain.Repositories;
 
-using Infrastructure.Persistence;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using Xunit;
 
 namespace Integration
 {
@@ -27,7 +22,7 @@ namespace Integration
 
             _vehicleRepository.Insert(car);
 
-            Assert.That(car.Id, Is.Not.EqualTo((int)default));
+            Assert.NotEqual((int)default, car.Id);
         }
 
         [Fact]
@@ -35,17 +30,17 @@ namespace Integration
         {
             Car car = new Car("XX123XX", "Voiture");
             Motorcycle motorcycle = new Motorcycle("YY123YY", "Moto");
-            Truck truck = new Truck("2212322", "Camion");            
+            Truck truck = new Truck("ZZ123ZZ", "Camion");            
 
             _vehicleRepository.Insert([car, motorcycle, truck]);
 
-            Assert.That(car.Id, Is.Not.EqualTo((int)default));
-            Assert.That(motorcycle.Id, Is.Not.EqualTo((int)default));
-            Assert.That(truck.Id, Is.Not.EqualTo((int)default));
+            Assert.NotEqual(default, car.Id);
+            Assert.NotEqual(default, motorcycle.Id);
+            Assert.NotEqual(default, truck.Id);
 
-            Assert.That(car.Id, Is.Not.EqualTo(motorcycle.Id));
-            Assert.That(truck.Id, Is.Not.EqualTo(motorcycle.Id));
-            Assert.That(truck.Id, Is.Not.EqualTo(car.Id));
+            Assert.NotEqual(motorcycle.Id, car.Id);
+            Assert.NotEqual(motorcycle.Id, truck.Id);
+            Assert.NotEqual(car.Id, truck.Id);
         }
 
         [Fact]
@@ -63,15 +58,15 @@ namespace Integration
         public void VehicleShouldBeUpdate()
         {
             Car car = new Car("XX123XX", "Voiture");
-
             _vehicleRepository.Insert(car);
 
-            Car updatedVehicle = new Car("XX123XX", "Voiture2");
-            _vehicleRepository.Update(updatedVehicle);
+            Vehicle updatedVehicle = _vehicleRepository.GetById(car.Id);
+            updatedVehicle.Update("YY456YY", "Voiture 2");
+            _vehicleRepository.Update(updatedVehicle);           
 
             Vehicle vehicleFromQuery = _vehicleRepository.GetById(car.Id);
 
-            Assert.Equals(updatedVehicle, vehicleFromQuery);
+            Assert.Equal(updatedVehicle, vehicleFromQuery);
         }
     }
 }

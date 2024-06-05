@@ -4,8 +4,6 @@ using Domain.Repositories;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using Xunit;
-
 namespace Integration
 {
     public class UserRepository
@@ -26,7 +24,7 @@ namespace Integration
 
             _userRepository.Insert(teacher);
 
-            Assert.That(teacher.Id, Is.Not.EqualTo(Guid.Empty));
+            Assert.NotEqual(Guid.Empty, teacher.Id);
         }
 
         [Fact]
@@ -38,13 +36,13 @@ namespace Integration
 
             _userRepository.Insert([teacher, student, admin]);
 
-            Assert.That(teacher.Id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(student.Id, Is.Not.EqualTo(Guid.Empty));
-            Assert.That(admin.Id, Is.Not.EqualTo(Guid.Empty));
+            Assert.NotEqual(Guid.Empty, teacher.Id);
+            Assert.NotEqual(Guid.Empty, student.Id);
+            Assert.NotEqual(Guid.Empty, admin.Id);
 
-            Assert.That(student.Id, Is.Not.EqualTo(teacher.Id));
-            Assert.That(admin.Id, Is.Not.EqualTo(teacher.Id));
-            Assert.That(admin.Id, Is.Not.EqualTo(student.Id));
+            Assert.NotEqual(teacher.Id ,student.Id);
+            Assert.NotEqual(teacher.Id, admin.Id);
+            Assert.NotEqual(student.Id, admin.Id);
         }
 
         [Fact]
@@ -70,7 +68,7 @@ namespace Integration
 
             User userFromQuery = _userRepository.GetUserById(teacher.Id);
 
-            Assert.Equals(updatedTeacher, userFromQuery);
+            Assert.Equal(updatedTeacher, userFromQuery);
         }
     }
 }
