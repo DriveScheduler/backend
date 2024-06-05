@@ -5,9 +5,7 @@ using API.Outputs.Users;
 using Application.Models;
 using Application.UseCases.Users.Commands;
 using Application.UseCases.Users.Queries;
-
-using Domain.Models;
-
+using Domain.Models.Users;
 using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
@@ -30,9 +28,9 @@ namespace API.Controllers
             var command = new CreateUser_Command(input.Name, input.FirstName, input.Email, input.Password, input.LicenceType, input.Type);
             try
             {
-                User user = await _mediator.Send(command);
-                string token = _tokenProvider.GenerateToken(user);
-                return Ok(new UserAuthenticated() { UserId = user.Id, Token = token});
+                Guid userId = await _mediator.Send(command);
+                string token = _tokenProvider.GenerateToken(userId, input.FirstName, input.Type);
+                return Ok(new UserAuthenticated() { UserId = userId, Token = token});
             }
             catch (Exception e)
             {
@@ -76,7 +74,7 @@ namespace API.Controllers
             var query = new GetTeachers_Query();
             try
             {
-                List<User> teachers = await _mediator.Send(query);
+                List<Teacher> teachers = await _mediator.Send(query);
                 return Ok(teachers.Select(teacher => new UserLight(teacher)));
             }
             catch (Exception e)
@@ -92,7 +90,8 @@ namespace API.Controllers
             try
             {
                 UserDashboard dashboard = await _mediator.Send(query);
-                return Ok(new UserDashboardOutput(dashboard));
+                User connectedUser = await _mediator.Send(new GetUserById_Query(GetUserId()));
+                return Ok(new UserDashboardOutput(dashboard, connectedUser));
             }
             catch (Exception e)
             {
@@ -107,7 +106,8 @@ namespace API.Controllers
             try
             {
                 UserLessonPlanning planning = await _mediator.Send(query);
-                return Ok(new UserLessonPlanningOutput(planning));
+                User connectedUser = await _mediator.Send(new GetUserById_Query(GetUserId()));
+                return Ok(new UserLessonPlanningOutput(planning, connectedUser));
             }
             catch (Exception e)
             {
@@ -122,7 +122,8 @@ namespace API.Controllers
             try
             {
                 UserLessonHistory history = await _mediator.Send(query);
-                return Ok(new UserLessonHistoryOutput(history));
+                User connectedUser = await _mediator.Send(new GetUserById_Query(GetUserId()));
+                return Ok(new UserLessonHistoryOutput(history, connectedUser));
             }
             catch (Exception e)
             {
@@ -138,7 +139,7 @@ namespace API.Controllers
             try
             {
                 User user = await _mediator.Send(query);
-                string token = _tokenProvider.GenerateToken(user);
+                string token = _tokenProvider.GenerateToken(user.Id, user.FirstName.Value, user.GetRole());
                 return Ok(new UserAuthenticated() { UserId = user.Id, Token = token});
             }
             catch (Exception e)

@@ -1,9 +1,6 @@
 ﻿using Domain.Enums;
-using Domain.Exceptions.Lessons;
-using Domain.Models;
+using Domain.Models.Users;
 using Domain.Repositories;
-
-using Infrastructure.Persistence;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,26 +8,21 @@ using Xunit;
 
 namespace Integration
 {
-    public class UserRepository : IClassFixture<SetupDependencies>, IDisposable
+    public class UserRepository
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IDataAccessor _database;
+        private readonly IUserRepository _userRepository;        
 
-        public UserRepository(SetupDependencies fixture)
+        public UserRepository()
         {
-            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            SetupDependencies fixture = new SetupDependencies();
+            _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();            
         }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+        
 
         [Fact]
         public void UserShouldBeCreatedWithId()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
 
             _userRepository.Insert(teacher);
 
@@ -40,9 +32,9 @@ namespace Integration
         [Fact]
         public void UserShouldBeCreatedWithDifferentId()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
-            User student = new User("student", "student", "student@gmail.com", "mdp", LicenceType.Car, UserType.Student);
-            User admin = new User("admin", "admin", "admin@gmail.com", "mdp", LicenceType.Car, UserType.Admin);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
+            Student student = new Student("student", "student", "student@gmail.com", "mdp", LicenceType.Car);
+            Admin admin = new Admin("admin", "admin", "admin@gmail.com", "mdp", LicenceType.Car);
 
             _userRepository.Insert([teacher, student, admin]);
 
@@ -58,7 +50,7 @@ namespace Integration
         [Fact]
         public void UserShouldBeGetByQuery()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
 
             _userRepository.Insert(teacher);
 
@@ -69,11 +61,11 @@ namespace Integration
         [Fact]
         public void UserShouldBeUpdate()
         {
-            User teacher = new User("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
+            Teacher teacher = new Teacher("teacher", "teacher", "teacher@gmail.com", "mdp", LicenceType.Car);
 
             _userRepository.Insert(teacher);
 
-            User updatedTeacher = new User(teacher.Id, "teacher2", "teacher2", "teacher2@gmail.com", "mdp", LicenceType.Car, UserType.Teacher);
+            Teacher updatedTeacher = new Teacher(teacher.Id, "teacher2", "teacher2", "teacher2@gmail.com", "mdp", LicenceType.Car);
             _userRepository.Update(updatedTeacher);
 
             User userFromQuery = _userRepository.GetUserById(teacher.Id);

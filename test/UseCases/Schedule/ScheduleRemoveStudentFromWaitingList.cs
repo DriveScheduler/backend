@@ -1,11 +1,13 @@
 ﻿using Application.Abstractions;
 using Application.UseCases.Lessons.Commands;
 
-using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Lessons;
 using Domain.Exceptions.Users;
+using Domain.Models;
 using Domain.Repositories;
+
+using Infrastructure.Persistence;
 
 using MediatR;
 
@@ -13,38 +15,36 @@ using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.Fakes;
 using UseCases.TestData;
-using Infrastructure.Persistence;
 
 namespace UseCases.Schedule
 {
-    public class ScheduleRemoveStudentFromWaitingList : IClassFixture<SetupDependencies>, IDisposable
+    public class ScheduleRemoveStudentFromWaitingList
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
-
-        private readonly IDataAccessor _database;
+        
         private readonly IMediator _mediator;
         private readonly ISystemClock _clock;
         private readonly FakeEmailSender _emailSender;
 
-        public ScheduleRemoveStudentFromWaitingList(SetupDependencies fixture)
+        public ScheduleRemoveStudentFromWaitingList()
         {
+            SetupDependencies fixture = new SetupDependencies();
+            fixture
+                .AddDefaultDependencies()
+                .AddFakeEmailSender()
+                .Build();
+
             _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
-
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = fixture.ServiceProvider.GetRequiredService<ISystemClock>();
             _emailSender = (FakeEmailSender)fixture.ServiceProvider.GetRequiredService<IEmailSender>();
         }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
-
+    
 
         [Fact]
         public async void ScheduleShould_RemoveStudentFromLesson_And_NotifyWaitingStudents()
@@ -59,11 +59,11 @@ namespace UseCases.Schedule
 
             const int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student1 = DataSet.GetCarStudent(studentId1);
-            User student2 = DataSet.GetStudent(studentId2, email: studentEmails[0]);
-            User student3 = DataSet.GetStudent(studentId3, email: studentEmails[1]);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataTestFactory.GetCarTeacher(teacherId);
+            var student1 = DataTestFactory.GetCarStudent(studentId1);
+            var student2 = DataTestFactory.GetStudent(studentId2, email: studentEmails[0]);
+            var student3 = DataTestFactory.GetStudent(studentId3, email: studentEmails[1]);
+            var car = DataTestFactory.GetCar(1);
             _userRepository.Insert(teacher);
             _userRepository.Insert(student1);
             _userRepository.Insert(student2);
@@ -96,11 +96,11 @@ namespace UseCases.Schedule
 
             const int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student1 = DataSet.GetCarStudent(studentId1);
-            User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataTestFactory.GetCarTeacher(teacherId);
+            var student1 = DataTestFactory.GetCarStudent(studentId1);
+            var student2 = DataTestFactory.GetCarStudent(studentId2);
+            var student3 = DataTestFactory.GetCarStudent(studentId3);
+            var car = DataTestFactory.GetCar(1);
             _userRepository.Insert(teacher);
             _userRepository.Insert(student1);
             _userRepository.Insert(student2);
@@ -132,11 +132,11 @@ namespace UseCases.Schedule
 
             const int lessonId = 1;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student1 = DataSet.GetCarStudent(studentId1);
-            User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataTestFactory.GetCarTeacher(teacherId);
+            var student1 = DataTestFactory.GetCarStudent(studentId1);
+            var student2 = DataTestFactory.GetCarStudent(studentId2);
+            var student3 = DataTestFactory.GetCarStudent(studentId3);
+            var car = DataTestFactory.GetCar(1);
             _userRepository.Insert(teacher);
             _userRepository.Insert(student1);
             _userRepository.Insert(student2);
@@ -166,11 +166,11 @@ namespace UseCases.Schedule
             const int lessonId = 1;
             const int invalidLessonId = 2;
 
-            User teacher = DataSet.GetCarTeacher(teacherId);
-            User student1 = DataSet.GetCarStudent(studentId1);
-            User student2 = DataSet.GetCarStudent(studentId2);
-            User student3 = DataSet.GetCarStudent(studentId3);
-            Vehicle car = DataSet.GetCar(1);
+            var teacher = DataTestFactory.GetCarTeacher(teacherId);
+            var student1 = DataTestFactory.GetCarStudent(studentId1);
+            var student2 = DataTestFactory.GetCarStudent(studentId2);
+            var student3 = DataTestFactory.GetCarStudent(studentId3);
+            var car = DataTestFactory.GetCar(1);
             _userRepository.Insert(teacher);
             _userRepository.Insert(student1);
             _userRepository.Insert(student2);

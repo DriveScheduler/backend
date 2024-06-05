@@ -1,6 +1,4 @@
 ﻿using Application.UseCases.Users.Queries;
-
-using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Users;
 using Domain.Repositories;
@@ -10,16 +8,20 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
+using Domain.Models.Users;
 
 namespace UseCases.Users
 {
-    public class UserGetAccount : IClassFixture<SetupDependencies>
+    public class UserGetAccount
     {
         private readonly IUserRepository _userRepository;
         private readonly IMediator _mediator;
 
-        public UserGetAccount(SetupDependencies fixture)
+        public UserGetAccount()
         {
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
         }
@@ -32,7 +34,7 @@ namespace UseCases.Users
             Guid userId = new Guid("00000000-0000-0000-0000-000000000001");
             const LicenceType licenceType = LicenceType.Car;
 
-            User expectedUser = DataSet.GetStudent(userId, licenceType);
+            User expectedUser = DataTestFactory.GetStudent(userId, licenceType);
             _userRepository.Insert(expectedUser);
 
             // Act

@@ -2,12 +2,13 @@
 using API.Inputs.Vehicles;
 using API.Outputs.Users;
 using API.Outputs.Vehicles;
-
+using Application.UseCases.Users.Commands;
 using Application.UseCases.Users.Queries;
 using Application.UseCases.Vehicles.Commands;
 using Application.UseCases.Vehicles.Queries;
 
-using Domain.Models;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
 
 using MediatR;
 
@@ -67,6 +68,21 @@ namespace API.Controllers
                 return BadRequest(e.Message);
             }
         }
+        
+        [HttpDelete("Vehicle/{id}")]
+        public async Task<IActionResult> DeleteVehicleById(int id)
+        {
+            var command = new DeleteVehicle_Command(id);
+            try
+            {
+                await _mediator.Send(command);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
         [HttpGet("Vehicles")]
         public async Task<IActionResult> Vehicles()
@@ -91,6 +107,21 @@ namespace API.Controllers
             {
                 List<User> users = await _mediator.Send(query);
                 return Ok(users.Select(u => new UserLight(u)));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
+        [HttpDelete("User/{id}")]
+        public async Task<IActionResult> DeleteUserById(Guid id)
+        {
+            var command = new DeleteUser_Command(id);
+            try
+            {
+                await _mediator.Send(command);
+                return Ok();
             }
             catch (Exception e)
             {

@@ -2,6 +2,7 @@
 using Application.Models;
 
 using Domain.Models;
+using Domain.Models.Users;
 using Domain.Repositories;
 
 using MediatR;
@@ -29,7 +30,16 @@ namespace Application.UseCases.Users.Queries
             DateTime firstDayOfNextWeek = GetFirstDayOfWeek(_clock.Now.AddDays(7));
             DateTime lastDayOfThisMonth = GetLastDayOfMonth(_clock.Now);
 
-            List<Lesson> lessons = _lessonRepository.GetPassedLesson(user, _clock.Now);
+            List<Lesson> lessons = [];
+            if (user is Student student)
+                lessons = _lessonRepository.GetLessonsForStudent(student);
+            else if (user is Teacher teacher)
+                lessons = _lessonRepository.GetLessonsForTeacher(teacher);
+
+            lessons = lessons
+                .Where(lesson => lesson.Start > _clock.Now)
+                .OrderBy(lesson => lesson.Start)
+                .ToList();
 
             UserLessonPlanning planning = new UserLessonPlanning()
             {
@@ -43,7 +53,7 @@ namespace Application.UseCases.Users.Queries
             };
 
             return Task.FromResult(planning);
-        }
+        }     
 
         private DateTime GetLastDayOfWeek(DateTime date)
         {

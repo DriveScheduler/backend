@@ -13,35 +13,32 @@ using Microsoft.Extensions.DependencyInjection;
 using UseCases.Fakes;
 using UseCases.TestData;
 using Infrastructure.Persistence;
+using Domain.Models.Users;
+using Domain.Models.Vehicles;
 
 namespace UseCases.Users
 {
-    public class UserGetDashboard : IClassFixture<SetupDependencies>, IDisposable
+    public class UserGetDashboard
     {
         private readonly IUserRepository _userRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly IVehicleRepository _vehicleRepository;
-
-        private readonly IDataAccessor _database;
+        
         private readonly IMediator _mediator;
         private readonly FakeSystemClock _clock;
 
-        public UserGetDashboard(SetupDependencies fixture)
+        public UserGetDashboard()
         {
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+
             _lessonRepository = fixture.ServiceProvider.GetRequiredService<ILessonRepository>();
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
-
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
             _clock = (FakeSystemClock)fixture.ServiceProvider.GetRequiredService<ISystemClock>();
         }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
-
 
         [Fact]
         public async void UserShould_GetHisLessonHistory()
@@ -76,7 +73,7 @@ namespace UseCases.Users
             _clock.Set(dataset.Date);
 
             // Arrange
-            User user = DataSet.GetCarStudent(Guid.NewGuid());
+            User user = DataTestFactory.GetCarStudent(Guid.NewGuid());
 
             _userRepository.Insert(dataset.Student);
             _userRepository.Insert(dataset.GetAllTeachers());
@@ -134,7 +131,7 @@ namespace UseCases.Users
             _clock.Set(dataset.Date);
 
             // Arrange
-            User user = DataSet.GetCarStudent(Guid.NewGuid());
+            User user = DataTestFactory.GetCarStudent(Guid.NewGuid());
 
             _userRepository.Insert(dataset.Student);
             _userRepository.Insert(dataset.GetAllTeachers());
@@ -179,8 +176,8 @@ namespace UseCases.Users
             Assert.Equal(expectedNextLesson, dashboard.NextLesson);
             Assert.Equal(expectedLastLessons, dashboard.LastLesson);
 
-            Assert.Equal(expectedFavoriteTeacher, dashboard.FavoriteTeacher);
-            Assert.Equal(expectedFavoriteTeacherTime, dashboard.FavoriteTeacherTimeSpent);
+            Assert.Equal(expectedFavoriteTeacher, dashboard.FavoriteUser);
+            Assert.Equal(expectedFavoriteTeacherTime, dashboard.FavoriteUserTimeSpent);
 
             Assert.Equal(expectedFavoriteVehicle, dashboard.FavoriteVehicle);
             Assert.Equal(expectedFavoriteVehicleTime, dashboard.FavoriteVehicleTimeSpent);
@@ -195,7 +192,7 @@ namespace UseCases.Users
             _clock.Set(dataset.Date);
 
             // Arrange
-            User user = DataSet.GetCarStudent(Guid.NewGuid());
+            User user = DataTestFactory.GetCarStudent(Guid.NewGuid());
 
             _userRepository.Insert(dataset.Student);
             _userRepository.Insert(dataset.GetAllTeachers());

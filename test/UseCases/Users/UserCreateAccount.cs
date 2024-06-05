@@ -1,6 +1,4 @@
 using Application.UseCases.Users.Commands;
-
-using Domain.Models;
 using Domain.Enums;
 using Domain.Exceptions.Users;
 using Domain.Repositories;
@@ -11,26 +9,23 @@ using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
 using Infrastructure.Persistence;
+using Domain.Models.Users;
 
 namespace UseCases.Users
 {
-    public class UserCreateAccount : IClassFixture<SetupDependencies>, IDisposable
+    public class UserCreateAccount
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IDataAccessor _database;
+        private readonly IUserRepository _userRepository;        
         private readonly IMediator _mediator;
 
-        public UserCreateAccount(SetupDependencies fixture)
+        public UserCreateAccount()
         {
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+            
             _userRepository = fixture.ServiceProvider.GetRequiredService<IUserRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
-        }
-
-        public void Dispose()
-        {
-            _database.Clear();
-        }
+        }      
 
         [Fact]
         public async void UserShould_CreateAnAccount()
@@ -44,11 +39,11 @@ namespace UseCases.Users
 
             // Act
             var command = new CreateUser_Command(name, firstname, email, password, licenceType, UserType.Student);
-            User user = await _mediator.Send(command);
+            Guid userId = await _mediator.Send(command);
 
             // Assert
-            Assert.NotEqual(Guid.Empty, user.Id);
-            Assert.NotNull(_userRepository.GetUserById(user.Id));
+            Assert.NotEqual(Guid.Empty, userId);
+            Assert.NotNull(_userRepository.GetUserById(userId));
         }
 
         [Fact]
@@ -133,7 +128,7 @@ namespace UseCases.Users
             const string password = "mdp123";
             const LicenceType licenceType = LicenceType.Car;
 
-            User user = DataSet.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
+            User user = DataTestFactory.GetCarStudent(new Guid("00000000-0000-0000-0000-000000000001"));
             string existingEmail = user.Email.Value;
             _userRepository.Insert(user);
 

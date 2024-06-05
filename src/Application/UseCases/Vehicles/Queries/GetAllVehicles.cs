@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Domain.Models.Vehicles;
 using Domain.Repositories;
 
 using MediatR;

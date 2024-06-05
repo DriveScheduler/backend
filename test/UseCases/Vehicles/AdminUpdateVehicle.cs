@@ -1,8 +1,7 @@
 ﻿using Application.UseCases.Vehicles.Commands;
 
-using Domain.Models;
-using Domain.Enums;
 using Domain.Exceptions.Vehicles;
+using Domain.Models.Vehicles;
 using Domain.Repositories;
 
 using MediatR;
@@ -10,28 +9,24 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 using UseCases.TestData;
-using Infrastructure.Persistence;
 
 namespace UseCases.Vehicles
 {
-    public class AdminUpdateVehicle : IClassFixture<SetupDependencies>, IDisposable
+    public class AdminUpdateVehicle 
     {
-        private readonly IVehicleRepository _vehicleRepository;
-        private readonly IDataAccessor _database;
+        private readonly IVehicleRepository _vehicleRepository;        
         private readonly IMediator _mediator;
 
-        public AdminUpdateVehicle(SetupDependencies fixture)
+        public AdminUpdateVehicle()
         {
-            _database = fixture.ServiceProvider.GetRequiredService<IDataAccessor>();
+            SetupDependencies fixture = new SetupDependencies();
+            fixture.BuildDefault();
+            
             _vehicleRepository = fixture.ServiceProvider.GetRequiredService<IVehicleRepository>();
             _mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
         }
 
-        public void Dispose()
-        {
-            _database.Clear();
-        }
-
+ 
         [Fact]
         public async void AdminShould_UpdateAVehicle()
         {
@@ -40,7 +35,7 @@ namespace UseCases.Vehicles
             const string registrationNumber = "AA123BB";
             const string updatedName = "Renault Clio";            
 
-            _vehicleRepository.Insert(DataSet.GetTruck(vehicleId));
+            _vehicleRepository.Insert(DataTestFactory.GetTruck(vehicleId));
 
             // Act
             var command = new UpdateVehicle_Command(vehicleId, registrationNumber, updatedName);
@@ -63,7 +58,7 @@ namespace UseCases.Vehicles
             // Arrange
             const int vehicleId = 1;
 
-            _vehicleRepository.Insert(DataSet.GetCar(vehicleId));
+            _vehicleRepository.Insert(DataTestFactory.GetCar(vehicleId));
 
             // Act
             var command = new UpdateVehicle_Command(vehicleId, invalidRegistrationNumber, "Car");
@@ -80,7 +75,7 @@ namespace UseCases.Vehicles
             const string registrationNumber = "AA123BB";
             const string name = "";            
 
-            _vehicleRepository.Insert(DataSet.GetCar(vehicleId));
+            _vehicleRepository.Insert(DataTestFactory.GetCar(vehicleId));
 
             // Act
             var command = new UpdateVehicle_Command(vehicleId, registrationNumber, name);
@@ -97,11 +92,11 @@ namespace UseCases.Vehicles
             // Arrange
             const int vehicleId = 1;
 
-            Vehicle car = DataSet.GetCar(2);
+            Vehicle car = DataTestFactory.GetCar(2);
             string existingRegistrationNumber = car.RegistrationNumber.Value;
 
             _vehicleRepository.Insert(car);
-            _vehicleRepository.Insert(DataSet.GetMotorcycle(vehicleId));
+            _vehicleRepository.Insert(DataTestFactory.GetMotorcycle(vehicleId));
 
             // Act
             var command = new UpdateVehicle_Command(vehicleId, existingRegistrationNumber, "moto");
